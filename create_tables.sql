@@ -73,28 +73,100 @@ INSERT INTO employees VALUES
 (6,'Macala Anderson',True,'9876'),
 (7,'Arlo Prado',True,'6543');
 
-DROP TABLE IF EXISTS users;
-CREATE TABLE users (
+DROP TABLE IF EXISTS users_web;
+CREATE TABLE users_web (
     user_id serial PRIMARY KEY,
-    username VARCHAR (20) UNIQUE NOT NULL,
-    password VARCHAR (20) UNIQUE NOT NULL,
-    email VARCHAR (20) UNIQUE NOT NULL
+    username VARCHAR (255) UNIQUE NOT NULL,
+    password VARCHAR (30) UNIQUE NOT NULL,
+    email VARCHAR (255) UNIQUE NOT NULL
 );
 
-DROP TABLE IF EXISTS orders_copy;
-CREATE TABLE orders_copy (
+DROP TABLE IF EXISTS orders_web;
+CREATE TABLE orders_web (
     order_id serial PRIMARY KEY,
     emp_id INT,
     cust_name TEXT,
     order_num INT,
     time_stamp TIMESTAMP
 );
-
 -- copy all data from orders table with auto-generating id
-INSERT INTO orders_copy (emp_id, cust_name, order_num, time_stamp) SELECT emp_id, cust_name, order_num, time_stamp FROM orders;
+INSERT INTO orders_web (emp_id, cust_name, order_num, time_stamp) SELECT emp_id, cust_name, order_num, time_stamp FROM orders;
 
--- manual insert into orders_copy
-insert into orders_copy (emp_id, cust_name, order_num, time_stamp) VALUES (2, 'testcopy', 57, '2022-10-19') returning order_id;
+-- same for pizzas, drinks, ingredients
+DROP TABLE IF EXISTS pizzas_web;
+CREATE TABLE pizzas_web (
+    pizza_id serial PRIMARY KEY,
+    order_id INT,
+    pizza_type TEXT,
+    pizza_price FLOAT
+);
+-- copy all data from pizzas table with auto-generating id
+INSERT INTO pizzas_web (order_id, pizza_type, pizza_price) SELECT order_id, pizza_type, pizza_price FROM pizzas;
 
--- same for pizzas, drinks
+DROP TABLE IF EXISTS drinks_web;
+CREATE TABLE drinks_web (
+    drink_id serial PRIMARY KEY,
+    order_id INT,
+    drink_type TEXT,
+    drink_price FLOAT
+);
+-- copy all data from drinks table with auto-generating id
+INSERT INTO drinks_web (order_id, drink_type, drink_price) SELECT order_id, drink_type, drink_price FROM drinks;
+
+DROP TABLE IF EXISTS ingredients_web;
+CREATE TABLE ingredients_web (
+    ingredient_id serial PRIMARY KEY,
+    ingredient_name TEXT,
+    ingredient_inventory FLOAT,
+    ingredient_type TEXT
+);
+-- copy all data from ingredients table with auto-generating id
+INSERT INTO ingredients_web (ingredient_name, ingredient_inventory, ingredient_type) SELECT ingredient_name, ingredient_inventory, ingredient_type FROM ingredients;
+
 -- also can for employees
+DROP TABLE IF EXISTS employees_web;
+CREATE TABLE employees_web (
+    emp_id serial PRIMARY KEY,
+    emp_name TEXT,
+    is_manager BOOLEAN,
+    passcode TEXT
+);
+-- copy all data from employees table with auto-generating id
+INSERT INTO employees_web (emp_name, is_manager, passcode) SELECT emp_name, is_manager, passcode FROM employees;
+
+DROP TABLE IF EXISTS ingredients_join_web;
+CREATE TABLE ingredients_join_web (
+    ingredient_id INT,
+    pizza_id INT
+);
+
+INSERT INTO ingredients_join_web (ingredient_id, pizza_id) SELECT ingredient_id, pizza_id FROM ingredients_join;
+
+DROP TABLE IF EXISTS ingredients_archive_web;
+CREATE TABLE ingredients_archive_web (
+    ingredient_id INT,
+    ingredient_inventory FLOAT,
+    time_stamp TIMESTAMP
+);
+
+INSERT INTO ingredients_archive_web (ingredient_id, ingredient_inventory, time_stamp) SELECT ingredient_id, ingredient_inventory, time_stamp FROM ingredients_archive;
+
+DROP TABLE IF EXISTS pizza_types_web;
+CREATE TABLE pizza_types_web (
+    pizza_type TEXT,
+    pizza_price FLOAT
+);
+
+INSERT INTO pizza_types_web (pizza_type, pizza_price) SELECT pizza_type, pizza_price FROM pizza_types;
+
+DROP TABLE IF EXISTS drink_types_web;
+CREATE TABLE drink_types_web (
+    drink_type TEXT,
+    drink_price FLOAT
+);
+
+INSERT INTO drink_types_web (drink_type, drink_price) SELECT drink_type, drink_price FROM drink_types;
+
+
+-- manual insert into orders_web
+insert into orders_web (emp_id, cust_name, order_num, time_stamp) VALUES (2, 'testcopy', 57, '2022-10-19') returning order_id;
