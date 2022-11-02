@@ -8,7 +8,7 @@ var manager = require("./manager.js");
 var checkout = require("./checkout.js");
 var login = require("./login.js");
 
-//reroute
+//reroute /api/* to given file
 app.use('/api/server', server);
 app.use('/api/manager', manager);
 app.use('/api/checkout', checkout);
