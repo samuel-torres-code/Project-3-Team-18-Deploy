@@ -10,7 +10,7 @@ const MenuTable = () => {
   return (
     <div class="border border-dark mx-5 my-4">
       <table class="w-100">
-        <tr>
+        <tr class="border-bottom border-dark">
           <th>Menu Item</th>
           <th>Price</th>
           <th>Select</th>

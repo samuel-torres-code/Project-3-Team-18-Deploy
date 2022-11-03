@@ -39,7 +39,7 @@ const IngredientTable = () => {
   return (
     <div class="border border-dark mx-5 my-4">
       <table class="w-100">
-        <tr>
+        <tr class="border-bottom border-dark">
           <th>Ingredient</th>
           <th>Type</th>
           <th>Inventory</th>
