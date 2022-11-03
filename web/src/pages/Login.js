@@ -5,6 +5,22 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 const Login = () => {
+  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+
+  const changeUser = (event) => {
+    setUser(event.target.value);
+  };
+
+  const changeEmail = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const changePass = (event) => {
+    setPass(event.target.value);
+  };
+
   return(
     <Form>
 
@@ -23,6 +39,8 @@ const Login = () => {
 
     </Form>
   );
+
+  
 };
   
 
