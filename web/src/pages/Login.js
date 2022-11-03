@@ -1,6 +1,6 @@
 import bootstrap from "bootstrap";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -12,16 +12,20 @@ const Login = () => {
 
   //update the user to the given user
   const changeUser = (event) => {
+    console.log(event.target.value);
     setUser(event.target.value);
+    changeEmail(event);
   };
 
   //update email to the given email
   const changeEmail = (event) => {
+    console.log(event.target.value);
     setEmail(event.target.value);
   };
 
   //update the password to the given password
   const changePass = (event) => {
+    console.log(event.target.value);
     setPass(event.target.value);
   };
 
@@ -41,34 +45,28 @@ const Login = () => {
     clearValues();
   };
 
-  //need the user onChange to call multiple functions
-  const multiSet = (event) => {
-    this.setEmail(event);
-    this.setUser(event);
-  }
-
   return(
     <Form>
 
       <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
         <Form.Label>Email or Username</Form.Label>
-        <Form.Control type="email" placeholder="Email or Username" value={{user, email}} onChange={(this.multiSet(user))}/>
+        <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
       </Form.Group>
 
       <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
         <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" value={pass} onChange={this.changePass(pass)}/>
+        <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
       </Form.Group>
 
       <Link to={'/Home'}>
-        <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} onClick={() => this.registerLogin}>Login</Button>
+        <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} onClick={registerLogin}>Login</Button>
       </Link>
 
       <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Register</Button></Link>
 
     </Form>
   );
-  
+
 };
   
 
