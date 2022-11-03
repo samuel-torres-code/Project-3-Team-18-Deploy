@@ -12,20 +12,17 @@ const Login = () => {
 
   //update the user to the given user
   const changeUser = (event) => {
-    console.log(event.target.value);
     setUser(event.target.value);
     changeEmail(event);
   };
 
   //update email to the given email
   const changeEmail = (event) => {
-    console.log(event.target.value);
     setEmail(event.target.value);
   };
 
   //update the password to the given password
   const changePass = (event) => {
-    console.log(event.target.value);
     setPass(event.target.value);
   };
 
