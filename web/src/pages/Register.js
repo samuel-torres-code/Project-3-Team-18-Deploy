@@ -5,6 +5,49 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 const Register = () => {
+  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [confPass, setConfPass] = useState('');
+
+  //update the user to the given user
+  const changeUser = (event) => {
+    setUser(event.target.value);
+    changeEmail(event);
+  };
+
+  //update email to the given email
+  const changeEmail = (event) => {
+    setEmail(event.target.value);
+  };
+
+  //update the password to the given password
+  const changePass = (event) => {
+    setPass(event.target.value);
+  };
+
+  //update confirmation password to the given password
+  const changeConfPass = (event) => {
+    setConfPass(event.target.value);
+  }
+
+  //In the event we need to immediately clear for some reason
+  const clearValues = () => {
+    setEmail('');
+    setPass('');
+    setUser('');
+  };
+
+  //cancel default login button function and handle it ourself
+  const registerLogin = (event) => {
+    event.preventDefault();
+
+    //create json here
+
+    clearValues();
+  };
+
+
   return(
       <Form>
 
