@@ -36,6 +36,7 @@ const Register = () => {
     setEmail('');
     setPass('');
     setUser('');
+    setConfPass('');
   };
 
   //cancel default login button function and handle it ourself
@@ -53,22 +54,22 @@ const Register = () => {
 
       <Form.Group className="mt-3 mx-auto" controlId="registerEmail" style={{width: '50%'}}>
           <Form.Label>Email</Form.Label>
-          <Form.Control type="email" placeholder="Email" />
+          <Form.Control type="email" placeholder="Email" value={email} onChange={setEmail} />
       </Form.Group>
 
       <Form.Group className="mt-3 mx-auto" controlId="registerUser" style={{width: '50%'}}>
           <Form.Label>Username</Form.Label>
-          <Form.Control type="username" placeholder="Username" />
+          <Form.Control type="username" placeholder="Username" value={username} onChange={setUser} />
       </Form.Group>
 
       <Form.Group className="mt-3 mx-auto" controlId="registerPass" style={{width: '50%'}}>
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
+          <Form.Control type="password" placeholder="Password" value={pass} onChange={setPass} />
       </Form.Group>
 
       <Form.Group className="mt-3 mx-auto" controlId="registerConfirmPass" style={{width: '50%'}}>
           <Form.Label>Confirm Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
+          <Form.Control type="password" placeholder="Password" value={confPass} onChange={confPass} />
       </Form.Group>
 
       <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}}>Register</Button></Link>
