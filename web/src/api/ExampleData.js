@@ -8,14 +8,45 @@ export const pizzas = [
     {
       pizza_type: "build-your-own",
       pizza_price: "$4.50",
-      ingredients: [],
+      ingredients: [
+        {
+          ingredient_id: "1",
+          ingredient_type: "Sauce",
+          ingredient_name: "Red Sauce",
+        },
+        {
+          ingredient_id: "2",
+          ingredient_type: "Cheese",
+          ingredient_name: "Mozzarella Cheese",
+        },
+        {
+          ingredient_id: "3",
+          ingredient_type: "Drizzle",
+          ingredient_name: "Olive Oil Drizzle",
+        },
+      ],
     },
     {
-      pizza_type: "build-your-own",
-      pizza_price: "$4.50",
-      ingredients: [],
+      pizza_type: "one-topping",
+      pizza_price: "$3.50",
+      ingredients: [
+        {
+          ingredient_id: "4",
+          ingredient_type: "Drizzle",
+          ingredient_name: "Pesto Sauce",
+        },
+        {
+          ingredient_id: "5",
+          ingredient_type: "Cheese",
+          ingredient_name: "Ricotta Cheese",
+        },
+        {
+          ingredient_id: "6",
+          ingredient_type: "Meat",
+          ingredient_name: "Pepperoni",
+        },
+      ],
     },
-    
   ]
 
 export const seasonal_items = [
@@ -40,6 +71,7 @@ export const seasonal_items = [
     },
   ];
 
+  
   export const ingredients = [
     {
       "ingredient_id": 24,
