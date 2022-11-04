@@ -71,10 +71,10 @@ const Register = () => {
             <Form.Label>Confirm Password</Form.Label>
           }
           {!(confPass === pass) && pass.length > 0 && confPass.length > 0 &&
-            <Form.Label style={{color: 'red'}}>Passwords Do Not Match</Form.Label>
+            <Form.Label style={{color: 'red',}}>Passwords Do Not Match</Form.Label>
           }
           {(confPass === pass) && pass.length > 0 && confPass.length > 0 &&
-            <Form.Label style={{color: 'blue'}}>Passwords Match</Form.Label>
+            <Form.Label style={{color: 'blue',}}>Passwords Match</Form.Label>
           }
           <Form.Control type="password" placeholder="Password" value={confPass} onChange={changeConfPass} />
           
