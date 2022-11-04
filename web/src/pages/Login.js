@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import jsonfile from 'jsonfile';
 
 const Login = () => {
   //initialize necessary settings for useState functions
@@ -37,7 +38,18 @@ const Login = () => {
   const registerLogin = (event) => {
     event.preventDefault();
 
-    //create json here
+    this.setState({email: email, user: user, pass: pass});
+    fetch('/login'{
+      method: 'POST',
+      body: JSON.stringify({
+        'user_name': user,
+        'password': pass,
+        'email': email
+      }),
+      headers:{
+        'Content type:': 'application/json, charset=utf-8'
+      }
+    });
 
     clearValues();
   };
