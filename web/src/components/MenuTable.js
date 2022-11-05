@@ -8,16 +8,18 @@ const MenuTable = () => {
   ];
 
   return (
-    <div class="border border-dark mx-5 my-4">
+    <div class="border border-dark mx-5">
       <table class="w-100">
-        <tr class="border-bottom border-dark">
+        <thead
+          class="table-header position-sticky"
+          styles="background-color:white; box-shadow: inset 0 -1px 0 black; border-collapse: separate;">
           <th>Menu Item</th>
           <th>Price</th>
           <th>Select</th>
-        </tr>
+        </thead>
         {data.map((val, key) => {
           return (
-            <tr key={key} class="border-bottom border-secondary">
+            <tr key={key} class="border-top border-secondary">
               <td>{val.name}</td>
               <td>{val.price}</td>
               <td>

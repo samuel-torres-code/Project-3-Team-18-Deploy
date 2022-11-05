@@ -37,17 +37,19 @@ const IngredientTable = () => {
   ];
 
   return (
-    <div class="border border-dark mx-5 my-4">
+    <div
+      class="border border-dark mx-5"
+      style={{ maxHeight: "80vh", overflowY: "auto" }}>
       <table class="w-100">
-        <tr class="border-bottom border-dark">
+        <thead class="table-header position-sticky">
           <th>Ingredient</th>
           <th>Type</th>
           <th>Inventory</th>
           <th>Select</th>
-        </tr>
+        </thead>
         {data.map((val, key) => {
           return (
-            <tr key={key} class="border-bottom border-secondary">
+            <tr key={key} class="table-row border-top border-secondary">
               <td>{val.name}</td>
               <td>{val.type}</td>
               <td>{val.inventory}</td>

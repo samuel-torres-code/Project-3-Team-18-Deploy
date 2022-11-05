@@ -16,10 +16,10 @@ const InputGroup = ({ title, text_hint, btn_label, ingredient_type }) => {
               <option value="1">Sauce</option>
               <option value="2">Cheese</option>
               <option value="3">Drizzle</option>
-              <option value="1">Meats</option>
-              <option value="2">Raw Veggies</option>
-              <option value="3">Roasted Veggies</option>
-              <option value="3">Other</option>
+              <option value="4">Meats</option>
+              <option value="5">Raw Veggies</option>
+              <option value="6">Roasted Veggies</option>
+              <option value="7">Other</option>
             </select>
           )}
         </div>
