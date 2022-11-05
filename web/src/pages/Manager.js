@@ -3,11 +3,16 @@ import IngredientTable from "../components/IngredientTable";
 import MenuTable from "../components/MenuTable";
 
 const Manager = () => {
+  const restockIngredient = () => {
+    console.log();
+  }
+
   return (
     <div class="row w-100">
       <div class="col my-5">
         <IngredientTable></IngredientTable>
       </div>
+      
       <div class="col my-auto">
         <div class="border border-secondary rounded p-3 my-3 mx-auto w-75">
           <h4>Restock Selected Ingredient</h4>
@@ -21,7 +26,8 @@ const Manager = () => {
             <input
               type="button"
               class="btn btn-primary my-2"
-              value="Restock"></input>
+              value="Restock"
+              onClick="restckIngredient"></input>
           </div>
         </div>
 
