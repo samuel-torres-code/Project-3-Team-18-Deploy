@@ -1,4 +1,6 @@
-const IngredientTable = () => {
+import { getStaticContextFromError } from "@remix-run/router";
+import { useState } from "react";
+const IngredientTable = ({ sendToParent }) => {
   const data = [
     { name: "Red", type: "Sauce", inventory: 1000 },
     { name: "Pesto", type: "Sauce", inventory: 1000 },
@@ -36,29 +38,52 @@ const IngredientTable = () => {
     { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
   ];
 
+  let selectedIngredients = ["apple"];
+
+  function handleSelectChange(event) {
+    console.log("Before: " + selectedIngredients);
+    if (event.target.checked) {
+      selectedIngredients.push(event.target.value);
+    } else {
+      selectedIngredients = selectedIngredients.filter(function (item) {
+        return item !== event.target.value;
+      });
+    }
+    console.log("After: " + selectedIngredients);
+    sendToParent(selectedIngredients);
+  }
+
   return (
     <div
-      class="border border-dark mx-5"
+      className="border border-dark mx-5"
       style={{ maxHeight: "80vh", overflowY: "auto" }}>
-      <table class="w-100">
-        <thead class="table-header position-sticky">
-          <th>Ingredient</th>
-          <th>Type</th>
-          <th>Inventory</th>
-          <th>Select</th>
+      <table className="w-100">
+        <thead className="table-header position-sticky">
+          <tr>
+            <th className="px-1">Ingredient</th>
+            <th className="px-1">Type</th>
+            <th className="px-1">Inventory</th>
+            <th className="px-1">Select</th>
+          </tr>
         </thead>
-        {data.map((val, key) => {
-          return (
-            <tr key={key} class="table-row border-top border-secondary">
-              <td>{val.name}</td>
-              <td>{val.type}</td>
-              <td>{val.inventory}</td>
-              <td>
-                <input type="checkbox" />
-              </td>
-            </tr>
-          );
-        })}
+        <tbody>
+          {data.map((val, key) => {
+            return (
+              <tr key={key} className="table-row border-top border-secondary">
+                <td>{val.name}</td>
+                <td>{val.type}</td>
+                <td>{val.inventory}</td>
+                <td>
+                  <input
+                    type="checkbox"
+                    value={val.name}
+                    onChange={handleSelectChange}
+                  />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
     </div>
   );

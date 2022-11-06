@@ -8,26 +8,28 @@ const MenuTable = () => {
   ];
 
   return (
-    <div class="border border-dark mx-5">
-      <table class="w-100">
-        <thead
-          class="table-header position-sticky"
-          styles="background-color:white; box-shadow: inset 0 -1px 0 black; border-collapse: separate;">
-          <th>Menu Item</th>
-          <th>Price</th>
-          <th>Select</th>
+    <div className="border border-dark mx-5">
+      <table className="w-100">
+        <thead className="table-header position-sticky">
+          <tr>
+            <td className="px-1">Menu Item</td>
+            <td className="px-1">Price</td>
+            <td className="px-1">Select</td>
+          </tr>
         </thead>
-        {data.map((val, key) => {
-          return (
-            <tr key={key} class="border-top border-secondary">
-              <td>{val.name}</td>
-              <td>{val.price}</td>
-              <td>
-                <input type="checkbox" />
-              </td>
-            </tr>
-          );
-        })}
+        <tbody>
+          {data.map((val, key) => {
+            return (
+              <tr key={key} className="border-top border-secondary">
+                <td>{val.name}</td>
+                <td>{val.price}</td>
+                <td>
+                  <input type="checkbox" />
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
     </div>
   );

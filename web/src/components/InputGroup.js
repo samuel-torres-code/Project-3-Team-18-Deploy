@@ -1,16 +1,16 @@
 const InputGroup = ({ title, text_hint, btn_label, ingredient_type }) => {
   return (
-    <div class="border border-secondary rounded p-3 my-3 mx-auto w-75">
+    <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
       <h4>{title}</h4>
-      <div class="d-flex justify-content-center flex-wrap">
-        <div class="d-flex flex-wrap my-2">
+      <div className="d-flex justify-content-center flex-wrap">
+        <div className="d-flex flex-wrap my-2">
           {text_hint && (
-            <input type="text" placeholder={text_hint} class="me-2"></input>
+            <input type="text" placeholder={text_hint} className="me-2"></input>
           )}
 
           {ingredient_type && (
             <select
-              class="form-select w-auto"
+              className="form-select w-auto"
               aria-label="Default select example">
               <option selected>Select Type</option>
               <option value="1">Sauce</option>
@@ -24,7 +24,7 @@ const InputGroup = ({ title, text_hint, btn_label, ingredient_type }) => {
           )}
         </div>
 
-        <input type="button" class="btn btn-primary my-2" value={btn_label}></input>
+        <input type="button" className="btn btn-primary my-2" value={btn_label}></input>
       </div>
     </div>
   );
