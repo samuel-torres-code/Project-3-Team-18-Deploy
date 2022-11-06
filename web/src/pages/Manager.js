@@ -9,6 +9,7 @@ function Manager() {
   const [restockAmount, setRestockAmount] = useState("");
   const [newIngredientName, setNewIngredientName] = useState("");
   const [newIngredientType, setNewIngredientType] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
 
   const ingredientData = [
     { name: "Red", type: "Sauce", inventory: 1000 },
@@ -100,13 +101,21 @@ function Manager() {
   }
 
   function handleAddIngredientClick() {
-    console.log(newIngredientName);
-    console.log(newIngredientType);
+    console.log("Name: " + newIngredientName + "\tType: " + newIngredientType);
+  }
+
+  function handleItemPriceChange(event) {
+    setNewItemPrice(event.target.value);
+  }
+
+  function handleItemPriceClick() {
+    console.log("New Price: " + newItemPrice + "\tItems: " + selectedMenuItems);
   }
 
   return (
     <div className="row w-100">
       <div className="col my-5">
+        {/* Ingredient Table */}
         <div
           className="border border-dark mx-5"
           style={{ maxHeight: "80vh", overflowY: "auto" }}>
@@ -141,10 +150,10 @@ function Manager() {
             </tbody>
           </table>
         </div>
-        {/* <IngredientTable sendToParent={getChildSelectedData}></IngredientTable> */}
       </div>
 
       <div className="col my-auto">
+        {/* Restock Ingredients */}
         <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
           <h4>Restock Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
@@ -162,6 +171,7 @@ function Manager() {
           </div>
         </div>
 
+        {/* Remove Ingredients */}
         <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
           <h4>Remove Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
@@ -173,6 +183,7 @@ function Manager() {
           </div>
         </div>
 
+        {/* Add Ingredients */}
         <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
           <h4>Add Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
@@ -204,21 +215,9 @@ function Manager() {
               onClick={handleAddIngredientClick}></input>
           </div>
         </div>
-
-        {/* <InputGroup
-              title="Restock Selected Ingredient"
-              text_hint="Restock Amount"
-              btn_label="Restock"></InputGroup>
-            <InputGroup
-              title="Remove Selected Ingredient"
-              btn_label="Remove Ingredient"></InputGroup>
-            <InputGroup
-              title="Add Ingredient"
-              text_hint="Ingredient Name"
-              ingredient_type={true}
-              btn_label="Add Ingredient"></InputGroup> */}
       </div>
       <div className="col my-auto">
+        {/* Menu Items Table */}
         <div className="border border-dark mx-5">
           <table className="w-100">
             <thead className="table-header position-sticky">
@@ -247,22 +246,24 @@ function Manager() {
             </tbody>
           </table>
         </div>
-        {/* <MenuTable></MenuTable> */}
+
+        {/* Change Menu Item Price */}
         <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
           <h4>Change Selected Menu Item Price</h4>
           <div className="d-flex justify-content-center flex-wrap">
-            <input type="text" placeholder="New Price" className="m-2"></input>
+            <input
+              type="text"
+              placeholder="New Price"
+              className="m-2"
+              value={newItemPrice}
+              onChange={handleItemPriceChange}></input>
             <input
               type="button"
               className="btn btn-primary my-2"
-              value="Change Price"></input>
+              value="Change Price"
+              onClick={handleItemPriceClick}></input>
           </div>
         </div>
-
-        {/* <InputGroup
-              title="Change Selected Menu Item Price"
-              text_hint="New Price"
-              btn_label="Change Price"></InputGroup> */}
       </div>
     </div>
   );
