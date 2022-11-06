@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
 
 const Register = () => {
   const [user, setUser] = useState('');
@@ -41,9 +42,25 @@ const Register = () => {
   //cancel default login button function and handle it ourself
   const registerLogin = (event) => {
     event.preventDefault();
-
-    //create json here
-
+    axios({
+      method: 'post',
+      url: 'server/login',
+      data: {
+        user_name: user,
+        email: email,
+        password: pass
+      }
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
     clearValues();
   };
 
@@ -80,7 +97,7 @@ const Register = () => {
           
       </Form.Group>
 
-      <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}}>Register</Button></Link>
+      <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} onClick={registerLogin}>Register</Button></Link>
       <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Back to Login</Button></Link>
 
       </Form>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
 
 const Login = () => {
   //initialize necessary settings for useState functions
@@ -36,7 +37,21 @@ const Login = () => {
   //cancel default login button function and handle it ourself
   const registerLogin = (event) => {
     event.preventDefault();
-
+    axios.post('/login',{
+        user_name: user,
+        email: email,
+        password: pass
+    }).catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
     clearValues();
   };
 
