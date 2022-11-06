@@ -11,6 +11,11 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
 
+  //confirm that information is entered
+  function infoCompleted() {
+    return user.length > 0 && pass.length > 0;
+  }
+
   //update the user to the given user
   const changeUser = (event) => {
     setUser(event.target.value);
@@ -69,7 +74,7 @@ const Login = () => {
       </Form.Group>
 
       <Link to={'/Home'}>
-        <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} onClick={registerLogin}>Login</Button>
+        <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
       </Link>
 
       <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Register</Button></Link>

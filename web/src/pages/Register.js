@@ -11,6 +11,11 @@ const Register = () => {
   const [pass, setPass] = useState('');
   const [confPass, setConfPass] = useState('');
 
+  //confirm that infomation is entered and passwords match
+  function infoCompleted() {
+    return user.length > 0 && pass.length > 0 && email.length > 0 && confPass.length > 0 && confPass === pass;
+  }
+
   //update the user to the given user
   const changeUser = (event) => {
     setUser(event.target.value);
@@ -97,7 +102,7 @@ const Register = () => {
           
       </Form.Group>
 
-      <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} onClick={registerLogin}>Register</Button></Link>
+      <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Register</Button></Link>
       <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Back to Login</Button></Link>
 
       </Form>
