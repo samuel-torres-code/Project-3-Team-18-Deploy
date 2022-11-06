@@ -3,6 +3,8 @@ var router = express.Router();
 const { Pool } = require('pg');
 const dotenv = require('dotenv').config();
 
+const app = express();
+
 const pool = new Pool({
     user: process.env.PSQL_USER,
     host: process.env.PSQL_HOST,
@@ -19,10 +21,10 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-app.get('/user', (req, res) => {
+app.post('/user', (req, res) => {
     data = [];
     pool
-        .query('insert into users_web (user_id, username, password, email) VALUES (, 1, 1, 1) returning user_id as userID;')
+        .query('insert into users_web (user_id, username, password, email) VALUES (DEFAULT, 1, 1, 1) returning user_id as userID;')
         .then(query_res => {
             for (let i = 0; i < query_res.rowCount; i++){
                 data.push(query_res.rows[i]);
