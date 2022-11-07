@@ -1,6 +1,3 @@
-// import IngredientTable from "../components/IngredientTable";
-// import InputGroup from "../components/InputGroup";
-import MenuTable from "../components/MenuTable";
 import { useState } from "react";
 
 function Manager() {
@@ -154,7 +151,7 @@ function Manager() {
 
       <div className="col my-auto">
         {/* Restock Ingredients */}
-        <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
+        <div className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto" style={{width:"80%"}}>
           <h4>Restock Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
@@ -172,7 +169,7 @@ function Manager() {
         </div>
 
         {/* Remove Ingredients */}
-        <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
+        <div className="border border-secondary rounded p-3 my-3 mx-auto" style={{width:"80%"}}>
           <h4>Remove Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
@@ -184,18 +181,18 @@ function Manager() {
         </div>
 
         {/* Add Ingredients */}
-        <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
+        <div className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto" style={{width:"80%"}}>
           <h4>Add Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
-            <div className="d-flex flex-wrap my-2 justify-content-center">
+            <div className="d-flex flex-wrap justify-content-center">
               <input
                 type="text"
                 placeholder="Ingredient Name"
-                className="me-2"
+                className="m-2"
                 value={newIngredientName}
                 onChange={handleAddNameChange}></input>
               <select
-                className="form-select w-auto"
+                className="form-select w-auto my-2"
                 onChange={handleAddTypeChange}
                 defaultValue={""}>
                 <option value="">Select Type</option>
@@ -218,7 +215,7 @@ function Manager() {
       </div>
       <div className="col my-auto">
         {/* Menu Items Table */}
-        <div className="border border-dark mx-5">
+        <div className="border border-dark mx-5 mt-5">
           <table className="w-100">
             <thead className="table-header position-sticky">
               <tr>
@@ -248,7 +245,7 @@ function Manager() {
         </div>
 
         {/* Change Menu Item Price */}
-        <div className="border border-secondary rounded p-3 my-3 mx-auto w-75">
+        <div className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto" style={{width:"80%"}}>
           <h4>Change Selected Menu Item Price</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
