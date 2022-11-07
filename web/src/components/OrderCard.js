@@ -64,15 +64,17 @@ const PizzaRows = ({ pizzas, handleDeletePizza, handleEditPizza }) => {
   ));
 };
 
-const OrderInfo = ({order_info, createEmptyOrder}) => {
+const OrderInfo = ({order_info, onFormChange, handleSubmitName}) => {
   if (order_info.name === "") {
     return (<InputGroup className="mb-3">
               <Form.Control
                 placeholder="Customer's name"
                 aria-label="Customer's name"
                 aria-describedby="customer-enter-name"
+                name="order_name"
+                onChange={onFormChange}
               />
-              <Button onClick={() => createEmptyOrder} variant="outline-primary" id="customer-enter-name">
+              <Button onClick={() => handleSubmitName()} variant="outline-primary" id="customer-enter-name">
                 Start Order
               </Button>
           </InputGroup>
@@ -90,10 +92,11 @@ const OrderCard = ({
   seasonal_items,
   drink_counts,
   total_price,
+  onFormChange,
   handleEditPizza,
   handleDeletePizza,
   handleDeleteSeasonalItem,
-  createEmptyOrder
+  handleSubmitName
 }) => {
   
 
@@ -102,7 +105,7 @@ const OrderCard = ({
       <div className="card">
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
-            <OrderInfo createEmptyOrder={createEmptyOrder} order_info = {order_info}/>
+            <OrderInfo handleSubmitName={handleSubmitName} onFormChange={onFormChange} order_info = {order_info}/>
           </li>
           <div style={{maxHeight: '80vh', overflowY:'scroll'}} >
           <li className="list-group-item">

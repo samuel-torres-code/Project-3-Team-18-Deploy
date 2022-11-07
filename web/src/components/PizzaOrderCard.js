@@ -37,7 +37,6 @@ const PizzaOrderCard = ({
   ingredients_by_type,
   value,
   handleChange,
-  setValue,
   baseIngredients,
   toppingIngredients,
   disabled
