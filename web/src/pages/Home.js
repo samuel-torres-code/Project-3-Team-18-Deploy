@@ -1,4 +1,7 @@
+import { getIngredientsByType } from '../api/ServerAPI'
+
 const Home = () => {
+    getIngredientsByType()
     return <h1>Home</h1>;
   };
   
