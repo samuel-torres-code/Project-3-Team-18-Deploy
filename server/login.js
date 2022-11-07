@@ -5,8 +5,6 @@ const dotenv = require('dotenv').config();
 
 const app = express();
 
-app.use()
-
 const pool = new Pool({
     user: process.env.PSQL_USER,
     host: process.env.PSQL_HOST,
@@ -23,7 +21,20 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-app.post('/api/user/login', (req, res) => {
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
+
+app.post('http://localhost:2000/api/login/user/login', (req, res, next) => {
+    console.log(req);
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next()
     data = [];
     /*pool
         .query('insert into users_web (user_id, username, password, email) VALUES (DEFAULT, 1, 1, 1) returning user_id as userID;');
@@ -39,10 +50,8 @@ app.post('/api/user/login', (req, res) => {
 });
 
 router.get('/', function(req, res){
-    res.send('default route /api/login');
+    res.send('default route /api/login/user/login');
 });
-
-app.listen(2000, () => {console.log("Server started on port 2000")});
 
 
 module.exports = router;

@@ -42,17 +42,12 @@ const Login = () => {
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
-    let config = {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        }
-    }
 
     const loginData = await axios.post('http://localhost:2000/api/login/user/login',{
         user_name: user,
         email: email,
         password: pass
-    }, config).catch((error) => {
+    }).catch((error) => {
       if (error.response) {
         console.log(error.response);
         console.log("Server responded.");
