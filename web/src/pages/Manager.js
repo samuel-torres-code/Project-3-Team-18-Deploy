@@ -8,7 +8,7 @@ function Manager() {
   const [newIngredientType, setNewIngredientType] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
 
-  const ingredientData = [
+  const [ingredientData, setIngredientData] = useState([
     { name: "Red", type: "Sauce", inventory: 1000 },
     { name: "Pesto", type: "Sauce", inventory: 1000 },
     { name: "White", type: "Sauce", inventory: 1000 },
@@ -43,15 +43,14 @@ function Manager() {
     { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
     { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
     { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-  ];
-
-  const menuItemData = [
+  ]);
+  const [menuItemData, setMenuItemData] = useState([
     { name: "one-topping", price: 9.99 },
     { name: "build-your-own", price: 8.99 },
     { name: "cheese", price: 7.99 },
     { name: "Fountain", price: 1.99 },
     { name: "Bottle", price: 1.99 },
-  ];
+  ]);
 
   function handleSelectIngredientChange(event) {
     if (event.target.checked) {
@@ -81,14 +80,6 @@ function Manager() {
     setRestockAmount(event.target.value);
   }
 
-  function handleRestockClick() {
-    console.log("Restock: " + restockAmount);
-  }
-
-  function handleRemoveClick() {
-    console.log("Ingredients: " + selectedIngredients);
-  }
-
   function handleAddNameChange(event) {
     setNewIngredientName(event.target.value);
   }
@@ -97,16 +88,77 @@ function Manager() {
     setNewIngredientType(event.target.value);
   }
 
-  function handleAddIngredientClick() {
-    console.log("Name: " + newIngredientName + "\tType: " + newIngredientType);
-  }
-
   function handleItemPriceChange(event) {
     setNewItemPrice(event.target.value);
   }
 
+  function handleRestockClick() {
+    setIngredientData(
+      ingredientData.map((element, index) => {
+        if (selectedIngredients.includes(element.name)) {
+          element = {
+            name: element.name,
+            type: element.type,
+            inventory: parseInt(element.inventory) + parseInt(restockAmount),
+          };
+        }
+        return element;
+      })
+    );
+    unCheckIngredients();
+  }
+
+  function handleRemoveClick() {
+    setIngredientData(
+      ingredientData.filter(function (item) {
+        return !selectedIngredients.includes(item.name);
+      })
+    );
+    // unCheckIngredients();
+  }
+
+  function handleAddIngredientClick() {
+    setIngredientData([
+      ...ingredientData,
+      {
+        name: newIngredientName,
+        type: newIngredientType,
+        inventory: 0,
+      },
+    ]);
+  }
+
   function handleItemPriceClick() {
+    setMenuItemData(
+      ingredientData.map((element, index) => {
+        if (selectedIngredients.includes(element.name)) {
+          element = {
+            name: element.name,
+            type: element.type,
+            inventory: parseInt(element.inventory) + parseInt(restockAmount),
+          };
+        }
+        return element;
+      })
+    );
+    unCheckMenuItems();
     console.log("New Price: " + newItemPrice + "\tItems: " + selectedMenuItems);
+  }
+
+  function unCheckIngredients() {
+    // uncheck all ingredient checkboxes
+    var x = document.getElementsByClassName("ing-checkbox");
+    for (var i = 0; i <= x.length; i++) {
+      x[i].checked = false;
+    }
+  }
+
+  function unCheckMenuItems() {
+    // uncheck all menu item checkboxes
+    var x = document.getElementsByClassName("item-checkbox");
+    for (var i = 0; i <= x.length; i++) {
+      x[i].checked = false;
+    }
   }
 
   return (
@@ -137,6 +189,7 @@ function Manager() {
                     <td>
                       <input
                         type="checkbox"
+                        className="ing-checkbox"
                         value={val.name}
                         onChange={handleSelectIngredientChange}
                       />
@@ -151,7 +204,9 @@ function Manager() {
 
       <div className="col my-auto">
         {/* Restock Ingredients */}
-        <div className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto" style={{width:"80%"}}>
+        <div
+          className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
+          style={{ width: "80%" }}>
           <h4>Restock Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
@@ -169,7 +224,9 @@ function Manager() {
         </div>
 
         {/* Remove Ingredients */}
-        <div className="border border-secondary rounded p-3 my-3 mx-auto" style={{width:"80%"}}>
+        <div
+          className="border border-secondary rounded p-3 my-3 mx-auto"
+          style={{ width: "80%" }}>
           <h4>Remove Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
@@ -181,7 +238,9 @@ function Manager() {
         </div>
 
         {/* Add Ingredients */}
-        <div className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto" style={{width:"80%"}}>
+        <div
+          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+          style={{ width: "80%" }}>
           <h4>Add Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <div className="d-flex flex-wrap justify-content-center">
@@ -233,6 +292,7 @@ function Manager() {
                     <td>
                       <input
                         type="checkbox"
+                        className="item-checkbox"
                         value={val.name}
                         onChange={handleSelectMenuItemChange}
                       />
@@ -245,7 +305,9 @@ function Manager() {
         </div>
 
         {/* Change Menu Item Price */}
-        <div className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto" style={{width:"80%"}}>
+        <div
+          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+          style={{ width: "80%" }}>
           <h4>Change Selected Menu Item Price</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
