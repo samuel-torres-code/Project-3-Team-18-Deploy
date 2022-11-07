@@ -10,7 +10,11 @@ export const pizzas = [
       pizza_price: "$4.50",
       ingredients: [],
     },
-    
+    {
+      pizza_type: "build-your-own",
+      pizza_price: "$4.50",
+      ingredients: [],
+    },
     
   ]
 
