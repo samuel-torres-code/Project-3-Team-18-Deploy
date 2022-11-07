@@ -40,7 +40,6 @@ export const seasonal_items = [
     },
   ];
 
-  
   export const ingredients = [
     {
       "ingredient_id": 24,
