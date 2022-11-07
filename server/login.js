@@ -26,15 +26,18 @@ app.use((req, res, next) => {
     res.setHeader(
         "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
     );
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
     next();
 });
 
-app.post('http://localhost:2000/api/login/user/login', (req, res, next) => {
-    console.log(req);
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    next()
+app.post('/api/login', (req, res, next) => {
+    //console.log(req);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+    //next()
     data = [];
     /*pool
         .query('insert into users_web (user_id, username, password, email) VALUES (DEFAULT, 1, 1, 1) returning user_id as userID;');
@@ -46,11 +49,11 @@ app.post('http://localhost:2000/api/login/user/login', (req, res, next) => {
             console.log(data);
             res.render('user', data);        
         });*/
-    console.log("Username: %s", req.body.email);
+    //console.log("Username: %s", req.body.email);
 });
 
 router.get('/', function(req, res){
-    res.send('default route /api/login/user/login');
+    res.send('default route /api/login');
 });
 
 

@@ -10,6 +10,9 @@ const Login = () => {
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+  const client = axios.create({
+    baseURL: "http://localhost:2000"
+  })
 
   //confirm that information is entered
   function infoCompleted() {
@@ -42,8 +45,7 @@ const Login = () => {
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
-
-    const loginData = await axios.post('http://localhost:2000/api/login/user/login',{
+    const loginData = await client.post('/api/login',{
         user_name: user,
         email: email,
         password: pass

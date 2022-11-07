@@ -1,6 +1,8 @@
 const express = require('express');
 var router = express.Router();
 const app = express();
+const { Pool } = require('pg');
+const dotenv = require('dotenv').config();
 const port = 2000;
 const cors = require('cors');
 var corsOptions ={
@@ -8,6 +10,9 @@ var corsOptions ={
     credentials: true,
     optionSuccessStatus:200
 }
+app.use(cors(corsOptions));
+app.use(express.json());
+
 
 // define subclasses of api routines
 var server = require('./server.js');
@@ -22,7 +27,6 @@ app.use('/api/manager', manager);
 app.use('/api/checkout', checkout);
 app.use('/api/login', login);
 app.use('/api/register', register);
-app.use(cors(corsOptions));
 
 
 
