@@ -6,14 +6,15 @@ import PizzaOrderCard from "../components/PizzaOrderCard";
 import {
   ingredients,
   //pizzas,
-  seasonal_items,
-  drink_counts,
-  order_info,
+  // seasonal_items,
+  // drink_counts,
+  // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
+// eslint-disable-next-line
   x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
 
 const Server = () => {
@@ -28,14 +29,31 @@ const Server = () => {
   const [drinkCounts, setDrinkCounts] = useState([]);
   // const [currentPizzaIndex, setCurrentPizzaIndex] = useState(-1);
   const [currentPizzaID, setCurrentPizzaID] = useState(-1);
-  const [orderInfo, setOrderInfo] = useState({ name: "Joey" });
+  const [orderInfo, setOrderInfo] = useState({ name: "" });
+  const [form,setForm] = useState({order_name:""});
   const baseIngredients = ["Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
+
+  const handleFormChange = (e) => {
+    e.preventDefault();
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmitName = () => {
+    // e.preventDefault();
+    
+    if(form.order_name !== "") {
+      //createEmptyOrder(form.order_name)
+      createEmptyOrder(form.order_name);
+      //setOrderInfo({... orderInfo, name: form.order_name})
+      
+    }
+  }
 
   const createEmptyOrder = (name) => {
     setPizzasOnOrder([]);
     setSeasonalItems([]);
-    setDrinkCounts(
+    setDrinkCounts([
       {
         drink_type: "Fountain",
         drink_count: 0,
@@ -43,9 +61,9 @@ const Server = () => {
       {
         drink_type: "Bottled",
         drink_count: 0,
-      }
+      }]
     );
-    setOrderInfo({ name: { name } });
+    setOrderInfo({ name: name  })
   };
   //createEmptyOrder("Joey")
 
@@ -78,6 +96,7 @@ const Server = () => {
         pizza_id: nextPizzaID
       },
     ]);
+    
     setNextPizzaID(nextPizzaID+1)
   };
   const handleDeletePizza = (id) => {
@@ -135,7 +154,8 @@ const Server = () => {
             handleDeletePizza={handleDeletePizza}
             handleEditPizza={handleEditPizza}
             handleDeleteSeasonalItem={handleDeleteSeasonalItem}
-            createEmptyOrder={createEmptyOrder}
+            onFormChange={handleFormChange}
+            handleSubmitName={handleSubmitName}
           />
         </div>
         <div className="col-3">
