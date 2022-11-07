@@ -35,11 +35,7 @@ app.use('/api/checkout', checkout);
 app.use('/api/login', login);
 
 
-
-
-app.get('/api', (req, res) => {
-    res.send('default route /api');
-});
+//test function for accessing db
 app.get('/user_test', (req, res) => {
     teammembers = []
     pool
@@ -50,10 +46,17 @@ app.get('/user_test', (req, res) => {
             }
             const data = {teammembers: teammembers};
             console.log(teammembers);
-            res.render('user', data);
+            // res.render('user', data);
+            res.send(teammembers)
         });
 });
+
+app.get('/api', (req, res) => {
+    res.send('default route /api');
+});
+
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
+
 
