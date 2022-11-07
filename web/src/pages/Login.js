@@ -1,5 +1,5 @@
 import bootstrap from "bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -40,13 +40,19 @@ const Login = () => {
   };
 
   //cancel default login button function and handle it ourself
-  const registerLogin = (event) => {
+  const registerLogin = async (event) => {
     event.preventDefault();
-    axios.post('/login',{
+    let config = {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        }
+    }
+
+    const loginData = await axios.post('http://localhost:2000/api/login/user/login',{
         user_name: user,
         email: email,
         password: pass
-    }).catch((error) => {
+    }, config).catch((error) => {
       if (error.response) {
         console.log(error.response);
         console.log("Server responded.");
@@ -57,7 +63,9 @@ const Login = () => {
         console.log(error);
       }
     });
-    clearValues();
+
+
+    //clearValues();
   };
 
   return(
