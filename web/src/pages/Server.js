@@ -3,6 +3,8 @@ import DoughCard from "../components/DoughCard";
 import DrinkCard from "../components/DrinkCard";
 import OrderCard from "../components/OrderCard";
 import PizzaOrderCard from "../components/PizzaOrderCard";
+
+
 import {
   ingredients,
   //pizzas,
@@ -11,7 +13,7 @@ import {
   // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
-import { getIngredientsByType } from "../api/ServerAPI";
+import { getIngredientsByType, getItemTypes } from "../api/ServerAPI";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
@@ -22,6 +24,7 @@ const Server = () => {
   const [ingredients_by_type,setIngredientsByType] = useState({});
   const [nextPizzaID, setNextPizzaID] = useState(1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [itemTypes,setItemTypes] = useState({});
   const [pizzasOnOrder, setPizzasOnOrder] = useState([]);
   const [seasonalItems, setSeasonalItems] = useState([]);
   const [drinkCounts, setDrinkCounts] = useState([]);
@@ -29,12 +32,22 @@ const Server = () => {
   const [currentPizzaID, setCurrentPizzaID] = useState(-1);
   const [orderInfo, setOrderInfo] = useState({ name: "" });
   const [form,setForm] = useState({order_name:""});
+  const [isLoading,setIsLoading] = useState(true);
+  let initialLoad = true;
   const baseIngredients = ["Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
 
   useEffect(() => {
-    setIngredientsByType(getIngredientsByType())
-  },[])
+    if(isLoading && initialLoad) {
+      initialLoad = false
+      
+      Promise.all([getIngredientsByType(), getItemTypes()]).then((values) => {
+          setIngredientsByType(values[0])
+          setItemTypes(values[1])
+          setIsLoading(false)
+      })
+    }
+  })
 
   const handleFormChange = (e) => {
     e.preventDefault();
@@ -67,7 +80,6 @@ const Server = () => {
     );
     setOrderInfo({ name: name  })
   };
-  //createEmptyOrder("Joey")
 
   const handleChange = async (val) => {
     if (!currentPizzaID !== -1) {
@@ -142,47 +154,56 @@ const Server = () => {
       })
     );
   };
-
-  return (
-    <div className="container">
-      <div className="row my-2">
-        <div className="col-3">
-          <OrderCard
-            order_info={orderInfo}
-            pizzas={pizzasOnOrder}
-            seasonal_items={seasonalItems}
-            drink_counts={drinkCounts}
-            total_price={0.0}
-            handleDeletePizza={handleDeletePizza}
-            handleEditPizza={handleEditPizza}
-            handleDeleteSeasonalItem={handleDeleteSeasonalItem}
-            onFormChange={handleFormChange}
-            handleSubmitName={handleSubmitName}
-          />
-        </div>
-        <div className="col-3">
-          <DrinkCard updateDrinkCount={updateDrinkCount} />
-          <DoughCard
-            ingredients_by_type={ingredients_by_type}
-            value={selectedIngredients}
-            handleChange={handleChange}
-          />
-          <AddPizzaCard handleAddPizza={handleAddPizza} />
-        </div>
-        <div className="col-6">
-          <PizzaOrderCard
-            disabled={currentPizzaID === -1}
-            handleChange={handleChange}
-            ingredients_by_type={ingredients_by_type}
-            value={selectedIngredients}
-            setValue={setSelectedIngredients}
-            baseIngredients={baseIngredients}
-            toppingIngredients={toppingIngredients}
-          />
+  if(!isLoading) {
+    
+    return (
+      <div className="container">
+        <div className="row my-2">
+          <div className="col-3">
+            <OrderCard
+              order_info={orderInfo}
+              pizzas={pizzasOnOrder}
+              seasonal_items={seasonalItems}
+              drink_counts={drinkCounts}
+              total_price={0.0}
+              handleDeletePizza={handleDeletePizza}
+              handleEditPizza={handleEditPizza}
+              handleDeleteSeasonalItem={handleDeleteSeasonalItem}
+              onFormChange={handleFormChange}
+              handleSubmitName={handleSubmitName}
+            />
+          </div>
+          <div className="col-3">
+            <DrinkCard updateDrinkCount={updateDrinkCount} />
+            <DoughCard
+              ingredients_by_type={ingredients_by_type}
+              value={selectedIngredients}
+              handleChange={handleChange}
+            />
+            <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} />
+          </div>
+          <div className="col-6">
+            <PizzaOrderCard
+              disabled={currentPizzaID === -1}
+              handleChange={handleChange}
+              ingredients_by_type={ingredients_by_type}
+              value={selectedIngredients}
+              setValue={setSelectedIngredients}
+              baseIngredients={baseIngredients}
+              toppingIngredients={toppingIngredients}
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+  else {
+    return (<>
+    <div style={{width:'100vw',height:'100vh', display:'flex',justifyContent:'center',alignItems:'center'}}>
+      <img src={require ('../loader_pizza.gif')} alt="Loading" style={{ width:'15vw', height:'auto'}}/>
+      </div>
+    </>)
+  }
 };
 
 export default Server;

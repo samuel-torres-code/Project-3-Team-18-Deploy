@@ -5,11 +5,22 @@ const client = axios.create({
 });
 
 
+
 export const getIngredientsByType = () => {
     
-        client.get('api/server/ingredients').then((response) => {
-           console.log(response)
+        return client.get('api/server/ingredients').then((res) => { 
+            return res.data
         });
+        
      
+}
+
+export const getItemTypes = () => {
+    
+    return client.get('api/server/types').then((res) => { 
+        return res.data
+    });
+    
+ 
 }
 

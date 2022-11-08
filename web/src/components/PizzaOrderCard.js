@@ -16,10 +16,10 @@ const IngredientSelectGroup = ({ ingredients, handleChange, value, width, disabl
         onChange={handleChange}
         
       >
-        {ingredients[1].map((ingredient) => {
+        {ingredients[1].map((ingredient, index) => {
           return (
             <ToggleButton
-              key={`${ingredient.ingredient_id}_${ingredient.ingredient_name}_${ingredient.ingredient_type}`}
+              key={`${ingredient.ingredient_id}_${index}_${ingredient.ingredient_name}_${ingredient.ingredient_type}`}
               id={`tbg-btn-${ingredient.ingredient_id}`}
               value={ingredient.ingredient_id}
               disabled={disabled}

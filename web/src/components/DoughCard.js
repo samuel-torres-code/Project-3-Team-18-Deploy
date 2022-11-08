@@ -4,8 +4,8 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 const DoughInputGroup = ({ingredients,handleChange,value,width}) => {
     return (
         <ToggleButtonGroup type="checkbox" value={value} onChange={handleChange}>
-        {ingredients[1].map(ingredient => {return (
-        <ToggleButton  key={`${ingredient.ingredient_id}_${ingredient.ingredient_name}_${ingredient.ingredient_type}`} id={`tbg-btn-${ingredient.ingredient_id}`} value={ingredient.ingredient_id} >
+        {ingredients[1].map((ingredient,index) => {return (
+        <ToggleButton  key={`${ingredient.ingredient_id}_${index}_${ingredient.ingredient_name}_${ingredient.ingredient_type}`} id={`tbg-btn-${ingredient.ingredient_id}`} value={ingredient.ingredient_id} >
             {ingredient.ingredient_name}
         </ToggleButton>)})}
         </ToggleButtonGroup>
