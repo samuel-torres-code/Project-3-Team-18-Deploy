@@ -127,6 +127,43 @@ router.get('/', function(req, res){
  
  router.get('/load_menu_items', function(req, res){
     //TODO -- unclear diff between this and load_prices
+    var final_dict = {"menu_items" : []
+    };
+    var drink_query = "SELECT * FROM drink_types_web";
+    var pizza_query = "SELECT * FROM pizza_types_web";
+    var seasonal_query = "SELECT * FROM seasonal_item";
+
+    d_response = []
+    pool
+        .query(drink_query)
+        .then(query_res => {
+            for(let i = 0; i < query_res.rowCount; i++) {
+                d_response.push(query_res.rows[i]);
+            }
+            for(let i = 0; i < d_response.length; i++)
+            {
+                var d_price = d_response[i]["drink_price"];
+                var d_name = d_response[i]["drink_type"];
+                final_dict["menu_items"].push([d_name, d_price]);
+
+            }
+            p_response = []
+            pool
+            .query(pizza_query)
+            .then(query_res => {
+                for(let i = 0; i < query_res.rowCount; i++) {
+                    p_response.push(query_res.rows[i]);
+                }
+                for(let i = 0; i < p_response.length; i++)
+                {
+                    var p_price = p_response[i]["pizza_price"];
+                    var p_name = p_response[i]["pizza_type"];
+                    final_dict["menu_items"].push([p_name, p_price])
+                }
+                res.send(final_dict)
+            });
+
+        });
  });
 
  
