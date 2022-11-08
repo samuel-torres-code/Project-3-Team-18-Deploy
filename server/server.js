@@ -56,6 +56,7 @@ router.get('/ingredients', function(req, res) {
     
 });
 
+//TODO: add functionality for seasonal items.
 router.get('/types', function(req, res) {
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
@@ -114,6 +115,5 @@ function query(query_string) {
             for(let i = 0; i < query_res.rowCount; i++) {
                 f_response.push(query_res.rows[i]);
             }
-            data = f_response;
         });
 }
