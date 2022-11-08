@@ -27,7 +27,6 @@ router.get('/', function(req, res){
             for(let i = 0; i < query_res.rowCount; i++) {
                 f_response.push(query_res.rows[i]);
             }
-            console.log(f_response);
             final_obj = []
             for(let i = 0; i < f_response.length; i++)
             {

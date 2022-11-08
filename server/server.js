@@ -17,7 +17,6 @@ const pool = new Pool({
 });
 
 router.get('/', function(req, res){
-    console.log(data);
     res.send('default route /api/server');
 });
 
