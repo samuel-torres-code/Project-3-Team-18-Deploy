@@ -17,6 +17,14 @@ const Login = () => {
     baseURL: "http://localhost:2000"
   })
 
+  //login persistency
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("isLoggedIn");
+    if (loggedInUser) {
+      setLoggedIn(loggedInUser);
+    }
+  }, []);
+
   //confirm that information is entered
   function infoCompleted() {
     return user.length > 0 && pass.length > 0;
@@ -53,6 +61,11 @@ const Login = () => {
     log = "a";
   }
 
+  function logOut(){
+    localStorage.clear();
+    log = "a";
+  }
+
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
@@ -62,6 +75,9 @@ const Login = () => {
         password: pass
     }).then(res => {
       changeLoggedIn(res.data);
+      localStorage.setItem('isLoggedIn', res.data);
+      localStorage.setItem('user', user);
+      localStorage.setItem('email', email);
     })
     .catch((error) => {
       if (error.response) {
@@ -113,6 +129,10 @@ const Login = () => {
           <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
           <Link to={'/Home'}>
             <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
+          </Link>
+          <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
+          <Link to={'/Home'}>
+            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
           </Link>
 
         </Form>

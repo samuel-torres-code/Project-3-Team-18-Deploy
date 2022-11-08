@@ -40,7 +40,6 @@ router.post('/', (req, res, next) => {
                 res.send(true);
             }
         }
-        console.log("OK");
         if(!send){
             var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
             pool.query(queryStringTwo).then(query_res => {
@@ -52,12 +51,10 @@ router.post('/', (req, res, next) => {
                 }
             });
         }
-        console.log("Here");
         if(!send){
             res.send(false);
         }
     });
-    console.log("Done");
 });
 
 router.get('/', function(req, res){

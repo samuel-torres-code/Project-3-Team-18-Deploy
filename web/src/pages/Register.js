@@ -1,5 +1,5 @@
 import bootstrap from "bootstrap";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -16,6 +16,14 @@ const Register = () => {
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
+
+  //login persistency
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("isLoggedIn");
+    if (loggedInUser) {
+      setIsRegistered(loggedInUser);
+    }
+  }, []);
 
   function setReg(){
     reg = "a";
@@ -69,6 +77,9 @@ const Register = () => {
         pass: pass
     }).then(res => {
       changeIsRegistered(res.data);
+      localStorage.setItem('isLoggedIn', res.data);
+      localStorage.setItem('user', user);
+      localStorage.setItem('email', email);
     })
     .catch((error) => {
       if (error.response) {
