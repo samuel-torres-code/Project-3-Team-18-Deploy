@@ -97,10 +97,10 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/add_inventory', function(req, res){
+ router.get('/restock', function(req, res){
     //add inventory amount to existing value
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory" +
-                                " = ingredient_inventory + $1 WHERE ingredient_id = $2";
+                                " = ingredient_inventory + $1 WHERE ingredient_name = $2";
     res.json({requestBody: req.body});
     var ingredient_ids = req.body["ingredients"];
     var amount = req.body["amount"];
@@ -124,11 +124,14 @@ router.get('/', function(req, res){
 
  
  router.get('/remove_ingredient', function(req, res){
-    //remove ingredient from db
+    //remove ingredients from db
     res.json({requestBody: req.body});
-    var ingredient_name = req.body["ingredient_name"];
+    var ingredient_names = req.body["ingredients"];
     var remove_ing_query = "DELETE FROM ingredients_web WHERE ingredient_name = $1";
-    pool.query(remove_ing_query, [ingredient_name]);
+    for(let i = 0; i < ingredient_names.length; i++)
+    {
+        pool.query(remove_ing_query, [ingredient_names[i]]);
+    }
  });
 
  
