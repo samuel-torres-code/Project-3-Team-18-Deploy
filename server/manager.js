@@ -97,10 +97,10 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/add_inventory', function(req, res){
+ router.get('/restock', function(req, res){
     //add inventory amount to existing value
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory" +
-                                " = ingredient_inventory + $1 WHERE ingredient_id = $2";
+                                " = ingredient_inventory + $1 WHERE ingredient_name = $2";
     res.json({requestBody: req.body});
     var ingredient_ids = req.body["ingredients"];
     var amount = req.body["amount"];
