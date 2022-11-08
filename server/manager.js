@@ -118,7 +118,10 @@ router.get('/', function(req, res){
 
  
  router.get('/remove_ingredient', function(req, res){
-    //TODO
+    res.json({requestBody: req.body});
+    var ingredient_name = req.body["ingredient_name"];
+    var remove_ing_query = "DELETE FROM ingredients_web WHERE ingredient_name = $1";
+    pool.query(remove_ing_query, [ingredient_name]);
  });
 
  
