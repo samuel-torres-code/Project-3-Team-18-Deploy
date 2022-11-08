@@ -115,6 +115,5 @@ function query(query_string) {
             for(let i = 0; i < query_res.rowCount; i++) {
                 f_response.push(query_res.rows[i]);
             }
-            data = f_response;
         });
 }
