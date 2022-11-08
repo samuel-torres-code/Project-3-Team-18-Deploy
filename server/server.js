@@ -21,6 +21,7 @@ router.get('/', function(req, res){
 });
 
 router.get('/ingredients', function(req, res) {
+    //get all ingredients
     var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients";
     f_response = []
     pool
@@ -41,6 +42,7 @@ router.get('/ingredients', function(req, res) {
                     };
             for(let i = 0; i < q_resp.length; i++)
             {
+                //create ingredient object for ingredient
                 var ing_id = q_resp[i]["ingredient_id"];
                 var ing_type = q_resp[i]["ingredient_type"];
                 var ing_name = q_resp[i]["ingredient_name"];
@@ -48,8 +50,10 @@ router.get('/ingredients', function(req, res) {
                                 "ingredient_type" : ing_type,
                                 "ingredient_name" : ing_name
                                 };
+                //add to final dict
                 final_dict[ing_type] = final_dict[ing_type].concat([ing_obj]);
             } 
+            //send response once populated
             res.send(final_dict);
         });
     
@@ -65,7 +69,7 @@ router.get('/types', function(req, res) {
     var pizza_query = "SELECT * FROM pizza_types_web";
     var seasonal_query = "SELECT * FROM seasonal_item";
 
-    
+    //get all drinks
     d_response = []
     pool
         .query(drink_query)
@@ -75,6 +79,7 @@ router.get('/types', function(req, res) {
             }
             for(let i = 0; i < d_response.length; i++)
             {
+                //create and add drink types
                 var d_price = d_response[i]["drink_price"];
                 var d_name = d_response[i]["drink_type"];
                 var d_obj = {"drink_type" : d_name,
@@ -82,6 +87,7 @@ router.get('/types', function(req, res) {
                 final_dict["drink_types"] = final_dict["drink_types"].concat([d_obj]);
 
             }
+            //get all pizza types
             p_response = []
             pool
             .query(pizza_query)
@@ -91,12 +97,14 @@ router.get('/types', function(req, res) {
                 }
                 for(let i = 0; i < p_response.length; i++)
                 {
+                    //get and add pizza types
                     var p_price = p_response[i]["pizza_price"];
                     var p_name = p_response[i]["pizza_type"];
                     var p_obj = {"pizza_type" : p_name,
                                     "pizza_price": p_price};
                     final_dict["pizza_types"] = final_dict["pizza_types"].concat([p_obj]);
                 }
+                //send final types
                 res.send(final_dict)
             });
 
