@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from 'axios';
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -7,7 +8,6 @@ function Manager() {
   const [newIngredientName, setNewIngredientName] = useState("");
   const [newIngredientType, setNewIngredientType] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-
   const [ingredientData, setIngredientData] = useState([
     { name: "Red", type: "Sauce", inventory: 1000 },
     { name: "Pesto", type: "Sauce", inventory: 1000 },
@@ -130,12 +130,11 @@ function Manager() {
 
   function handleItemPriceClick() {
     setMenuItemData(
-      ingredientData.map((element, index) => {
-        if (selectedIngredients.includes(element.name)) {
+      menuItemData.map((element, index) => {
+        if (selectedMenuItems.includes(element.name)) {
           element = {
             name: element.name,
-            type: element.type,
-            inventory: parseInt(element.inventory) + parseInt(restockAmount),
+            price: newItemPrice,
           };
         }
         return element;
@@ -147,6 +146,7 @@ function Manager() {
 
   function unCheckIngredients() {
     // uncheck all ingredient checkboxes
+    setSelectedIngredients([]);
     var x = document.getElementsByClassName("ing-checkbox");
     for (var i = 0; i <= x.length; i++) {
       x[i].checked = false;
@@ -155,6 +155,7 @@ function Manager() {
 
   function unCheckMenuItems() {
     // uncheck all menu item checkboxes
+    setSelectedMenuItems([]);
     var x = document.getElementsByClassName("item-checkbox");
     for (var i = 0; i <= x.length; i++) {
       x[i].checked = false;
