@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
+=======
+import React, { useState } from "react";
+>>>>>>> 3ed02462e8697784ff9c6b845dacb6639d669e15
 import DoughCard from "../components/DoughCard";
 import DrinkCard from "../components/DrinkCard";
 import OrderCard from "../components/OrderCard";
@@ -11,7 +15,10 @@ import {
   // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
+<<<<<<< HEAD
 import { getIngredientsByType } from "../api/ServerAPI";
+=======
+>>>>>>> 3ed02462e8697784ff9c6b845dacb6639d669e15
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
