@@ -47,7 +47,7 @@ router.get('/', function(req, res){
     //TODO -- seasonal items
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
-                        "seasonal_item_types" : []
+                        "seasonal_items" : []
     };
     var drink_query = "SELECT * FROM drink_types_web";
     var pizza_query = "SELECT * FROM pizza_types_web";
@@ -126,12 +126,27 @@ router.get('/', function(req, res){
 
  
  router.get('/load_menu_items', function(req, res){
-    //TODO
+    //TODO -- unclear diff between this and load_prices
  });
 
  
  router.get('/update_menu_items', function(req, res){
     //TODO
+    res.json({requestBody: req.body});
+    var menu_items = req.body["menu_items"];
+    var new_price = req.body["new_price"];
+
+    //brute force set through each table
+    // assumes menu item names are distinct between all tables
+    var update_pizzas = "UPDATE pizza_types_web SET pizza_price = $1 where pizza_type = $2";
+    var update_drinks = "UPDATE drink_types_web SET drink_price = $1 where drink_type = $2";
+    //TODO -- update seasonal as well
+    for(let i = 0; i < menu_items.length; i++)
+    {
+        pool.query(update_pizzas, [new_price, menu_items[i]]);
+        pool.query(update_drinks, [new_price, menu_items[i]])
+    }
+
  });
 
  module.exports = router;
