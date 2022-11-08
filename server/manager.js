@@ -96,7 +96,6 @@ router.get('/', function(req, res){
 
  
  router.get('/add_inventory', function(req, res){
-    //TODO
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory = ingredient_inventory + $1 WHERE ingredient_id = $2";
     res.json({requestBody: req.body});
     var ingredient_ids = req.body["ingredients"];
@@ -109,7 +108,12 @@ router.get('/', function(req, res){
 
  
  router.get('/add_ingredient', function(req, res){
-    //TODO
+    res.json({requestBody: req.body});
+    var ingredient_name = req.body["ingredient_name"];
+    var ingredient_type = req.body["ingredient_type"];
+
+    var add_ing_query = "INSERT INTO ingredients_web (ingredient_name, ingredient_type, ingredient_inventory) VALUES ($1, $2, $3)";
+    pool.query(add_ing_query, [ingredient_name, ingredient_type, 0]);
  });
 
  
