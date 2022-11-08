@@ -1,9 +1,19 @@
 //requirements
 const express = require('express');
+var router = express.Router();
+const cors = require('cors');
+const app = express();
 const { Pool } = require('pg');
 const dotenv = require('dotenv').config();
-const app = express();
 const port = 2000;
+var corsOptions ={
+    origin: 'http://localhost:3000',
+    credentials: true,
+    optionSuccessStatus:200
+}
+app.use(cors());
+app.use(express.json());
+
 
 //create pool for psql access
 const pool = new Pool({
@@ -22,17 +32,20 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
+
 // define subclasses of api routines
 var server = require('./server.js');
 var manager = require("./manager.js");
 var checkout = require("./checkout.js");
 var login = require("./login.js");
+var register = require("./register.js");
 
 //reroute /api/* to given file
 app.use('/api/server', server);
 app.use('/api/manager', manager);
 app.use('/api/checkout', checkout);
 app.use('/api/login', login);
+app.use('/api/register', register);
 
 
 //test function for accessing db
@@ -59,4 +72,4 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
 
-
+module.exports = router;
