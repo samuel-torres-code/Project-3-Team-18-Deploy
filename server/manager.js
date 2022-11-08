@@ -44,6 +44,7 @@ router.get('/', function(req, res){
  
  router.get('/load_prices', function(req, res){
     //duplicate functionality as server side
+    //TODO -- seasonal items
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
                         "seasonal_item_types" : []
