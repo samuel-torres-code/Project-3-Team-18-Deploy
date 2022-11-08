@@ -43,7 +43,54 @@ router.get('/', function(req, res){
 
  
  router.get('/load_prices', function(req, res){
-    //TODO
+    //duplicate functionality as server side
+    var final_dict = {"pizza_types": [],
+                        "drink_types": [],
+                        "seasonal_item_types" : []
+    };
+    var drink_query = "SELECT * FROM drink_types_web";
+    var pizza_query = "SELECT * FROM pizza_types_web";
+    var seasonal_query = "SELECT * FROM seasonal_item";
+
+    
+    d_response = []
+    pool
+        .query(drink_query)
+        .then(query_res => {
+            for(let i = 0; i < query_res.rowCount; i++) {
+                d_response.push(query_res.rows[i]);
+            }
+            for(let i = 0; i < d_response.length; i++)
+            {
+                var d_price = d_response[i]["drink_price"];
+                var d_name = d_response[i]["drink_type"];
+                var d_obj = {"drink_type" : d_name,
+                                "drink_price": d_price};
+                final_dict["drink_types"] = final_dict["drink_types"].concat([d_obj]);
+
+            }
+            p_response = []
+            pool
+            .query(pizza_query)
+            .then(query_res => {
+                for(let i = 0; i < query_res.rowCount; i++) {
+                    p_response.push(query_res.rows[i]);
+                }
+                for(let i = 0; i < p_response.length; i++)
+                {
+                    var p_price = p_response[i]["pizza_price"];
+                    var p_name = p_response[i]["pizza_type"];
+                    var p_obj = {"pizza_type" : p_name,
+                                    "pizza_price": p_price};
+                    final_dict["pizza_types"] = final_dict["pizza_types"].concat([p_obj]);
+                }
+                res.send(final_dict)
+            });
+
+        });
+    
+
+
  });
 
  
