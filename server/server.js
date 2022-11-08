@@ -19,7 +19,7 @@ const pool = new Pool({
 router.get('/', function(req, res){
     console.log(data);
     res.send('default route /api/server');
- });
+});
 
 router.get('/ingredients', function(req, res) {
     var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients";
@@ -56,6 +56,7 @@ router.get('/ingredients', function(req, res) {
     
 });
 
+//TODO: add functionality for seasonal items.
 router.get('/types', function(req, res) {
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
