@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DoughCard from "../components/DoughCard";
 import DrinkCard from "../components/DrinkCard";
 import OrderCard from "../components/OrderCard";
@@ -11,6 +11,7 @@ import {
   // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
+import { getIngredientsByType } from "../api/ServerAPI";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
@@ -18,10 +19,7 @@ const groupBy = (x, f) =>
   x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
 
 const Server = () => {
-  const ingredients_by_type = groupBy(
-    ingredients,
-    (ingredient) => ingredient.ingredient_type
-  );
+  const [ingredients_by_type,setIngredientsByType] = useState({});
   const [nextPizzaID, setNextPizzaID] = useState(1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [pizzasOnOrder, setPizzasOnOrder] = useState([]);
@@ -33,6 +31,10 @@ const Server = () => {
   const [form,setForm] = useState({order_name:""});
   const baseIngredients = ["Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
+
+  useEffect(() => {
+    setIngredientsByType(getIngredientsByType())
+  },[])
 
   const handleFormChange = (e) => {
     e.preventDefault();
