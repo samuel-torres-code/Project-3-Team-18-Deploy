@@ -10,6 +10,7 @@ const Login = () => {
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+  const [loggedIn, setLoggedIn] = useState('');
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
@@ -35,6 +36,10 @@ const Login = () => {
     setPass(event.target.value);
   };
 
+  const changeLoggedIn = (event) => {
+    setLoggedIn(event);
+  }
+
   //In the event we need to immediately clear for some reason
   const clearValues = () => {
     setEmail('');
@@ -51,6 +56,9 @@ const Login = () => {
         password: pass
     }).then(res => {
       console.log(res);
+      changeLoggedIn(res);
+      console.log(res);
+      console.log(loggedIn);
     })
     .catch((error) => {
       if (error.response) {
@@ -68,25 +76,39 @@ const Login = () => {
   };
 
   return(
-    <Form>
+    <div>
+      {(!loggedIn) && 
+        <Form>
 
-      <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
-        <Form.Label>Email or Username</Form.Label>
-        <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
-      </Form.Group>
+        <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
+          <Form.Label>Email or Username</Form.Label>
+          <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
+        </Form.Group>
 
-      <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
-      </Form.Group>
+        <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
+        </Form.Group>
 
-      <Link to={'/Home'}>
-        <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
-      </Link>
+        <Link to={'/Home'}>
+          <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
+        </Link>
 
-      <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Register</Button></Link>
+        <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Register</Button></Link>
 
-    </Form>
+        </Form>
+      }
+      {loggedIn &&
+        <Form>
+
+          <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
+          <Link to={'/Home'}>
+            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}}>Back To Home</Button>
+          </Link>
+
+        </Form>
+      }
+    </div>
   );
 
 };
