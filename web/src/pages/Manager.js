@@ -1,5 +1,5 @@
-import { useState } from "react";
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -8,49 +8,81 @@ function Manager() {
   const [newIngredientName, setNewIngredientName] = useState("");
   const [newIngredientType, setNewIngredientType] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-  const [ingredientData, setIngredientData] = useState([
-    { name: "Red", type: "Sauce", inventory: 1000 },
-    { name: "Pesto", type: "Sauce", inventory: 1000 },
-    { name: "White", type: "Sauce", inventory: 1000 },
-    { name: "Zesty Red", type: "Sauce", inventory: 1000 },
-    { name: "Mozzarella", type: "Cheese", inventory: 1000 },
-    { name: "Parmesan", type: "Cheese", inventory: 1000 },
-    { name: "Ricotta", type: "Cheese", inventory: 1000 },
-    { name: "Vegan", type: "Cheese", inventory: 1000 },
-    { name: "House Blend", type: "Cheese", inventory: 1000 },
-    { name: "Oregano", type: "Drizzle", inventory: 1000 },
-    { name: "Siracha", type: "Drizzle", inventory: 1000 },
-    { name: "Balsamic", type: "Drizzle", inventory: 1000 },
-    { name: "BBQ", type: "Drizzle", inventory: 1000 },
-    { name: "Basil Pesto", type: "Drizzle", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Pepperoni", type: "Meats", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Cherry Tomatos", type: "Raw Veggies", inventory: 1000 },
-    { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-    { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-    { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-    { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-    { name: "Carmalized Onions", type: "Roasted Veggies", inventory: 1000 },
-  ]);
-  const [menuItemData, setMenuItemData] = useState([
-    { name: "one-topping", price: 9.99 },
-    { name: "build-your-own", price: 8.99 },
-    { name: "cheese", price: 7.99 },
-    { name: "Fountain", price: 1.99 },
-    { name: "Bottle", price: 1.99 },
-  ]);
+  const [ingredientData, setIngredientData] = useState([]);
+  const [menuItemData, setMenuItemData] = useState([]);
+
+  const client = axios.create({
+    baseURL: "http://localhost:2000",
+  });
+
+  useEffect(() => {
+    loadIngredients();
+    loadMenuItems();
+  }, []);
+
+  useEffect(() => {
+    loadIngredients();
+    loadMenuItems();
+  }, [selectedIngredients]);
+
+  function loadIngredients() {
+    client
+      .get("/api/manager/load_ingredients")
+      .then((res) => {
+        const ingredients = [];
+        for (var i = 0; i < res.data.length; i++) {
+          ingredients.push({
+            name: res.data[i][0],
+            type: res.data[i][1],
+            inventory: res.data[i][2],
+          });
+        }
+        setIngredientData(ingredients);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.");
+          console.log(error);
+        }
+      });
+  }
+
+  function loadMenuItems() {
+    client
+      .get("/api/manager/load_prices")
+      .then((res) => {
+        const items = [];
+        for (var i = 0; i < res.data["pizza_types"].length; i++) {
+          items.push({
+            name: res.data["pizza_types"][i]["pizza_type"],
+            price: res.data["pizza_types"][i]["pizza_price"],
+          });
+        }
+        for (i = 0; i < res.data["drink_types"].length; i++) {
+          items.push({
+            name: res.data["drink_types"][i]["drink_type"],
+            price: res.data["drink_types"][i]["drink_price"],
+          });
+        }
+        setMenuItemData(items);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.");
+          console.log(error);
+        }
+      });
+  }
 
   function handleSelectIngredientChange(event) {
     if (event.target.checked) {
@@ -93,18 +125,35 @@ function Manager() {
   }
 
   function handleRestockClick() {
-    setIngredientData(
-      ingredientData.map((element, index) => {
-        if (selectedIngredients.includes(element.name)) {
-          element = {
-            name: element.name,
-            type: element.type,
-            inventory: parseInt(element.inventory) + parseInt(restockAmount),
-          };
-        }
-        return element;
+    client
+      .post("/api/manager/restock", {
+        ingredients: selectedIngredients,
+        amount: restockAmount,
       })
-    );
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.");
+          console.log(error);
+        }
+      });
+    // setIngredientData(
+    //   ingredientData.map((element, index) => {
+    //     if (selectedIngredients.includes(element.name)) {
+    //       element = {
+    //         name: element.name,
+    //         type: element.type,
+    //         inventory: parseInt(element.inventory) + parseInt(restockAmount),
+    //       };
+    //     }
+    //     return element;
+    //   })
+    // );
+    console.log("posted restock");
     unCheckIngredients();
   }
 
@@ -114,7 +163,7 @@ function Manager() {
         return !selectedIngredients.includes(item.name);
       })
     );
-    // unCheckIngredients();
+    unCheckIngredients();
   }
 
   function handleAddIngredientClick() {

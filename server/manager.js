@@ -27,7 +27,7 @@ router.get('/', function(req, res){
             for(let i = 0; i < query_res.rowCount; i++) {
                 f_response.push(query_res.rows[i]);
             }
-            console.log(f_response);
+            // console.log(f_response);
             final_obj = []
             for(let i = 0; i < f_response.length; i++)
             {
@@ -95,7 +95,7 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/add_inventory', function(req, res){
+ router.get('/restock', function(req, res){
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory = ingredient_inventory + $1 WHERE ingredient_id = $2";
     res.json({requestBody: req.body});
     var ingredient_ids = req.body["ingredients"];
