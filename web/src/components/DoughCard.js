@@ -19,7 +19,11 @@ const DoughCard = ({ingredients_by_type, value, handleChange}) => {
           <div className="card-body">
             <h5 className="card-title">Dough Type</h5>
             <div className="card-text container w-auto">
+                {ingredients_by_type ?
                 <DoughInputGroup ingredients={['Dough',ingredients_by_type['Dough']]} value={value} handleChange={handleChange}/>
+                :
+                <p>Not loaded</p>
+                }
             
             </div>     
           </div>
