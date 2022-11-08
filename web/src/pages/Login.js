@@ -46,10 +46,13 @@ const Login = () => {
   const registerLogin = async (event) => {
     event.preventDefault();
     const loginData = await client.post('/api/login',{
-        user_name: user,
+        user: user,
         email: email,
         password: pass
-    }).catch((error) => {
+    }).then(res => {
+      console.log(res);
+    })
+    .catch((error) => {
       if (error.response) {
         console.log(error.response);
         console.log("Server responded.");
@@ -60,7 +63,6 @@ const Login = () => {
         console.log(error);
       }
     });
-
 
     //clearValues();
   };
