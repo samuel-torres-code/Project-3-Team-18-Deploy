@@ -46,15 +46,15 @@ router.get('/', function(req, res){
                 //send ingredients
                 var pizza_id = p_id['rows'][0]['pizza_id'];
                 console.log("pizza_id: " + pizza_id);
-                //TODO -- check whether ingredients is just ID or needs to be parsed --> id.
+                //TODO -- check whether ingredients  contains id
                 var ingredients_join_query = "INSERT INTO ingredients_join_web (pizza_id, ingredient_id) VALUES ($1, $2)";
                 var ingredients_query = "UPDATE ingredients_web set ingredient_inventory = ingredient_inventory - 1 WHERE ingredient_id = $1";
                 for(let j = 0; j < ingredients.length; j++)
                 {
                     //ingredient join
-                    pool.query(ingredients_join_query, [pizza_id, ingredients[j]]);
+                    pool.query(ingredients_join_query, [pizza_id, ingredients[j]["ingredient_id"]]);
                     //ingredients
-                    pool.query(ingredients_query, [ingredients[j]]);
+                    pool.query(ingredients_query, [ingredients[j]["ingredient_id"]]);
                 }
             });
         }
