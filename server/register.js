@@ -32,31 +32,29 @@ router.use((req, res, next) => {
 
 router.post('/', (req, res, next) => {
     let send = false;
-    var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
-    pool.query(queryString).then(query_res => {
+    var queryString = "insert into users_web (username, password, email) VALUES ('" + req.body.user + "', '" + req.body.pass + "', '" + req.body.email + "') returning username as username;";
+    var finduser = "SELECT * FROM users_web WHERE email='" + req.body.email + "';";
+    pool.query(finduser).then(query_res => {
         for(let i = 0; i < query_res.rowCount; i++) {
-            if((query_res.rows[i].password === req.body.password) && (!send)){
+            if((query_res.rows[i].email === req.body.email)){
                 send = true;
-                res.send(true);
+                res.send(false);
             }
         }
+
         if(!send){
-            var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
-            pool.query(queryStringTwo).then(query_res => {
+            pool.query(queryString).then(query_res => {
                 for(let i = 0; i < query_res.rowCount; i++) {
-                    if(query_res.rows[i].password === req.body.password){
+                    if((query_res.rows[i].username === req.body.user)){
                         send = true;
                         res.send(true);
                     }
                 }
             });
         }
-        if(!send){
-            res.send(false);
-        }
     });
 });
 
 router.get('/', function(req, res){
-    res.send('default route /api/login');
+    res.send('default route /api/register');
 });
