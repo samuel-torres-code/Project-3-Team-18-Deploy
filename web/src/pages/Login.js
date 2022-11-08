@@ -13,6 +13,8 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const [loggedIn, setLoggedIn] = useState('');
+  const [isEmployee, setEmployee] = useState(false);
+  const [isManager, setManager] = useState('');
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
@@ -46,9 +48,20 @@ const Login = () => {
     setPass(event.target.value);
   };
 
+  //determine if user login was successful
   const changeLoggedIn = (event) => {
     setLoggedIn(event);
   }
+
+  //set the employee is user is an employee
+  const changeEmployee = (event) => {
+    setEmployee(event);
+  }
+
+  //update the manager value is necessary
+  const changeManager = (event) => {
+    setManager(event);
+  };
 
   //In the event we need to immediately clear for some reason
   const clearValues = () => {
@@ -72,12 +85,24 @@ const Login = () => {
     const loginData = await client.post('/api/login',{
         user: user,
         email: email,
-        password: pass
+        password: pass,
+        emp: (isEmployee) ? "true" : "false"
     }).then(res => {
-      changeLoggedIn(res.data);
-      localStorage.setItem('isLoggedIn', res.data);
-      localStorage.setItem('user', user);
-      localStorage.setItem('email', email);
+      if(!isEmployee){
+        changeLoggedIn(res.data);
+        localStorage.setItem('isLoggedIn', res.data);
+        localStorage.setItem('user', user);
+        localStorage.setItem('email', email);
+      }
+      else{
+        changeLoggedIn(res.data[0]);
+        changeManager(res.data[1]);
+        localStorage.setItem('isLoggedIn', loggedIn);
+        localStorage.setItem('user', user);
+        localStorage.setItem('email', email);
+        localStorage.setItem('manager', isManager);
+        localStorage.setItem('employee', isEmployee);
+      }
     })
     .catch((error) => {
       if (error.response) {
@@ -115,6 +140,10 @@ const Login = () => {
           </Form.Group>
         }
 
+        <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
+          <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
+        </Form.Group>
+
         <Link to={'/Home'}>
           <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
         </Link>
@@ -125,14 +154,22 @@ const Login = () => {
       }
       {loggedIn &&
         <Form>
-
-          <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
+          
+          {(!isEmployee) && 
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
+          }
+          {(isEmployee) && (!isManager) && 
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome, Server!</div>
+          }
+          {(isEmployee) && (isManager) &&
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome, Manager!</div>
+          }
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
+            <Button className="btn btn-primary mx-3 mt-1 mb-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
           </Link>
           <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
+            <Button className="btn btn-primary mx-3 mt-1" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
           </Link>
 
         </Form>

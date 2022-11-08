@@ -31,30 +31,55 @@ router.use((req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+    data = [];
     let send = false;
-    var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
-    pool.query(queryString).then(query_res => {
-        for(let i = 0; i < query_res.rowCount; i++) {
-            if((query_res.rows[i].password === req.body.password) && (!send)){
-                send = true;
-                res.send(true);
-            }
-        }
-        if(!send){
-            var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
-            pool.query(queryStringTwo).then(query_res => {
-                for(let i = 0; i < query_res.rowCount; i++) {
-                    if(query_res.rows[i].password === req.body.password){
-                        send = true;
-                        res.send(true);
-                    }
+    if(req.body.emp === "true"){
+        var queryString = "SELECT * FROM employees_web where emp_name='" + req.body.user +"';"
+        pool.query(queryString).then(query_res => {
+            for(let i = 0; i < query_res.rowCount; i++) {
+                console.log(query_res.rows[i].is_manager)
+                if((query_res.rows[i].passcode === req.body.password) && (query_res.rows[i].is_manager === true)){
+                    console.log("1");
+                    send = true;
+                    data.push(true);
+                    data.push(true);
+                    res.send(data);
                 }
-            });
-        }
-        if(!send){
-            res.send(false);
-        }
-    });
+                else if(query_res.rows[i].passcode === req.body.password){
+                    console.log("2");
+                    send = true;
+                    data.push(true);
+                    data.push(false);
+                    res.send(data);
+                }
+            }
+        });
+    }
+    else{
+        var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
+        pool.query(queryString).then(query_res => {
+            for(let i = 0; i < query_res.rowCount; i++) {
+                if((query_res.rows[i].password === req.body.password) && (!send)){
+                    send = true;
+                    res.send(true);
+                }
+            }
+            if(!send){
+                var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
+                pool.query(queryStringTwo).then(query_res => {
+                    for(let i = 0; i < query_res.rowCount; i++) {
+                        if(query_res.rows[i].password === req.body.password){
+                            send = true;
+                            res.send(true);
+                        }
+                    }
+                });
+            }
+            if(!send){
+                res.send(false);
+            }
+        });
+    }
 });
 
 router.get('/', function(req, res){
