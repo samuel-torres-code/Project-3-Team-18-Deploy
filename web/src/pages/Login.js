@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
+var log = "a";
+
 const Login = () => {
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
@@ -47,6 +49,10 @@ const Login = () => {
     setUser('');
   };
 
+  function changeLog(){
+    log = "a";
+  }
+
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
@@ -55,10 +61,7 @@ const Login = () => {
         email: email,
         password: pass
     }).then(res => {
-      console.log(res);
-      changeLoggedIn(res);
-      console.log(res);
-      console.log(loggedIn);
+      changeLoggedIn(res.data);
     })
     .catch((error) => {
       if (error.response) {
@@ -71,7 +74,7 @@ const Login = () => {
         console.log(error);
       }
     });
-
+    log = "b";
     //clearValues();
   };
 
@@ -90,6 +93,12 @@ const Login = () => {
           <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
         </Form.Group>
 
+        {(log === "b") &&
+          <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+            <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
+          </Form.Group>
+        }
+
         <Link to={'/Home'}>
           <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
         </Link>
@@ -103,7 +112,7 @@ const Login = () => {
 
           <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}}>Back To Home</Button>
+            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
           </Link>
 
         </Form>

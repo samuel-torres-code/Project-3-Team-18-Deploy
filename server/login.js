@@ -31,30 +31,33 @@ router.use((req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    data = [];
     let send = false;
     var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
     pool.query(queryString).then(query_res => {
         for(let i = 0; i < query_res.rowCount; i++) {
             if((query_res.rows[i].password === req.body.password) && (!send)){
                 send = true;
-                res.send(send);
+                res.send(true);
             }
         }
-        
+        console.log("OK");
         if(!send){
             var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
             pool.query(queryStringTwo).then(query_res => {
                 for(let i = 0; i < query_res.rowCount; i++) {
                     if(query_res.rows[i].password === req.body.password){
                         send = true;
-                        res.send(send);
+                        res.send(true);
                     }
                 }
             });
         }
+        console.log("Here");
+        if(!send){
+            res.send(false);
+        }
     });
-    //'insert into users_web (username, password, email) VALUES (1, 1, 1) returning user_id as userID;'
+    console.log("Done");
 });
 
 router.get('/', function(req, res){
