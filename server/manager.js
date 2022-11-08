@@ -97,6 +97,14 @@ router.get('/', function(req, res){
  
  router.get('/add_inventory', function(req, res){
     //TODO
+    var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory = ingredient_inventory + $1 WHERE ingredient_id = $2";
+    res.json({requestBody: req.body});
+    var ingredient_ids = req.body["ingredients"];
+    var amount = req.body["amount"];
+    for(let i = 0; i < ingredient_ids.length; i++)
+    {
+        pool.query(ingredients_dec_query, [amount, ingredient_ids[i]]);
+    }
  });
 
  
