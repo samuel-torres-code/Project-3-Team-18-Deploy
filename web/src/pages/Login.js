@@ -156,7 +156,7 @@ const Login = () => {
       }
       {loggedIn &&
         <Form>
-          
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 
             <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
           }
@@ -166,14 +166,21 @@ const Login = () => {
           {(isEmployee) && (isManager) &&
             <div style={{color: 'blue', fontSize: '40'}}>Welcome, Manager!</div>
           }
+          </div>
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-auto mt-1 mb-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
+            <Button className="btn btn-primary mx-auto mt-1 mb-3" variant="primary" type="button" style={{width: '100%'}} onClick={changeLog}>Back To Home</Button>
           </Link>
+          </div>
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
+          </div>
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
+            <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
-
+          </div>
+          
         </Form>
       }
     </div>
