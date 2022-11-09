@@ -40,14 +40,14 @@ function Manager() {
           });
         }
         ingredients.sort((a, b) => {
-          const nameA = a.type.toUpperCase();
-          const nameB = b.type.toUpperCase();
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
+          const typeA = a.type.toUpperCase();
+          const typeB = b.type.toUpperCase();
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          if (typeA < typeB) return -1;
+          if (typeA > typeB) return 1;
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
           return 0;
         });
         setIngredientData(ingredients);
@@ -138,8 +138,18 @@ function Manager() {
   }
 
   function handleRestockClick() {
-    if (selectedIngredients.length === 0 || restockAmount === "") {
-      console.log("Bad Input");
+    if (selectedIngredients.length === 0) {
+      console.error(
+        "Invalid Input for Restock Ingredient: No ingredients are selected."
+      );
+    } else if (restockAmount === "") {
+      console.error(
+        "Invalid Input for Restock Ingredient: Restock amount is null."
+      );
+    } else if (isNaN(restockAmount)) {
+      console.error(
+        "Invalid Input for Restock Ingredient: Restock amount is NaN."
+      );
     } else {
       client
         .post("/api/manager/restock", {
@@ -165,7 +175,9 @@ function Manager() {
 
   function handleRemoveClick() {
     if (selectedIngredients.length === 0) {
-      console.log("Bad Input");
+      console.error(
+        "Invalid Input for Remove Ingredients: No ingredients are selected."
+      );
     } else {
       client
         .post("/api/manager/remove_ingredient", {
@@ -188,8 +200,14 @@ function Manager() {
   }
 
   function handleAddIngredientClick() {
-    if (newIngredientName === "" || newIngredientType === "") {
-      console.log("Bad Input");
+    if (newIngredientName === "") {
+      console.error(
+        "Invalid Input for Add Ingredient: Ingredient name is null."
+      );
+    } else if (newIngredientType === "") {
+      console.error(
+        "Invalid Input for Add Ingredient: Ingredient type is null."
+      );
     } else {
       client
         .post("/api/manager/add_ingredient", {
@@ -208,14 +226,25 @@ function Manager() {
           }
         });
       setLoad(!load);
+      loadIngredients();
       setNewIngredientName("");
       // setNewIngredientType("");
     }
   }
 
   function handleItemPriceClick() {
-    if (selectedMenuItems.length === 0 || newItemPrice === "") {
-      console.log("Bad Input");
+    if (selectedMenuItems.length === 0) {
+      console.error(
+        "Invalid Input for Update Menu Item Price: No menu items are selected."
+      );
+    } else if (newItemPrice === "") {
+      console.error(
+        "Invalid Input for Update Menu Item Price: New item price is null."
+      );
+    } else if (isNaN(newItemPrice)) {
+      console.error(
+        "Invalid Input for Update Menu Item Price: New item price is NaN."
+      );
     } else {
       client
         .post("/api/manager/update_menu_items", {
@@ -243,7 +272,7 @@ function Manager() {
     // uncheck all ingredient checkboxes
     setSelectedIngredients([]);
     var x = document.getElementsByClassName("ing-checkbox");
-    for (var i = 0; i <= x.length; i++) {
+    for (var i = 0; i < x.length; i++) {
       x[i].checked = false;
     }
   }
@@ -252,7 +281,7 @@ function Manager() {
     // uncheck all menu item checkboxes
     setSelectedMenuItems([]);
     var x = document.getElementsByClassName("item-checkbox");
-    for (var i = 0; i <= x.length; i++) {
+    for (var i = 0; i < x.length; i++) {
       x[i].checked = false;
     }
   }
