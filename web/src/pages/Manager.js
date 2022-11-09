@@ -214,7 +214,7 @@ function Manager() {
   }
 
   function handleItemPriceClick() {
-    if (selectedIngredients.length === 0 || newItemPrice === "") {
+    if (selectedMenuItems.length === 0 || newItemPrice === "") {
       console.log("Bad Input");
     } else {
       client
