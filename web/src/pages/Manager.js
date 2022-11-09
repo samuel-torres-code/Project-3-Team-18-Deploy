@@ -138,45 +138,53 @@ function Manager() {
   }
 
   function handleRestockClick() {
-    client
-      .post("/api/manager/restock", {
-        ingredients: selectedIngredients,
-        amount: restockAmount,
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log("Server responded.");
-        } else if (error.request) {
-          console.log("Network error.");
-        } else {
-          console.log("Unknown error type.");
-          console.log(error);
-        }
-      });
-    setRestockAmount("");
-    setLoad(!load);
-    unCheckIngredients();
+    if (selectedIngredients.length === 0 || restockAmount === "") {
+      console.log("Bad Input");
+    } else {
+      client
+        .post("/api/manager/restock", {
+          ingredients: selectedIngredients,
+          amount: restockAmount,
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            console.log("Server responded.");
+          } else if (error.request) {
+            console.log("Network error.");
+          } else {
+            console.log("Unknown error type.");
+            console.log(error);
+          }
+        });
+      setRestockAmount("");
+      setLoad(!load);
+      unCheckIngredients();
+    }
   }
 
   function handleRemoveClick() {
-    client
-      .post("/api/manager/remove_ingredient", {
-        ingredients: selectedIngredients,
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log("Server responded.");
-        } else if (error.request) {
-          console.log("Network error.");
-        } else {
-          console.log("Unknown error type.");
-          console.log(error);
-        }
-      });
-    setLoad(!load);
-    unCheckIngredients();
+    if (selectedIngredients.length === 0) {
+      console.log("Bad Input");
+    } else {
+      client
+        .post("/api/manager/remove_ingredient", {
+          ingredients: selectedIngredients,
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            console.log("Server responded.");
+          } else if (error.request) {
+            console.log("Network error.");
+          } else {
+            console.log("Unknown error type.");
+            console.log(error);
+          }
+        });
+      setLoad(!load);
+      unCheckIngredients();
+    }
   }
 
   function handleAddIngredientClick() {
@@ -206,25 +214,29 @@ function Manager() {
   }
 
   function handleItemPriceClick() {
-    client
-      .post("/api/manager/update_menu_items", {
-        menu_items: selectedMenuItems,
-        new_price: newItemPrice,
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log("Server responded.");
-        } else if (error.request) {
-          console.log("Network error.");
-        } else {
-          console.log("Unknown error type.");
-          console.log(error);
-        }
-      });
-    setLoad(!load);
-    setNewItemPrice("");
-    unCheckMenuItems();
+    if (selectedIngredients.length === 0 || newItemPrice === "") {
+      console.log("Bad Input");
+    } else {
+      client
+        .post("/api/manager/update_menu_items", {
+          menu_items: selectedMenuItems,
+          new_price: newItemPrice,
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            console.log("Server responded.");
+          } else if (error.request) {
+            console.log("Network error.");
+          } else {
+            console.log("Unknown error type.");
+            console.log(error);
+          }
+        });
+      setLoad(!load);
+      setNewItemPrice("");
+      unCheckMenuItems();
+    }
   }
 
   function unCheckIngredients() {
