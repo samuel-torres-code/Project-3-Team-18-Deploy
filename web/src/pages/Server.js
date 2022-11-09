@@ -101,7 +101,7 @@ const Server = () => {
         pizza_id: nextPizzaID
       },
     ]);
-    
+    setCurrentPizzaID(nextPizzaID)
     setNextPizzaID(nextPizzaID+1)
   };
   const handleDeletePizza = (id) => {
@@ -117,24 +117,33 @@ const Server = () => {
   };
   const handleEditPizza = (id) => {
     //setCurrentPizzaIndex(index);
-    setCurrentPizzaID(id)
-    console.log(pizzasOnOrder)
-    console.log(id)
-    //Select Ingredients
-    setSelectedIngredients(
-      pizzasOnOrder.filter((pizza) => pizza.pizza_id ===id)[0].ingredients.map((ing) => {
-        return Number(ing.ingredient_id);
+    if(id !== currentPizzaID) {
+      setCurrentPizzaID(id)
+      //Select Ingredients
+      setSelectedIngredients(
+        pizzasOnOrder.filter((pizza) => pizza.pizza_id ===id)[0].ingredients.map((ing) => {
+          return Number(ing.ingredient_id);
       })
-    );
+      );
+    }
+    else {
+      setCurrentPizzaID(-1)
+      setSelectedIngredients([])
+    }
+    
     //console.log(selectedIngredients)
   };
 
   const handleDeleteSeasonalItem = (index) => {
     setSeasonalItems(seasonalItems.filter((s, i) => i !== index));
   };
-
+  const resetPage = () => {
+    createEmptyOrder("")
+    setDrinkCounts([])
+    setSelectedIngredients([])
+    setCurrentPizzaID(-1)
+  }
   const handleCheckout = () => {
-    console.log('checkout')
     var error = "";
     //Check if order has name
     if(orderInfo.name === "") {
@@ -188,8 +197,11 @@ const Server = () => {
     console.log('order added')
 
     //Alert Success
+    alert('Order Success')
 
     //Create empty order of name 
+    resetPage()
+
 
   }
 
@@ -222,8 +234,11 @@ const Server = () => {
               handleDeleteSeasonalItem={handleDeleteSeasonalItem}
               onFormChange={handleFormChange}
               handleSubmitName={handleSubmitName}
+              currentPizzaID={currentPizzaID}
               
             />
+            <button disabled={orderInfo.name === ""} className="btn btn-primary" onClick={() => handleCheckout()} >Checkout</button>
+            <button disabled={orderInfo.name === ""} className="btn btn-secondary" onClick={() => resetPage()} >Cancel Order</button>
           </div>
           <div className="col-3">
             <DrinkCard disabled={orderInfo.name === ""} updateDrinkCount={updateDrinkCount} drink_types={itemTypes.drink_types} />
@@ -231,10 +246,10 @@ const Server = () => {
               ingredients_by_type={ingredients_by_type}
               value={selectedIngredients}
               handleChange={handleChange}
-              disabled ={orderInfo.name === ""}
+              disabled ={currentPizzaID === -1}
             />
             <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} disabled={orderInfo.name === ""} />
-            <button className="btn btn-primary" onClick={() => handleCheckout()} >Checkout</button>
+            
           </div>
           <div className="col-6">
             <PizzaOrderCard
@@ -253,7 +268,7 @@ const Server = () => {
   }
   else {
     return (<>
-    <div style={{width:'100vw',height:'100vh', display:'flex',justifyContent:'center',alignItems:'center'}}>
+    <div style={{width:'100vw',height:'90vh', display:'flex',justifyContent:'center',alignItems:'center'}}>
       <img src={require ('../loader_pizza.gif')} alt="Loading" style={{ width:'15vw', height:'auto'}}/>
       </div>
     </>)

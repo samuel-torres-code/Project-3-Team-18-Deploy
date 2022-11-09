@@ -33,12 +33,17 @@ const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   ));
 };
 
-const PizzaRows = ({ pizzas, handleDeletePizza, handleEditPizza }) => {
+const PizzaRows = ({ pizzas, handleDeletePizza, handleEditPizza, currentPizzaID }) => {
   return pizzas.map((pizza, index) => (
     <div key={pizza.pizza_type + index} className="row my-2">
       <div className="col-8">
+
         <p className="text-left my-0">
-          {pizza.pizza_type}
+          {pizza.pizza_id === currentPizzaID ?
+           <strong>{pizza.pizza_type}</strong>:
+           <>{pizza.pizza_type}</>
+          }
+          
           </p>
           <p className="text-left mb-1">
           {pizza.pizza_price}
@@ -98,7 +103,8 @@ const OrderCard = ({
   handleEditPizza,
   handleDeletePizza,
   handleDeleteSeasonalItem,
-  handleSubmitName
+  handleSubmitName,
+  currentPizzaID
 }) => {
   
   const calculatePrice = () => {
@@ -130,7 +136,7 @@ const OrderCard = ({
           </li>
           <li className="list-group-item">
             <strong>Pizza:</strong>
-            <PizzaRows pizzas={pizzas} handleDeletePizza={handleDeletePizza} handleEditPizza={handleEditPizza}/>
+            <PizzaRows currentPizzaID={currentPizzaID} pizzas={pizzas} handleDeletePizza={handleDeletePizza} handleEditPizza={handleEditPizza}/>
           </li>
           <li className="list-group-item">
             <strong>Total Price: {calculatePrice()}</strong>
