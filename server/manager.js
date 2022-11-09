@@ -97,7 +97,7 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/restock', function(req, res){
+ router.post('/restock', function(req, res){
     //add inventory amount to existing value
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory" +
                                 " = ingredient_inventory + $1 WHERE ingredient_name = $2";
@@ -111,7 +111,7 @@ router.get('/', function(req, res){
 });
 
  
- router.get('/add_ingredient', function(req, res){
+ router.post('/add_ingredient', function(req, res){
     //add new ingredient to database
     res.json({requestBody: req.body});
     var ingredient_name = req.body["ingredient_name"];
@@ -123,7 +123,7 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/remove_ingredient', function(req, res){
+ router.post('/remove_ingredient', function(req, res){
     //remove ingredients from db
     res.json({requestBody: req.body});
     var ingredient_names = req.body["ingredients"];
@@ -177,7 +177,7 @@ router.get('/', function(req, res){
  });
 
  
- router.get('/update_menu_items', function(req, res){
+ router.post('/update_menu_items', function(req, res){
     //TODO
     res.json({requestBody: req.body});
     var menu_items = req.body["menu_items"];
