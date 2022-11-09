@@ -12,9 +12,9 @@ const Login = () => {
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
-  const [loggedIn, setLoggedIn] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
   const [isEmployee, setEmployee] = useState(false);
-  const [isManager, setManager] = useState('');
+  const [isManager, setManager] = useState(false);
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
@@ -89,13 +89,13 @@ const Login = () => {
         emp: (isEmployee) ? "true" : "false"
     }).then(res => {
       if(!isEmployee){
-        changeLoggedIn(res.data);
+        setLoggedIn(res.data);
         localStorage.setItem('isLoggedIn', res.data);
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
       }
       else{
-        changeLoggedIn(res.data[0]);
+        setLoggedIn(res.data[0]);
         changeManager(res.data[1]);
         localStorage.setItem('isLoggedIn', loggedIn);
         localStorage.setItem('user', user);
@@ -115,14 +115,41 @@ const Login = () => {
         console.log(error);
       }
     });
+
+    if(!loggedIn){
+      const emailData = await client.post('/api/login/email',{
+        user: user,
+        email: email,
+        password: pass,
+      }).then(res => {
+        if(res.data === true){
+          changeLoggedIn(res.data);
+          localStorage.setItem('isLoggedIn', res.data);
+          localStorage.setItem('user', user);
+          localStorage.setItem('email', email);
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.")
+          console.log(error);
+        }
+      });
+    }
+    
     log = "b";
     //clearValues();
   };
 
   return(
     <div>
-      {(!loggedIn) && 
-        <Form>
+      {(loggedIn === false) && 
+        (<Form>
 
         <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
           <Form.Label>Email or Username</Form.Label>
@@ -135,9 +162,11 @@ const Login = () => {
         </Form.Group>
 
         {(log === "b") &&
-          <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
-            <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
-          </Form.Group>
+          (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+              <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
+            </Form.Group>
+          </div>)
         }
 
         <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
@@ -152,10 +181,10 @@ const Login = () => {
 
           <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3"  style={{width:'90%'}} type="button">Register</Button></Link>
         </div>
-        </Form>
+        </Form>)
       }
-      {loggedIn &&
-        <Form>
+      {(loggedIn) &&
+        (<Form>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 
             <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
@@ -181,7 +210,7 @@ const Login = () => {
           </Link>
           </div>
           
-        </Form>
+        </Form>)
       }
     </div>
   );

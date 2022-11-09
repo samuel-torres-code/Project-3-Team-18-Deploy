@@ -21,14 +21,14 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-router.use((req, res, next) => {
+/*router.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
         "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
     );
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
     next();
-});
+});*/
 
 router.post('/', (req, res, next) => {
     data = [];
@@ -39,48 +39,50 @@ router.post('/', (req, res, next) => {
             for(let i = 0; i < query_res.rowCount; i++) {
                 console.log(query_res.rows[i].is_manager)
                 if((query_res.rows[i].passcode === req.body.password) && (query_res.rows[i].is_manager === true)){
-                    console.log("1");
                     send = true;
                     data.push(true);
                     data.push(true);
-                    res.send(data);
+                    return res.send(data);
                 }
                 else if(query_res.rows[i].passcode === req.body.password){
-                    console.log("2");
                     send = true;
                     data.push(true);
                     data.push(false);
-                    res.send(data);
+                    return res.send(data);
                 }
             }
         });
     }
     else{
-        var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
-        pool.query(queryString).then(query_res => {
-            for(let i = 0; i < query_res.rowCount; i++) {
-                if((query_res.rows[i].password === req.body.password) && (!send)){
-                    send = true;
-                    res.send(true);
-                }
-            }
-            if(!send){
-                var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
-                pool.query(queryStringTwo).then(query_res => {
-                    for(let i = 0; i < query_res.rowCount; i++) {
-                        if(query_res.rows[i].password === req.body.password){
-                            send = true;
-                            res.send(true);
-                        }
+        //IF USERNAME DOES NOT EXIST WE GET AN ERROR. LOGGING IN WITH EMAIL NEVER TAKEN CARE OF BC OF THIS
+            var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
+            pool.query(queryString).then(query_res => {
+                for(let i = 0; i < query_res.rowCount; i++) {
+                    if((query_res.rows[i].password === req.body.password) && (!send)){
+                        send = true;
+                        return res.send(true);
                     }
-                });
-            }
-            if(!send){
-                res.send(false);
-            }
-        });
-    }
+                }
+                if(!send)
+                    return res.send(false);
+            });
+        }
 });
+
+router.post('/email', (req, res, next) => {
+    var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
+    var send = false;
+    pool.query(queryStringTwo).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++) {
+            if(query_res.rows[i].password === req.body.password){
+                send = true;
+                return res.send(true);
+            }
+        }
+        if(!send)
+            return res.send(false);
+    });
+})
 
 router.get('/', function(req, res){
     res.send('default route /api/login');
