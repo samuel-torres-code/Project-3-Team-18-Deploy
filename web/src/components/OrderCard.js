@@ -108,7 +108,6 @@ const OrderCard = ({
 }) => {
   
   const calculatePrice = () => {
-    console.log(pizzas)
     var total_price = 0.00
     pizzas.forEach(element => {
       total_price += Number(element.pizza_price)

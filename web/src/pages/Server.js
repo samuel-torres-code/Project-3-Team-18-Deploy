@@ -109,8 +109,6 @@ const Server = () => {
     setNextPizzaID(nextPizzaID+1)
   };
   const handleDeletePizza = (id) => {
-    console.log(pizzasOnOrder);
-    console.log(id)
     
     setPizzasOnOrder(pizzasOnOrder.filter((p, i) => p.pizza_id !== id));
     if (id === currentPizzaID) {
@@ -135,7 +133,6 @@ const Server = () => {
       setSelectedIngredients([])
     }
     
-    //console.log(selectedIngredients)
   };
 
   const handleDeleteSeasonalItem = (index) => {
@@ -198,7 +195,6 @@ const Server = () => {
     
     //Send Request
     postOrder(reqJson)
-    console.log('order added')
 
     //Alert Success
     alert('Order Success')
