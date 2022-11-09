@@ -14,7 +14,7 @@ const pool = new Pool({
 });
 
 
-router.get('/', function(req, res){
+router.post('/', function(req, res){
     res.json({requestBody:  req.body});
     //extract main elements
     var order_details = req.body["order"];
