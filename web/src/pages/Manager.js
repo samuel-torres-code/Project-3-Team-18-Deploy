@@ -317,6 +317,9 @@ function Manager() {
                         className="ing-checkbox"
                         value={val.name}
                         onChange={handleSelectIngredientChange}
+                        style={{
+                          transform: "scale(1.5)",
+                        }}
                       />
                     </td>
                   </tr>
@@ -332,7 +335,7 @@ function Manager() {
         <div
           className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
           style={{ width: "80%" }}>
-          <h4>Restock Selected Ingredient</h4>
+          <h4 className="text-center">Restock Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
               type="text"
@@ -352,7 +355,7 @@ function Manager() {
         <div
           className="border border-secondary rounded p-3 my-3 mx-auto"
           style={{ width: "80%" }}>
-          <h4>Remove Selected Ingredient</h4>
+          <h4 className="text-center">Remove Selected Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
               type="button"
@@ -366,7 +369,7 @@ function Manager() {
         <div
           className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
           style={{ width: "80%" }}>
-          <h4>Add Ingredient</h4>
+          <h4 className="text-center">Add Ingredient</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <div className="d-flex flex-wrap justify-content-center">
               <input
@@ -400,8 +403,8 @@ function Manager() {
       </div>
       <div className="col my-auto">
         {/* Menu Items Table */}
-        <div className="border border-dark mx-5 mt-5">
-          <table className="w-100">
+        <div className="mx-5 mt-5">
+          <table className="w-75 border border-dark mx-auto">
             <thead className="table-header position-sticky">
               <tr>
                 <th className="px-1">Menu Item</th>
@@ -421,6 +424,9 @@ function Manager() {
                         className="item-checkbox"
                         value={val.name}
                         onChange={handleSelectMenuItemChange}
+                        style={{
+                          transform: "scale(1.5)",
+                        }}
                       />
                     </td>
                   </tr>
@@ -434,7 +440,7 @@ function Manager() {
         <div
           className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
           style={{ width: "80%" }}>
-          <h4>Change Selected Menu Item Price</h4>
+          <h4 className="text-center">Change Selected Menu Item Price</h4>
           <div className="d-flex justify-content-center flex-wrap">
             <input
               type="text"
