@@ -353,6 +353,7 @@ function Manager() {
                 <option value="">Select Type</option>
                 <option value="Sauce">Sauce</option>
                 <option value="Cheese">Cheese</option>
+                <option value="Dough">Dough</option>
                 <option value="Drizzle">Drizzle</option>
                 <option value="Meats">Meats</option>
                 <option value="Raw Veggies">Raw Veggies</option>
