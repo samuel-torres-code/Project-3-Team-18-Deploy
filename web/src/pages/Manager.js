@@ -317,11 +317,6 @@ function Manager() {
                         className="ing-checkbox"
                         value={val.name}
                         onChange={handleSelectIngredientChange}
-                        style={{
-                          transform: "scale(1.5)",
-                          zIndex: "-1",
-                          position: "relative"
-                        }}
                       />
                     </td>
                   </tr>
@@ -426,9 +421,6 @@ function Manager() {
                         className="item-checkbox"
                         value={val.name}
                         onChange={handleSelectMenuItemChange}
-                        style={{
-                          transform: "scale(1.5)",
-                        }}
                       />
                     </td>
                   </tr>
