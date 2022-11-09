@@ -144,12 +144,14 @@ const Login = () => {
           <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
         </Form.Group>
 
-        <Link to={'/Home'}>
-          <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
-        </Link>
+        <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+          <Link to={'/Home'}>
+            <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
+          </Link>
+        
 
-        <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}}>Register</Button></Link>
-
+          <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3"  style={{width:'90%'}} type="button">Register</Button></Link>
+        </div>
         </Form>
       }
       {loggedIn &&
@@ -165,11 +167,11 @@ const Login = () => {
             <div style={{color: 'blue', fontSize: '40'}}>Welcome, Manager!</div>
           }
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-1 mb-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
+            <Button className="btn btn-primary mx-auto mt-1 mb-3" variant="primary" type="button" style={{width: '40%'}} onClick={changeLog}>Back To Home</Button>
           </Link>
           <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
           <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-1" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
+            <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '40%'}} onClick={logOut}>Log Out</Button>
           </Link>
 
         </Form>
