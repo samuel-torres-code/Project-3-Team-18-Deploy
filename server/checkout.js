@@ -16,26 +16,25 @@ const pool = new Pool({
 
 router.get('/', function(req, res){
     res.json({requestBody:  req.body});
-    console.log(req.body)
+    //extract main elements
     var order_details = req.body["order"];
     var pizza_details = req.body["pizzas"];
     var drink_details = req.body["drinks"];
-    console.log(order_details);
     //update order table
-    var order_insert = "INSERT INTO orders_web (emp_id, cust_name, order_num, time_stamp) VALUES (";
+    var order_insert = "INSERT INTO orders_web (emp_id, cust_name, order_num, time_stamp)"  +
+                        "VALUES ($1, $2, $3, Now()) RETURNING order_id";
     var emp_id = order_details["emp_id"]
     var cust_name = order_details["cust_name"];
     var order_num = -1;
-    order_insert += "'" + emp_id + "', '" + cust_name + "', '" + order_num  + "', Now()) RETURNING order_id";
-    console.log(order_insert);
     //create order query
-    pool.query(order_insert, (error, id) => 
+    pool.query(order_insert, [emp_id, cust_name, order_num], (error, id) => 
     {
         //extract id
+
         var order_id = id['rows'][0]['order_id']
-        console.log("order_id: " + order_id);
         //send pizzas with order id
-        var pizza_query = "INSERT INTO pizzas_web (order_id, pizza_type, pizza_price) VALUES ($1, $2, $3) RETURNING pizza_id";
+        var pizza_query = "INSERT INTO pizzas_web (order_id, pizza_type, pizza_price)" +  
+                            "VALUES ($1, $2, $3) RETURNING pizza_id";
         for(let i = 0; i < pizza_details.length; i++)
         {
             var pizza_price = pizza_details[i]["pizza_price"];
@@ -43,23 +42,25 @@ router.get('/', function(req, res){
             var ingredients = pizza_details[i]["ingredients"];
             pool.query(pizza_query, [order_id, pizza_type, pizza_price], (p_error, p_id) =>
             {
-                //send ingredients
+                //send ingredients with pizza id
                 var pizza_id = p_id['rows'][0]['pizza_id'];
-                console.log("pizza_id: " + pizza_id);
                 //TODO -- check whether ingredients  contains id
-                var ingredients_join_query = "INSERT INTO ingredients_join_web (pizza_id, ingredient_id) VALUES ($1, $2)";
-                var ingredients_query = "UPDATE ingredients_web set ingredient_inventory = ingredient_inventory - 1 WHERE ingredient_id = $1";
+                var ingredients_join_query = "INSERT INTO ingredients_join_web" +
+                                            "(pizza_id, ingredient_id) VALUES ($1, $2)";
+                var ingredients_query = "UPDATE ingredients_web set ingredient_inventory" + 
+                                        " = ingredient_inventory - 1 WHERE ingredient_id = $1";
                 for(let j = 0; j < ingredients.length; j++)
                 {
-                    //ingredient join
+                    //ingredients_join table update
                     pool.query(ingredients_join_query, [pizza_id, ingredients[j]["ingredient_id"]]);
-                    //ingredients
+                    //ingredients table update
                     pool.query(ingredients_query, [ingredients[j]["ingredient_id"]]);
                 }
             });
         }
-
-        var drink_query = "INSERT INTO drinks_web (order_id, drink_type, drink_price) VALUES ($1, $2, $3)";
+        //update drinks with order_id
+        var drink_query = "INSERT INTO drinks_web (order_id, drink_type, drink_price)" +
+                            " VALUES ($1, $2, $3)";
         for(let k = 0; k < drink_details.length; k++)
         {
             //assuming drink is object with drink_type, drink_price;
@@ -67,7 +68,6 @@ router.get('/', function(req, res){
             var drink_type = drink_details[k]["drink_type"];
             pool.query(drink_query, [order_id, drink_type, drink_price]);
         }
-        //send drinks with order_id
     });
 
     
