@@ -41,7 +41,6 @@ const IngredientTable = ({ sendToParent }) => {
   let selectedIngredients = ["apple"];
 
   function handleSelectChange(event) {
-    console.log("Before: " + selectedIngredients);
     if (event.target.checked) {
       selectedIngredients.push(event.target.value);
     } else {
@@ -49,7 +48,6 @@ const IngredientTable = ({ sendToParent }) => {
         return item !== event.target.value;
       });
     }
-    console.log("After: " + selectedIngredients);
     sendToParent(selectedIngredients);
   }
 
