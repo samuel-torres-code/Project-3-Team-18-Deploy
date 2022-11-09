@@ -136,10 +136,10 @@ const Register = () => {
             <Form.Label style={{color: 'red',}}>Email Already in Use</Form.Label>
           </Form.Group>
         }
-  
-        <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '20%'}} disabled={!infoCompleted()} onClick={registerRegistration}>Register</Button></Link>
-        <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '20%'}} onClick={setReg}>Back to Login</Button></Link>
-  
+        <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+        <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '100%'}} disabled={!infoCompleted()} onClick={registerRegistration}>Register</Button></Link>
+        <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '100%'}} onClick={setReg}>Back to Login</Button></Link>
+        </div>
         </Form>
       }
       {(registered) && 
