@@ -5,11 +5,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 const DrinkCountRows = ({ drink_counts }) => {
-  return drink_counts.map((drink, index) => (
-    <p key={drink.drink_type + index} className="my-0">
-      {drink.drink_type} Drink: {drink.drink_count}
-    </p>
-  ));
+  
+  return drink_counts.map((drink, index) => {
+      return <p key={drink.drink_name + index} className="my-0">
+      {drink.drink_name} Drink: {drink.drink_count}
+      </p>
+    
+    
+});
 };
 
 const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
@@ -91,7 +94,6 @@ const OrderCard = ({
   pizzas,
   seasonal_items,
   drink_counts,
-  total_price,
   onFormChange,
   handleEditPizza,
   handleDeletePizza,
@@ -99,7 +101,17 @@ const OrderCard = ({
   handleSubmitName
 }) => {
   
-
+  const calculatePrice = () => {
+    console.log(pizzas)
+    var total_price = 0.00
+    pizzas.forEach(element => {
+      total_price += Number(element.pizza_price)
+    });
+    drink_counts.forEach(element => {
+      total_price += Number(element.drink_count) * Number(element.drink_price)
+    })
+    return `$${total_price.toFixed(2)}`
+  }
   return (
     <>
       <div className="card">
@@ -119,6 +131,10 @@ const OrderCard = ({
           <li className="list-group-item">
             <strong>Pizza:</strong>
             <PizzaRows pizzas={pizzas} handleDeletePizza={handleDeletePizza} handleEditPizza={handleEditPizza}/>
+          </li>
+          <li className="list-group-item">
+            <strong>Total Price: {calculatePrice()}</strong>
+            
           </li>
           </div>
         </ul>

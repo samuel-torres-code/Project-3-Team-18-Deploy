@@ -13,7 +13,7 @@ import {
   // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
-import { getIngredientsByType, getItemTypes } from "../api/ServerAPI";
+import { getIngredientsByType, getItemTypes, postOrder } from "../api/ServerAPI";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
@@ -68,16 +68,7 @@ const Server = () => {
   const createEmptyOrder = (name) => {
     setPizzasOnOrder([]);
     setSeasonalItems([]);
-    setDrinkCounts([
-      {
-        drink_type: "Fountain",
-        drink_count: 0,
-      },
-      {
-        drink_type: "Bottled",
-        drink_count: 0,
-      }]
-    );
+    setDrinkCounts(itemTypes.drink_types.map((drink_type) => ({drink_name:drink_type.drink_type,drink_count:0,drink_price:drink_type.drink_price})));
     setOrderInfo({ name: name  })
   };
 
@@ -142,10 +133,70 @@ const Server = () => {
     setSeasonalItems(seasonalItems.filter((s, i) => i !== index));
   };
 
+  const handleCheckout = () => {
+    console.log('checkout')
+    var error = "";
+    //Check if order has name
+    if(orderInfo.name === "") {
+      error += "Order has not been started."
+    }
+
+    const numDrinks = drinkCounts.reduce((accum,item) => accum + item.drink_count, 0)
+    //Check if order has anything
+    if(pizzasOnOrder.length ===0 && seasonalItems.length === 0 && numDrinks === 0) {
+      error += "Nothing on Order"
+    }
+
+    //Alert Errors
+    if(error !== "") {
+      alert(error)
+      return
+    }
+
+    //construct drinks
+    let formattedDrinks = []
+    for( let i = 0; i < drinkCounts.length; i++) {
+      for(let j = 0; j < drinkCounts[i].drink_count; j++) {
+        formattedDrinks.push({drink_type: drinkCounts[i].drink_name,drink_price: drinkCounts[i].drink_price})
+      }
+    }
+
+
+    //Arrange JSON
+    const reqJson = {
+      order: {
+        emp_id:1,
+        cust_name: orderInfo.name
+      },
+      pizzas:[
+        pizzasOnOrder.map((pizza) => ({
+          pizza_type: pizza.pizza_type,
+          pizza_price: pizza.pizza_price,
+          ingredients: [
+            pizza.ingredients.map((ingredient) => ({
+              ingredient_id: ingredient.ingredient_id
+            }))
+          ]
+        }))
+      ],
+      drinks:formattedDrinks
+
+    }
+    
+    //Send Request
+    postOrder(reqJson)
+    console.log('order added')
+
+    //Alert Success
+
+    //Create empty order of name 
+
+  }
+
   const updateDrinkCount = (type, updateVal) => {
     setDrinkCounts(
       drinkCounts.map((drink) => {
-        if (drink.drink_type === type) {
+        if (drink.drink_name === type) {
           if (drink.drink_count !== 0 || updateVal > 0) {
             drink.drink_count += updateVal;
           }
@@ -171,16 +222,19 @@ const Server = () => {
               handleDeleteSeasonalItem={handleDeleteSeasonalItem}
               onFormChange={handleFormChange}
               handleSubmitName={handleSubmitName}
+              
             />
           </div>
           <div className="col-3">
-            <DrinkCard updateDrinkCount={updateDrinkCount} />
+            <DrinkCard disabled={orderInfo.name === ""} updateDrinkCount={updateDrinkCount} drink_types={itemTypes.drink_types} />
             <DoughCard
               ingredients_by_type={ingredients_by_type}
               value={selectedIngredients}
               handleChange={handleChange}
+              disabled ={orderInfo.name === ""}
             />
-            <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} />
+            <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} disabled={orderInfo.name === ""} />
+            <button className="btn btn-primary" onClick={() => handleCheckout()} >Checkout</button>
           </div>
           <div className="col-6">
             <PizzaOrderCard

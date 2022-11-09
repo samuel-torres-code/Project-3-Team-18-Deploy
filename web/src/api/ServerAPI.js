@@ -24,3 +24,17 @@ export const getItemTypes = () => {
  
 }
 
+export const postOrder = (reqJson) => {
+    console.log(reqJson)
+    client.post('api/checkout/', { 
+        order: reqJson.order,
+        pizzas: reqJson.pizzas[0],
+        drinks: reqJson.drinks 
+        
+    }).catch((error) => { 
+        console.log(error)
+    });
+    
+ 
+}
+
