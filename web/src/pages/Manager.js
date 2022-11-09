@@ -319,6 +319,8 @@ function Manager() {
                         onChange={handleSelectIngredientChange}
                         style={{
                           transform: "scale(1.5)",
+                          zIndex: "-1",
+                          position: "relative"
                         }}
                       />
                     </td>
