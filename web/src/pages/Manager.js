@@ -15,6 +15,8 @@ function Manager() {
     baseURL: "http://localhost:2000",
   });
 
+  const [load, setLoad] = useState(false);
+
   useEffect(() => {
     loadIngredients();
     loadMenuItems();
@@ -23,13 +25,13 @@ function Manager() {
   useEffect(() => {
     loadIngredients();
     loadMenuItems();
-  }, [selectedIngredients]);
+  }, [load]);
 
   function loadIngredients() {
     client
       .get("/api/manager/load_ingredients")
       .then((res) => {
-        const ingredients = [];
+        var ingredients = [];
         for (var i = 0; i < res.data.length; i++) {
           ingredients.push({
             name: res.data[i][0],
@@ -37,6 +39,17 @@ function Manager() {
             inventory: res.data[i][2],
           });
         }
+        ingredients.sort((a, b) => {
+          const nameA = a.type.toUpperCase();
+          const nameB = b.type.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        });
         setIngredientData(ingredients);
       })
       .catch((error) => {
@@ -141,56 +154,77 @@ function Manager() {
           console.log(error);
         }
       });
-    // setIngredientData(
-    //   ingredientData.map((element, index) => {
-    //     if (selectedIngredients.includes(element.name)) {
-    //       element = {
-    //         name: element.name,
-    //         type: element.type,
-    //         inventory: parseInt(element.inventory) + parseInt(restockAmount),
-    //       };
-    //     }
-    //     return element;
-    //   })
-    // );
-    console.log("posted restock");
+    setRestockAmount("");
+    setLoad(!load);
     unCheckIngredients();
   }
 
   function handleRemoveClick() {
-    setIngredientData(
-      ingredientData.filter(function (item) {
-        return !selectedIngredients.includes(item.name);
+    client
+      .post("/api/manager/remove_ingredient", {
+        ingredients: selectedIngredients,
       })
-    );
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.");
+          console.log(error);
+        }
+      });
+    setLoad(!load);
     unCheckIngredients();
   }
 
   function handleAddIngredientClick() {
-    setIngredientData([
-      ...ingredientData,
-      {
-        name: newIngredientName,
-        type: newIngredientType,
-        inventory: 0,
-      },
-    ]);
+    if (newIngredientName === "" || newIngredientType === "") {
+      console.log("Bad Input");
+    } else {
+      client
+        .post("/api/manager/add_ingredient", {
+          ingredient_name: newIngredientName,
+          ingredient_type: newIngredientType,
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            console.log("Server responded.");
+          } else if (error.request) {
+            console.log("Network error.");
+          } else {
+            console.log("Unknown error type.");
+            console.log(error);
+          }
+        });
+      setLoad(!load);
+      setNewIngredientName("");
+      // setNewIngredientType("");
+    }
   }
 
   function handleItemPriceClick() {
-    setMenuItemData(
-      menuItemData.map((element, index) => {
-        if (selectedMenuItems.includes(element.name)) {
-          element = {
-            name: element.name,
-            price: newItemPrice,
-          };
-        }
-        return element;
+    client
+      .post("/api/manager/update_menu_items", {
+        menu_items: selectedMenuItems,
+        new_price: newItemPrice,
       })
-    );
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log("Server responded.");
+        } else if (error.request) {
+          console.log("Network error.");
+        } else {
+          console.log("Unknown error type.");
+          console.log(error);
+        }
+      });
+    setLoad(!load);
+    setNewItemPrice("");
     unCheckMenuItems();
-    console.log("New Price: " + newItemPrice + "\tItems: " + selectedMenuItems);
   }
 
   function unCheckIngredients() {
