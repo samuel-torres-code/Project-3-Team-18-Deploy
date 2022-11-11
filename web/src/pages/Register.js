@@ -132,24 +132,30 @@ const Register = () => {
         </Form.Group>
   
         {(!registered) && (reg === "b") &&
-          <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
-            <Form.Label style={{color: 'red',}}>Email Already in Use</Form.Label>
-          </Form.Group>
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+              <Form.Label style={{color: 'red',}}>Email Already in Use</Form.Label>
+            </Form.Group>
+          </div>
         }
         <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-        <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '100%'}} disabled={!infoCompleted()} onClick={registerRegistration}>Register</Button></Link>
-        <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '100%'}} onClick={setReg}>Back to Login</Button></Link>
+          <Link to={'/Home'}><Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '100%'}} disabled={!infoCompleted()} onClick={registerRegistration}>Register</Button></Link>
+          <Link to={'/Login'}><Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '100%'}} onClick={setReg}>Back to Login</Button></Link>
         </div>
         </Form>
       }
       {(registered) && 
         <Form>
-
-          <div style={{color: 'blue', fontSize: '40'}}>Thanks For Signing Up!</div>
-          <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-3" variant="primary" type="button" style={{width: '40%'}}>Back To Home</Button>
-          </Link>
-
+          <div className="mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <div style={{color: 'blue', fontSize: '40'}}>Thanks For Signing Up!</div>
+          </div> 
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Form.Group>
+              <Link to={'/Home'}>
+                <Button className="btn btn-primary" variant="primary" type="button" style={{width: '100%'}}>Back To Home</Button>
+              </Link>
+            </Form.Group>
+          </div>
         </Form>
       }
     </div>
