@@ -1,11 +1,9 @@
 import bootstrap from "bootstrap";
 import { useState, useEffect } from "react";
-import { Link, useAsyncError } from "react-router-dom";
+import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
-
-var log = "a";
 
 const Login = () => {
   //initialize necessary settings for useState functions
@@ -22,8 +20,19 @@ const Login = () => {
   //login persistency
   useEffect(() => {
     const loggedInUser = localStorage.getItem("isLoggedIn");
-    if (loggedInUser) {
-      setLoggedIn(loggedInUser);
+    const manager = localStorage.getItem("manager");
+    const employee = localStorage.getItem("employee");
+    if (loggedInUser === 'true') {
+      setLoggedIn(true);
+    }
+    else{
+      localStorage.setItem("log", "a");
+    }
+    if(manager === 'true'){
+      setManager(true);
+    }
+    if(employee === 'true'){
+      setEmployee(true);
     }
   }, []);
 
@@ -50,7 +59,7 @@ const Login = () => {
 
   //determine if user login was successful
   const changeLoggedIn = (event) => {
-    setLoggedIn(event);
+    setLoggedIn(event.target.value);
   }
 
   //set the employee is user is an employee
@@ -71,12 +80,12 @@ const Login = () => {
   };
 
   function changeLog(){
-    log = "a";
+    localStorage.setItem("log", "a");
   }
 
   function logOut(){
     localStorage.clear();
-    log = "a";
+    localStorage.setItem("log", "a");
   }
 
   //cancel default login button function and handle it ourself
@@ -93,15 +102,18 @@ const Login = () => {
         localStorage.setItem('isLoggedIn', res.data);
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
+        localStorage.setItem('employee', false);
       }
       else{
-        setLoggedIn(res.data[0]);
-        changeManager(res.data[1]);
-        localStorage.setItem('isLoggedIn', loggedIn);
+        var b = res.data[0];
+        var c = res.data[1];
+        setLoggedIn(b);
+        setManager(c);
+        localStorage.setItem('isLoggedIn', b);
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
-        localStorage.setItem('manager', isManager);
-        localStorage.setItem('employee', isEmployee);
+        localStorage.setItem('manager', c);
+        localStorage.setItem('employee', true);
       }
     })
     .catch((error) => {
@@ -116,17 +128,26 @@ const Login = () => {
       }
     });
 
+    if(!loggedIn)
+      secondaryLoginVerification();
+    localStorage.setItem("log", "b");
+    window.location.reload();
+    //clearValues();
+  };
+
+  const secondaryLoginVerification = (event) =>{
     if(!loggedIn){
-      const emailData = await client.post('/api/login/email',{
+      const emailData = client.post('/api/login/email',{
         user: user,
         email: email,
         password: pass,
       }).then(res => {
         if(res.data === true){
-          changeLoggedIn(res.data);
-          localStorage.setItem('isLoggedIn', res.data);
+          setLoggedIn(true);
+          localStorage.setItem('isLoggedIn', true);
           localStorage.setItem('user', user);
           localStorage.setItem('email', email);
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -141,49 +162,45 @@ const Login = () => {
         }
       });
     }
-    
-    log = "b";
-    //clearValues();
-  };
+  }
 
   return(
     <div>
-      {(loggedIn === false) && 
+      {((localStorage.getItem('isLoggedin') === 'false') || (localStorage.getItem('isLoggedin') === null)) && (loggedIn === false) &&
         (<Form>
 
-        <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
-          <Form.Label>Email or Username</Form.Label>
-          <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
-        </Form.Group>
+          <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
+            <Form.Label>Email or Username</Form.Label>
+            <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
+          </Form.Group>
 
-        <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
-        </Form.Group>
+          <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
+          </Form.Group>
 
-        {(log === "b") &&
-          (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
-              <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
-            </Form.Group>
-          </div>)
-        }
+          {(localStorage.getItem('log') === "b") &&
+            (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+              <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+                <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
+              </Form.Group>
+            </div>)
+          }
 
-        <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
-          <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
-        </Form.Group>
+          <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
+            <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
+          </Form.Group>
 
-        <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
-          </Link>
-        
-
-          <Link to={'/Register'}><Button className="btn btn-primary mx-3 mt-3"  style={{width:'90%'}} type="button">Register</Button></Link>
-        </div>
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Link to={'/Home'}>
+              <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
+            </Link>
+          
+            <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
+          </div>
         </Form>)
       }
-      {(loggedIn) &&
+      {(localStorage.getItem('isLoggedIn') === 'true') &&
         (<Form>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 

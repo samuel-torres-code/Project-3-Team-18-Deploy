@@ -37,7 +37,6 @@ router.post('/', (req, res, next) => {
         var queryString = "SELECT * FROM employees_web where emp_name='" + req.body.user +"';"
         pool.query(queryString).then(query_res => {
             for(let i = 0; i < query_res.rowCount; i++) {
-                console.log(query_res.rows[i].is_manager)
                 if((query_res.rows[i].passcode === req.body.password) && (query_res.rows[i].is_manager === true)){
                     send = true;
                     data.push(true);
@@ -51,6 +50,9 @@ router.post('/', (req, res, next) => {
                     return res.send(data);
                 }
             }
+            data.push(false);
+            data.push(false);
+            return res.send(data);
         });
     }
     else{
@@ -60,11 +62,12 @@ router.post('/', (req, res, next) => {
                 for(let i = 0; i < query_res.rowCount; i++) {
                     if((query_res.rows[i].password === req.body.password) && (!send)){
                         send = true;
-                        return res.send(true);
+                        return res.send(send);
                     }
                 }
-                if(!send)
-                    return res.send(false);
+                if(!send){
+                    return res.send(send);
+                }
             });
         }
 });
