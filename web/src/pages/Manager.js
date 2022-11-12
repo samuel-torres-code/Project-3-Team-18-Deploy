@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import axios from "axios";
 
 function Manager() {
@@ -10,6 +12,10 @@ function Manager() {
   const [newItemPrice, setNewItemPrice] = useState("");
   const [ingredientData, setIngredientData] = useState([]);
   const [menuItemData, setMenuItemData] = useState([]);
+  const [addEmployeeName, setNewEmployeeName] = useState("");
+  const [addEmployeePassword, setNewEmployeePassword] = useState("");
+  const [addAsManager, setAsManager] = useState([false, false]);
+  const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
 
   const client = axios.create({
     baseURL: "http://localhost:2000",
@@ -135,6 +141,19 @@ function Manager() {
 
   function handleItemPriceChange(event) {
     setNewItemPrice(event.target.value);
+  }
+
+  function handleAddEmployeeName(event){
+    setNewEmployeeName(event.target.value);
+  }
+
+  function handleAddEmployeePassword(event){
+    setNewEmployeePassword(event.target.value);
+  }
+
+  function handleAddAsManager(event){
+    setAsManager(event);
+    console.log(event);
   }
 
   function handleRestockClick() {
@@ -265,6 +284,47 @@ function Manager() {
       setLoad(!load);
       setNewItemPrice("");
       unCheckMenuItems();
+    }
+  }
+
+  function handleAddNewEmployee() {
+    if (addEmployeeName.length === 0) {
+      console.error(
+        "Invalid Input for Employee Name: No name is given."
+      );
+    } else if (isNaN(addEmployeePassword)) {
+      console.error(
+        "Invalid Input for Employee Password: Password is Nan."
+      );
+    } else {
+      client
+        .post("/api/manager/addEmployee", {
+          emp: addEmployeeName,
+          pass: addEmployeePassword,
+          status: (addAsManager.length > 2) ? "true" : "false",
+        }).then(res => {
+          if(res.data === true){
+            setAddedEmployeeDatabase(true);
+          }
+          else{
+            setAddedEmployeeDatabase(false);
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.log(error.response);
+            console.log("Server responded.");
+          } else if (error.request) {
+            console.log("Network error.");
+          } else {
+            console.log("Unknown error type.");
+            console.log(error);
+          }
+        });
+      setLoad(!load);
+      setAsManager([false, false]);
+      setNewEmployeeName('');
+      setNewEmployeePassword('');
     }
   }
 
@@ -448,6 +508,49 @@ function Manager() {
               value="Change Price"
               onClick={handleItemPriceClick}></input>
           </div>
+        </div>
+
+        {/* Add New Employee to System */}
+        <div
+          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+          style={{ width: "80%" }}>
+          <h4 className="text-center">Add Employee to System</h4>
+          <div className="d-flex justify-content-center flex-wrap">
+            <input
+              type="text"
+              placeholder="Employee Name"
+              className="m-2"
+              value={addEmployeeName}
+              onChange={handleAddEmployeeName}></input>
+            <input
+              type="text"
+              placeholder="Employee Passcode"
+              className="m-2"
+              value={addEmployeePassword}
+              onChange={handleAddEmployeePassword}></input>
+            <ToggleButtonGroup type="checkbox" value={addAsManager} onChange={handleAddAsManager}>
+              <ToggleButton id="tbg-btn-1 m-2" value={true} onChange={handleAddAsManager}>
+                Add as Manager?
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </div>
+          <div className="d-flex justify-content-center flex-wrap">
+            <input
+                type="button"
+                className="btn btn-primary my-2"
+                value="Add Employee"
+                onClick={handleAddNewEmployee}></input>
+          </div>
+          {(addedEmployeeDatabase === true) &&
+            <div className="d-flex justify-content-center flex-wrap" style={{color: 'blue',}}>
+              Added New Employee.
+            </div>
+          }
+          {(addedEmployeeDatabase === false) &&
+          <div className="d-flex justify-content-center flex-wrap" style={{color: 'red',}}>
+            Failed to Add New Employee. Try Different Passcode.
+          </div>
+          }
         </div>
       </div>
     </div>

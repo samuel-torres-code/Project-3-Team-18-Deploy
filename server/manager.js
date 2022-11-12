@@ -196,4 +196,45 @@ router.get('/', function(req, res){
 
  });
 
+ router.post('/addEmployee', function(req, res){
+    var query = "insert into employees_web (emp_name, is_manager, passcode) VALUES ('" + req.body.emp + "','" + req.body.status + "'," + req.body.pass + ") returning emp_name as employee;";
+    var finduser = "SELECT * FROM employees_web WHERE emp_name='" + req.body.emp + "';";
+    var findPass = "SELECT * FROM employees_web WHERE passcode='" + req.body.pass + "';";
+    var foundUser = false;
+    pool.query(finduser).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++) {
+            if((query_res.rows[i].emp_name === req.body.emp)){
+                founduser = true;
+                console.log("1");
+                return res.send(false);
+            }
+        }
+
+        if(!foundUser){
+            pool.query(findPass).then(query_res => {
+                for(let i = 0; i < query_res.rowCount; i++) {
+                    if((query_res.rows[i].passcode === req.body.pass)){
+                        foundUser = true;
+                        console.log("2");
+                        return res.send(false);
+                    }
+                }
+
+                if(!foundUser){
+                    pool.query(query).then(query_res => {
+                        for(let i = 0; i < query_res.rowCount; i++) {
+                            if((query_res.rows[i].employee === req.body.emp)){
+                                foundUser = true;
+                                console.log("3");
+                                return res.send(true);
+                            }
+                        }
+                    });
+                }
+
+            });
+        }
+    });
+ })
+
  module.exports = router;
