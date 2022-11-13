@@ -12,8 +12,7 @@ const DrinkCountRows = ({ drink_counts }) => {
       </p>
     
     
-});
-};
+});};
 
 const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => (

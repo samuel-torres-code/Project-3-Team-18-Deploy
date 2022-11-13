@@ -1,0 +1,17 @@
+.homeContainer {
+    background-image: url('../home_backdrop.jpg');
+    width: 100vw;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100vh;
+    margin: 1rem;
+    display: flex;
+    
+}
+
+.textContainer {
+    width: 40%;
+}
+
+
+
