@@ -87,7 +87,24 @@ router.get('/', function(req, res){
                                     "pizza_price": p_price};
                     final_dict["pizza_types"] = final_dict["pizza_types"].concat([p_obj]);
                 }
-                res.send(final_dict)
+                s_response = []
+                pool
+                .query(seasonal_query)
+                .then(query_res => {
+                    for(let j = 0; j < query_res.rowCount; j++)
+                    {
+                        s_response.push(query_res.rows[j]);
+                    }
+                    for(let j = 0; j < s_response.length; j++)
+                    {
+                        var s_price = s_response[j]["item_price"];
+                        var s_name = s_response[j]["item_name"];
+                        var s_obj = {"item_name" : s_name, 
+                                        "item_price" : s_price};
+                        final_dict["seasonal_items"] = final_dict["seasonal_items"].concat([s_obj]);
+                    }
+                    res.send(final_dict)
+                });
             });
 
         });
@@ -170,7 +187,22 @@ router.get('/', function(req, res){
                     var p_name = p_response[i]["pizza_type"];
                     final_dict["menu_items"].push([p_name, p_price])
                 }
-                res.send(final_dict)
+                s_response = []
+                pool
+                .query(seasonal_query)
+                .then(query_res => {
+                    for(let j = 0; j < query_res.rowCount; j++)
+                    {
+                        s_response.push(query_res.rows[j]);
+                    }
+                    for(let j = 0; j < s_response.length; j++)
+                    {
+                        var s_price = s_response[j]["item_price"];
+                        var s_name = s_response[j]["item_name"];
+                        final_dict["menu_items"].push([s_name, s_price]);
+                    }
+                    res.send(final_dict)
+                });
             });
 
         });
@@ -187,11 +219,13 @@ router.get('/', function(req, res){
     // assumes menu item names are distinct between all tables
     var update_pizzas = "UPDATE pizza_types_web SET pizza_price = $1 where pizza_type = $2";
     var update_drinks = "UPDATE drink_types_web SET drink_price = $1 where drink_type = $2";
+    var update_seasonal = "UPDATE seasonal_item SET item_price = $1 where item_type = $2";
     //TODO -- update seasonal as well
     for(let i = 0; i < menu_items.length; i++)
     {
         pool.query(update_pizzas, [new_price, menu_items[i]]);
-        pool.query(update_drinks, [new_price, menu_items[i]])
+        pool.query(update_drinks, [new_price, menu_items[i]]);
+        pool.query(update_seasonal, [new_price, menu_items[i]]);
     }
 
  });

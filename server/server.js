@@ -59,7 +59,6 @@ router.get('/ingredients', function(req, res) {
     
 });
 
-//TODO: add functionality for seasonal items.
 router.get('/types', function(req, res) {
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
@@ -104,8 +103,25 @@ router.get('/types', function(req, res) {
                                     "pizza_price": p_price};
                     final_dict["pizza_types"] = final_dict["pizza_types"].concat([p_obj]);
                 }
+                s_response = []
+                pool
+                .query(seasonal_query)
+                .then(query_res => {
+                    for(let j = 0; j < query_res.rowCount; j++)
+                    {
+                        s_response.push(query_res.rows[j]);
+                    }
+                    for(let j = 0; j < s_response.length; j++)
+                    {
+                        var s_price = s_response[j]["item_price"];
+                        var s_name = s_response[j]["item_name"];
+                        var s_obj = {"item_name" : s_name, 
+                                        "item_price" : s_price};
+                        final_dict["seasonal_item_types"] = final_dict["seasonal_item_types"].concat([s_obj]);
+                    }
+                    res.send(final_dict)
+                });
                 //send final types
-                res.send(final_dict)
             });
 
         });
