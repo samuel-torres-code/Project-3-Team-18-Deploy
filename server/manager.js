@@ -219,7 +219,7 @@ router.get('/', function(req, res){
     // assumes menu item names are distinct between all tables
     var update_pizzas = "UPDATE pizza_types_web SET pizza_price = $1 where pizza_type = $2";
     var update_drinks = "UPDATE drink_types_web SET drink_price = $1 where drink_type = $2";
-    var update_seasonal = "UPDATE seasonal_item SET item_price = $1 where item_type = $2";
+    var update_seasonal = "UPDATE seasonal_item SET item_price = $1 where item_name = $2";
     //TODO -- update seasonal as well
     for(let i = 0; i < menu_items.length; i++)
     {
