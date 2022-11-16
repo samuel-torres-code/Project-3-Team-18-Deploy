@@ -8,10 +8,19 @@ const Layout = () => {
   return (
     <>
       
-        <Navbar bg="light" expand="lg">
+        <Navbar className="shadow-sm" bg="light" expand="lg">
             <Container>
             <LinkContainer to="/">
-              <Navbar.Brand >Spin 'N Stone Pizza</Navbar.Brand>
+              <Navbar.Brand >
+                {/* <img  style={{ width:'10vw', height:'auto'}} alt="spin n stone logo" /> */}
+                <img
+              src={require ('../spin_n_stone_logo.png')}
+              
+              height="50vh"
+              className="d-inline-block align-top"
+              alt="spin n stone logo"
+            />
+              </Navbar.Brand>
             </LinkContainer>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
