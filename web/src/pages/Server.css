@@ -1,0 +1,9 @@
+.dynamic-height {
+    height:80vh;
+}
+
+@media screen and (max-width: 767px)  {
+    .dynamic-height {
+        height:fit-content;
+    }
+}

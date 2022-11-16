@@ -1,0 +1,25 @@
+@import "bootstrap/scss/functions"; 
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import url("fonts/gooper/stylesheet.css");
+/* Your customizations here */
+
+h1,h2,h3,h4,h5,nav >* {
+        font-weight: 600 !important;    
+}  
+
+.App {
+    font-family: 'Gooper';
+    font-weight: 300;
+    font-style: normal;
+}
+
+$theme-colors: (
+  primary:  #e8b74d,
+  secondary: #626262
+);
+
+
+
+
+@import "bootstrap";
