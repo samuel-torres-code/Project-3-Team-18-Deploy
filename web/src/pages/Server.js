@@ -5,14 +5,10 @@ import DoughCard from "../components/DoughCard";
 import DrinkCard from "../components/DrinkCard";
 import OrderCard from "../components/OrderCard";
 import PizzaOrderCard from "../components/PizzaOrderCard";
-
+import "./Server.css";
 
 import {
   ingredients,
-  //pizzas,
-  // seasonal_items,
-  // drink_counts,
-  // order_info,
 } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
 
@@ -106,6 +102,7 @@ const Server = () => {
       },
     ]);
     setCurrentPizzaID(nextPizzaID)
+    setSelectedIngredients([])
     setNextPizzaID(nextPizzaID+1)
   };
   const handleDeletePizza = (id) => {
@@ -222,7 +219,7 @@ const Server = () => {
     return (
       <div className="container">
         <div className="row my-2">
-          <div className="col-3">
+          <div className="col-md-12 col-lg-3">
             <OrderCard
               order_info={orderInfo}
               pizzas={pizzasOnOrder}
@@ -235,23 +232,25 @@ const Server = () => {
               onFormChange={handleFormChange}
               handleSubmitName={handleSubmitName}
               currentPizzaID={currentPizzaID}
+              disabled={orderInfo.name === ""}
+              handleCheckout={handleCheckout}
+              resetPage={resetPage}
               
             />
-            <button disabled={orderInfo.name === ""} className="btn btn-primary" onClick={() => handleCheckout()} >Checkout</button>
-            <button disabled={orderInfo.name === ""} className="btn btn-secondary" onClick={() => resetPage()} >Cancel Order</button>
+            
           </div>
-          <div className="col-3">
+          <div className="col-md-12 col-lg-3">
             <DrinkCard disabled={orderInfo.name === ""} updateDrinkCount={updateDrinkCount} drink_types={itemTypes.drink_types} />
+            
+            <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} disabled={orderInfo.name === ""} />
             <DoughCard
               ingredients_by_type={ingredients_by_type}
               value={selectedIngredients}
               handleChange={handleChange}
               disabled ={currentPizzaID === -1}
             />
-            <AddPizzaCard handleAddPizza={handleAddPizza} pizza_types={itemTypes.pizza_types} disabled={orderInfo.name === ""} />
-            
           </div>
-          <div className="col-6">
+          <div className="col-md-12 col-lg-6">
             <PizzaOrderCard
               disabled={currentPizzaID === -1}
               handleChange={handleChange}

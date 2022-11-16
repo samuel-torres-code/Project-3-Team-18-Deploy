@@ -8,7 +8,7 @@ const Layout = () => {
   return (
     <>
       
-        <Navbar bg="light" expand="lg">
+        <Navbar className="shadow-sm" bg="light" expand="lg">
             <Container>
             <LinkContainer to="/">
               <Navbar.Brand >

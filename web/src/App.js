@@ -8,7 +8,8 @@ import NoPage from './pages/NoPage.js';
 import Login from './pages/Login.js';
 import Register from './pages/Register.js';
 
-import './App.css';
+import './App.scss';
+
 
 function App() {
   return (

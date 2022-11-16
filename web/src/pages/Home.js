@@ -5,8 +5,8 @@ const Home = () => {
       <div >
         <div className="homeContainer container-fluid" >
           <div className="row ">
-            <div className="col-xs-12 col-sm-1"></div>
-          <div className="col-xs-10 col-sm-5 py-3">
+            <div className="col-sm-12 col-md-1"><img className="smallBackdrop" src={require ('../home_backdrop_small.jpg')} /></div>
+          <div className="col-sm-10 col-md-5 py-5">
           <h2>Quality you can taste
           </h2>
           <p>

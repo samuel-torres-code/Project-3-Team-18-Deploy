@@ -2,11 +2,14 @@ import React from "react";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 
-const IngredientSelectGroup = ({ ingredients, handleChange, value, width, disabled }) => {
+const convertWord = (str) => {
+    return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
+}
+const IngredientSelectGroup = ({ ingredients, handleChange, value, disabled }) => {
   return (
-    <div className={`col-${width}`}>
+    <div className="col-lg-4 col-xs-5 ">
       <p>
-        <strong>{ingredients[0]}</strong>
+        <strong>{convertWord(ingredients[0])}</strong>
       </p>
 
       <ToggleButtonGroup
@@ -24,7 +27,7 @@ const IngredientSelectGroup = ({ ingredients, handleChange, value, width, disabl
               value={ingredient.ingredient_id}
               disabled={disabled}
             >
-              {ingredient.ingredient_name}
+              {convertWord(ingredient.ingredient_name)}
             </ToggleButton>
           );
         })}
@@ -42,13 +45,12 @@ const PizzaOrderCard = ({
   disabled
 }) => {
   return (
-    <div className="card" style={{ maxHeight: "90vh", overflowY: "scroll" }}>
+    <div className="card dynamic-height" style={{ maxHeight: "90vh", overflowY: "scroll" }}>
       <div className="container py-2">
         <div className="row">
           {baseIngredients.map((type, key) => (
             <IngredientSelectGroup
               key={type}
-              width={4}
               handleChange={handleChange}
               value={value}
               ingredients={[type, ingredients_by_type[type]]}
@@ -58,7 +60,6 @@ const PizzaOrderCard = ({
           {toppingIngredients.map((type, key) => (
             <IngredientSelectGroup
               key={type}
-              width={4}
               handleChange={handleChange}
               value={value}
               ingredients={[type, ingredients_by_type[type]]}

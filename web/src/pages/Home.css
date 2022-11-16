@@ -1,11 +1,8 @@
 .homeContainer {
     background-image: url('../home_backdrop.jpg');
-    width: 100vw;
     background-repeat: no-repeat;
-    background-size: contain;
-    height: 100vh;
-    margin: 1rem;
-    display: flex;
+    background-size: 100vw;
+
     
 }
 
@@ -13,5 +10,25 @@
     width: 40%;
 }
 
+.container-fluid {
+    margin: 1rem;
+    height: 80vh;
+}
+
+.smallBackdrop {
+    display: none;
+    width: 90vw;
+    height: 40vh;
+    object-fit: cover;
+}
+@media screen and
+(max-width: 767px) {
+    .smallBackdrop {
+        display: block;
+    }
+    .homeContainer {
+        background-image: none;
+    }
+}
 
 

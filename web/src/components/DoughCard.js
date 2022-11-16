@@ -14,6 +14,7 @@ const DoughInputGroup = ({ingredients,handleChange,value,width,disabled}) => {
 }
 
 const DoughCard = ({ingredients_by_type, value, handleChange,disabled}) => {
+    if(!disabled) {
     return (
         <div className="card">
           <div className="card-body">
@@ -28,7 +29,7 @@ const DoughCard = ({ingredients_by_type, value, handleChange,disabled}) => {
             </div>     
           </div>
           </div>
-    );
+    );}
 }
 
 export default DoughCard;
