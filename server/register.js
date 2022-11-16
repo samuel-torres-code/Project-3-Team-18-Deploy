@@ -21,14 +21,14 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-router.use((req, res, next) => {
+/*router.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
         "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
     );
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
     next();
-});
+});*/
 
 router.post('/', (req, res, next) => {
     let send = false;
