@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 
 const Login = () => {
+
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -198,6 +199,8 @@ const Login = () => {
           
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
+
+          <div class="g-signin2" data-onsuccess="onSignIn"></div>
         </Form>)
       }
       {(localStorage.getItem('isLoggedIn') === 'true') &&
@@ -234,6 +237,5 @@ const Login = () => {
 
 };
   
-
 
   export default Login;
