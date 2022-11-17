@@ -7,6 +7,7 @@ import Manager from './pages/Manager.js';
 import NoPage from './pages/NoPage.js';
 import Login from './pages/Login.js';
 import Register from './pages/Register.js';
+import Pizza from './pages/Pizza.js';
 
 import './App.scss';
 
@@ -22,6 +23,7 @@ function App() {
             <Route path="server" element={<Server />} />
             <Route path="manager" element={<Manager />} />
             <Route path="login" element={<Login />} />
+            <Route path="pizza" element={<Pizza />} />
             <Route path="*" element={<NoPage />} />
             <Route path="register" element={<Register />} />
           </Route>
