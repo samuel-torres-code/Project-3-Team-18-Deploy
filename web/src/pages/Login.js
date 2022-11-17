@@ -4,9 +4,24 @@ import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
+import { gapi } from "gapi-script";
+import OAuth2Login from 'react-simple-oauth2-login';
+import { GoogleButton, IAuthorizationOptions, isLoggedIn, createOAuthHeaders, logOutOAuthUser, GoogleAuth, } from "react-google-oauth2";
+
+const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 
 const Login = () => {
 
+  const options = {
+    clientId: clientId,
+    redirectUri: "http://localhost:3000/react-google-Oauth2.0/dist/index.html",
+    scopes: ["profile", "email"],
+    includeGrantedScopes: true,
+    accessType: "offline",
+  };
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -14,9 +29,24 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isEmployee, setEmployee] = useState(false);
   const [isManager, setManager] = useState(false);
+
+  const [loading, setLoading] = useState('Please Wait.');
+  const [logoutFailure, setLogoutFailure] = useState(false);
+
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
+
+
+  useEffect(() => {
+    function start() {
+      gapi.auth2.init({
+        clientId: clientId,
+        scope: "email",
+      });
+    }
+    gapi.load("client:auth2", start);
+  });
 
   //login persistency
   useEffect(() => {
@@ -80,6 +110,10 @@ const Login = () => {
     setUser('');
   };
 
+  const handleRequest = () => {
+    setLoading("Please Wait.");
+  }
+
   function changeLog(){
     localStorage.setItem("log", "a");
   }
@@ -88,6 +122,38 @@ const Login = () => {
     localStorage.clear();
     localStorage.setItem("log", "a");
   }
+
+  const handleLogoutFailure = error => {
+    console.log("Logout Failure ", error);
+    setLogoutFailure(true);
+  }
+
+  const handleLoginSuccess = (event) => {
+    console.log("Google Login Successful.", event);
+    //setUser(event.profileObj);
+    //return {googleLogIn};
+  }
+
+  function googleLogIn(){
+    setLoading();
+    setLoggedIn(true);
+    localStorage.setItem("log", "b");
+    localStorage.setItem('isLoggedIn', true);
+    localStorage.setItem('user', user);
+    localStorage.setItem('employee', false);
+  }
+
+  const handleLoginFailure = (error) => {
+    console.log("Login Failure ", error);
+    //setLoading();
+  }
+
+  const handleAutoLoadFinished = () => {
+    setLoading();
+  }
+
+  const onSuccess = response => console.log(response);
+  const onFailure = response => console.error(response);
 
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
@@ -167,6 +233,43 @@ const Login = () => {
 
   return(
     <div>
+
+          {/*loggedIn ? <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <GoogleLogin
+              clientId={clientId}
+              buttonText={loading}
+              onSuccess={handleLoginSuccess}
+              onFailure={handleLoginFailure}
+              onRequest={handleRequest}
+              onAutoLoadFinished={handleAutoLoadFinished}
+              isSignedIn={true}
+            />
+          </div> : <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            {<GoogleLogout
+              clientId={clientId}
+              onLogoutSuccess={logOut}
+              onFailure={handleLogoutFailure}
+            />}
+          </div>*/}
+
+          <OAuth2Login
+            authorizationUrl="https://accounts.google.com/o/oauth2/auth"
+            responseType="token"
+            scope="email"
+            clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com"
+            redirectUri="http://localhost:3000/login"
+            onSuccess={onSuccess}
+            onFailure={onFailure}/>
+          
+          {/*<GoogleLogin
+            clientId={clientId}
+            buttonText="Sign in with Google"
+            onSuccess={handleLoginSuccess}
+            onFailure={handleLoginFailure}
+            cookiePolicy={'single_host_origin'}
+            isSignedIn={true}
+          />*/}
+
       {((localStorage.getItem('isLoggedin') === 'false') || (localStorage.getItem('isLoggedin') === null)) && (loggedIn === false) &&
         (<Form>
 
@@ -200,8 +303,8 @@ const Login = () => {
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
 
-          <div class="g-signin2" data-onsuccess="onSignIn"></div>
         </Form>)
+
       }
       {(localStorage.getItem('isLoggedIn') === 'true') &&
         (<Form>
@@ -229,6 +332,14 @@ const Login = () => {
             <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
           </div>
+
+          
+
+          {(logoutFailure) &&
+            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+              <Form.Label style={{color: 'red',}}>Logout Failed. Perhaps You Signed In Without Google?</Form.Label>
+            </Form.Group>
+          }
           
         </Form>)
       }

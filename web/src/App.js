@@ -7,11 +7,26 @@ import Manager from './pages/Manager.js';
 import NoPage from './pages/NoPage.js';
 import Login from './pages/Login.js';
 import Register from './pages/Register.js';
-
 import './App.scss';
 
+import { useState, useEffect } from "react";
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from 'gapi-script';
+
+const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 
 function App() {
+
+  useEffect(() => {
+    const initClient = () => {
+          gapi.auth2.init({
+          clientId: clientId,
+          scope: 'email'
+        });
+    };
+    gapi.load('client:auth2', initClient);
+  });
+
   return (
     <div className="App">
       <BrowserRouter>
