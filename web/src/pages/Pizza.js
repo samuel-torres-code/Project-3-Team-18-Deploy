@@ -11,7 +11,7 @@ const Pizza = () => {
       <div className="row">
         <ItemButton
           imgName={"scary_pizza.png"}
-          cardText="Not Found"
+          cardText="Scary Pizza"
           onClick={buttonClick}></ItemButton>
       </div>
     </div>
