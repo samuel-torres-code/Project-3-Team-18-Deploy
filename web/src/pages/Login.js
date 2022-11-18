@@ -245,33 +245,6 @@ const Login = () => {
   return(
     <div>
 
-          {/*loggedIn ? <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-            <GoogleLogin
-              clientId={clientId}
-              buttonText={loading}
-              onSuccess={handleLoginSuccess}
-              onFailure={handleLoginFailure}
-              onRequest={handleRequest}
-              onAutoLoadFinished={handleAutoLoadFinished}
-              isSignedIn={true}
-            />
-          </div> : <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-            {<GoogleLogout
-              clientId={clientId}
-              onLogoutSuccess={logOut}
-              onFailure={handleLogoutFailure}
-            />}
-          </div>*/}
-          
-          {/*<GoogleLogin
-            clientId={clientId}
-            buttonText="Sign in with Google"
-            onSuccess={handleLoginSuccess}
-            onFailure={handleLoginFailure}
-            cookiePolicy={'single_host_origin'}
-            isSignedIn={true}
-          />*/}
-
       {((localStorage.getItem('isLoggedin') === 'false') || (localStorage.getItem('isLoggedin') === null)) && (loggedIn === false) &&
         (<Form>
 
