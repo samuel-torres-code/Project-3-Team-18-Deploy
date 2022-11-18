@@ -1,14 +1,15 @@
 import axios from "axios";
+import { API_URL } from "../API";
 
 const client = axios.create({
-  baseURL: "http://localhost:2000/" 
+  baseURL: API_URL 
 });
 
 
 
 export const getIngredientsByType = () => {
     
-        return client.get('api/server/ingredients').then((res) => { 
+        return client.get('/api/server/ingredients').then((res) => { 
             return res.data
         });
         
@@ -17,7 +18,7 @@ export const getIngredientsByType = () => {
 
 export const getItemTypes = () => {
     
-    return client.get('api/server/types').then((res) => { 
+    return client.get('/api/server/types').then((res) => { 
         return res.data
     });
     
@@ -25,7 +26,7 @@ export const getItemTypes = () => {
 }
 
 export const postOrder = (reqJson) => {
-    client.post('api/checkout/', { 
+    client.post('/api/checkout/', { 
         order: reqJson.order,
         pizzas: reqJson.pizzas[0],
         drinks: reqJson.drinks 

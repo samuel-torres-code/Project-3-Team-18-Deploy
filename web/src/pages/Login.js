@@ -4,6 +4,7 @@ import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { API_URL } from "../API";
 
 const Login = () => {
   //initialize necessary settings for useState functions
@@ -14,7 +15,7 @@ const Login = () => {
   const [isEmployee, setEmployee] = useState(false);
   const [isManager, setManager] = useState(false);
   const client = axios.create({
-    baseURL: "http://localhost:2000"
+    baseURL: API_URL
   })
 
   //login persistency
