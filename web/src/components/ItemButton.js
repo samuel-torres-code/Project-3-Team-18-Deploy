@@ -11,7 +11,7 @@ const ItemButton = ({ cardText, imgName, onClick }) => {
         src={loading ? "../images/loader_pizza.gif" : image}
         alt={cardText ? cardText : "No alt text"}
       />
-      <div className="card-body text-center mx-4 my-2">
+      <div className="card-body text-center my-2">
         {cardText ? cardText : "No text"}
       </div>
     </div>

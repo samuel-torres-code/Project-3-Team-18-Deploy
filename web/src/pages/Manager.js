@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import ToggleButton from "react-bootstrap/ToggleButton";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import axios from "axios";
 
 function Manager() {
@@ -88,6 +88,12 @@ function Manager() {
             price: res.data["drink_types"][i]["drink_price"],
           });
         }
+        for (i = 0; i < res.data["seasonal_items"].length; i++) {
+          items.push({
+            name: res.data["seasonal_items"][i]["item_name"],
+            price: res.data["seasonal_items"][i]["item_price"],
+          });
+        }
         setMenuItemData(items);
       })
       .catch((error) => {
@@ -143,15 +149,15 @@ function Manager() {
     setNewItemPrice(event.target.value);
   }
 
-  function handleAddEmployeeName(event){
+  function handleAddEmployeeName(event) {
     setNewEmployeeName(event.target.value);
   }
 
-  function handleAddEmployeePassword(event){
+  function handleAddEmployeePassword(event) {
     setNewEmployeePassword(event.target.value);
   }
 
-  function handleAddAsManager(event){
+  function handleAddAsManager(event) {
     setAsManager(event);
     console.log(event);
   }
@@ -289,24 +295,20 @@ function Manager() {
 
   function handleAddNewEmployee() {
     if (addEmployeeName.length === 0) {
-      console.error(
-        "Invalid Input for Employee Name: No name is given."
-      );
+      console.error("Invalid Input for Employee Name: No name is given.");
     } else if (isNaN(addEmployeePassword)) {
-      console.error(
-        "Invalid Input for Employee Password: Password is Nan."
-      );
+      console.error("Invalid Input for Employee Password: Password is NaN.");
     } else {
       client
         .post("/api/manager/addEmployee", {
           emp: addEmployeeName,
           pass: addEmployeePassword,
-          status: (addAsManager.length > 2) ? "true" : "false",
-        }).then(res => {
-          if(res.data === true){
+          status: addAsManager.length > 2 ? "true" : "false",
+        })
+        .then((res) => {
+          if (res.data === true) {
             setAddedEmployeeDatabase(true);
-          }
-          else{
+          } else {
             setAddedEmployeeDatabase(false);
           }
         })
@@ -323,8 +325,8 @@ function Manager() {
         });
       setLoad(!load);
       setAsManager([false, false]);
-      setNewEmployeeName('');
-      setNewEmployeePassword('');
+      setNewEmployeeName("");
+      setNewEmployeePassword("");
     }
   }
 
@@ -403,7 +405,6 @@ function Manager() {
             <input
               type="button"
               className="btn btn-primary my-2"
-              value="Restock"
               onClick={handleRestockClick}></input>
           </div>
         </div>
@@ -417,7 +418,6 @@ function Manager() {
             <input
               type="button"
               className="btn btn-primary my-2"
-              value="Remove Ingredient"
               onClick={handleRemoveClick}></input>
           </div>
         </div>
@@ -453,7 +453,6 @@ function Manager() {
             <input
               type="button"
               className="btn btn-primary my-2"
-              value="Add Ingredient"
               onClick={handleAddIngredientClick}></input>
           </div>
         </div>
@@ -505,7 +504,6 @@ function Manager() {
             <input
               type="button"
               className="btn btn-primary my-2"
-              value="Change Price"
               onClick={handleItemPriceClick}></input>
           </div>
         </div>
@@ -528,29 +526,39 @@ function Manager() {
               className="m-2"
               value={addEmployeePassword}
               onChange={handleAddEmployeePassword}></input>
-            <ToggleButtonGroup type="checkbox" value={addAsManager} onChange={handleAddAsManager}>
-              <ToggleButton id="tbg-btn-1 m-2" value={true} onChange={handleAddAsManager}>
+            <ToggleButtonGroup
+              type="checkbox"
+              value={addAsManager}
+              onChange={handleAddAsManager}>
+              <ToggleButton
+                id="tbg-btn-1 m-2"
+                value={true}
+                onChange={handleAddAsManager}>
                 Add as Manager?
               </ToggleButton>
             </ToggleButtonGroup>
           </div>
           <div className="d-flex justify-content-center flex-wrap">
             <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Add Employee"
-                onClick={handleAddNewEmployee}></input>
+              type="button"
+              className="btn btn-primary my-2"
+              value="Add Employee"
+              onClick={handleAddNewEmployee}></input>
           </div>
-          {(addedEmployeeDatabase === true) &&
-            <div className="d-flex justify-content-center flex-wrap" style={{color: 'blue',}}>
+          {addedEmployeeDatabase === true && (
+            <div
+              className="d-flex justify-content-center flex-wrap"
+              style={{ color: "blue" }}>
               Added New Employee.
             </div>
-          }
-          {(addedEmployeeDatabase === false) &&
-          <div className="d-flex justify-content-center flex-wrap" style={{color: 'red',}}>
-            Failed to Add New Employee. Try Different Passcode.
-          </div>
-          }
+          )}
+          {addedEmployeeDatabase === false && (
+            <div
+              className="d-flex justify-content-center flex-wrap"
+              style={{ color: "red" }}>
+              Failed to Add New Employee. Try Different Passcode.
+            </div>
+          )}
         </div>
       </div>
     </div>
