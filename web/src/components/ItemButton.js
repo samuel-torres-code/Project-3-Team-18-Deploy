@@ -1,7 +1,7 @@
-import './ItemButton.css'
-import useImage from '../hooks/useImage'
-import(`../images/loader_pizza.gif`)
-import(`../images/image_not_found.png`)
+import "./ItemButton.css";
+import useImage from "../hooks/useImage";
+import(`../images/loader_pizza.gif`);
+import(`../images/image_not_found.png`);
 
 const ItemButton = ({cardText, imgName, onClick}) => {
     const { loading, error, image } = useImage(imgName)
@@ -15,6 +15,5 @@ const ItemButton = ({cardText, imgName, onClick}) => {
         
     )
 }
-
 
 export default ItemButton;
