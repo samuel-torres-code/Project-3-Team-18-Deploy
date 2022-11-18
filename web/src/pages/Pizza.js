@@ -10,7 +10,7 @@ const Pizza = () => {
     return (
         <div className="container">
             <div className="row">
-                {/* <ItemButton imgName={"scary_pizza.png"} cardText="Not Found" onClick={buttonClick} ></ItemButton> */}
+                <ItemButton imgName={"loader_pizza.gif"} cardText="Joey sucks eggs af" onClick={buttonClick} ></ItemButton>
             </div>
 
         </div>
