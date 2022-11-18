@@ -10,6 +10,7 @@ import OAuth2Login from 'react-simple-oauth2-login';
 import { GoogleButton, IAuthorizationOptions, isLoggedIn, createOAuthHeaders, logOutOAuthUser, GoogleAuth, } from "react-google-oauth2";
 
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
+const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
 
 const Login = () => {
 
@@ -55,6 +56,7 @@ const Login = () => {
     const employee = localStorage.getItem("employee");
     if (loggedInUser === 'true') {
       setLoggedIn(true);
+      setUser(localStorage.getItem("user"));
     }
     else{
       localStorage.setItem("log", "a");
@@ -139,7 +141,7 @@ const Login = () => {
     setLoggedIn(true);
     localStorage.setItem("log", "b");
     localStorage.setItem('isLoggedIn', true);
-    localStorage.setItem('user', user);
+    localStorage.setItem('user', 'guest');
     localStorage.setItem('employee', false);
   }
 
@@ -152,7 +154,16 @@ const Login = () => {
     setLoading();
   }
 
-  const onSuccess = response => console.log(response);
+  const onSuccess = response => {
+    console.log(response);
+    setLoggedIn(true);
+    setUser("Guest");
+    localStorage.setItem("log", "b");
+    localStorage.setItem('isLoggedIn', true);
+    localStorage.setItem('user', "Guest");
+    localStorage.setItem('employee', false);
+  }
+
   const onFailure = response => console.error(response);
 
   //cancel default login button function and handle it ourself
@@ -251,15 +262,6 @@ const Login = () => {
               onFailure={handleLogoutFailure}
             />}
           </div>*/}
-
-          <OAuth2Login
-            authorizationUrl="https://accounts.google.com/o/oauth2/auth"
-            responseType="token"
-            scope="email"
-            clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com"
-            redirectUri="http://localhost:3000/login"
-            onSuccess={onSuccess}
-            onFailure={onFailure}/>
           
           {/*<GoogleLogin
             clientId={clientId}
@@ -303,6 +305,18 @@ const Login = () => {
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
 
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <OAuth2Login
+              buttonText="Login with Google"
+              authorizationUrl="https://accounts.google.com/o/oauth2/auth"
+              responseType="token"
+              scope="email profile"
+              clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com"
+              redirectUri="http://localhost:3000/login"
+              onSuccess={onSuccess}
+              onFailure={onFailure}/>
+          </div>
+
         </Form>)
 
       }
@@ -310,7 +324,7 @@ const Login = () => {
         (<Form>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome, {user}!</div>
           }
           {(isEmployee) && (!isManager) && 
             <div style={{color: 'blue', fontSize: '40'}}>Welcome, Server!</div>
@@ -332,8 +346,6 @@ const Login = () => {
             <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
           </div>
-
-          
 
           {(logoutFailure) &&
             <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
