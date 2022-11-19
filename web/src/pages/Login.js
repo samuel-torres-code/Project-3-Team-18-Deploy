@@ -1,13 +1,15 @@
 import bootstrap from "bootstrap";
+import ReactDOM from 'react-dom'
 import { useState, useEffect } from "react";
 import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
-import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { gapi } from "gapi-script";
 import OAuth2Login from 'react-simple-oauth2-login';
+import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { GoogleButton, IAuthorizationOptions, isLoggedIn, createOAuthHeaders, logOutOAuthUser, GoogleAuth, } from "react-google-oauth2";
+import jwt_decode from "jwt-decode";
 
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
@@ -121,8 +123,12 @@ const Login = () => {
   }
 
   function logOut(){
+    setLoggedIn(false);
+    localStorage.setItem('employee', false);
+    localStorage.setItem('manager', false);
     localStorage.clear();
     localStorage.setItem("log", "a");
+    window.location.reload();
   }
 
   const handleLogoutFailure = error => {
@@ -242,10 +248,20 @@ const Login = () => {
     }
   }
 
+
+  const login = useGoogleLogin({
+    onSuccess: codeResponse => {
+      console.log(codeResponse);
+      var decoded = jwt_decode(codeResponse.access_token, {header : true});  
+      console.log(decoded);
+    },
+  });
+
+
   return(
     <div>
 
-      {((localStorage.getItem('isLoggedin') === 'false') || (localStorage.getItem('isLoggedin') === null)) && (loggedIn === false) &&
+      {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
         (<Form>
 
           <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
@@ -278,7 +294,7 @@ const Login = () => {
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
 
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+          {/* <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
             <OAuth2Login
               buttonText="Login with Google"
               authorizationUrl="https://accounts.google.com/o/oauth2/auth"
@@ -288,6 +304,10 @@ const Login = () => {
               redirectUri="http://localhost:3000/login"
               onSuccess={onSuccess}
               onFailure={onFailure}/>
+          </div> */}
+
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+              <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}>Login With Google</Button>
           </div>
 
         </Form>)
@@ -315,7 +335,7 @@ const Login = () => {
           <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
           </div>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <Link to={'/Home'}>
+          <Link to={'/Login'}>
             <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
           </div>
