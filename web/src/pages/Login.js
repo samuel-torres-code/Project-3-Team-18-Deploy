@@ -5,10 +5,7 @@ import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
-import { gapi } from "gapi-script";
-import OAuth2Login from 'react-simple-oauth2-login';
 import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import { GoogleButton, IAuthorizationOptions, isLoggedIn, createOAuthHeaders, logOutOAuthUser, GoogleAuth, } from "react-google-oauth2";
 import jwt_decode from "jwt-decode";
 
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
@@ -16,15 +13,6 @@ const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
 
 const Login = () => {
 
-  // const options = {
-  //   clientId: clientId,
-  //   redirectUri: "http://localhost:3000/react-google-Oauth2.0/dist/index.html",
-  //   scopes: ["profile", "email"],
-  //   includeGrantedScopes: true,
-  //   accessType: "offline",
-  // };
-
-  //<script src="https://accounts.google.com/gsi/client" async defer></script>
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -39,17 +27,6 @@ const Login = () => {
   const client = axios.create({
     baseURL: "http://localhost:2000"
   })
-
-
-  // useEffect(() => {
-  //   function start() {
-  //     gapi.auth2.init({
-  //       clientId: clientId,
-  //       scope: "email",
-  //     });
-  //   }
-  //   gapi.load("client:auth2", start);
-  // });
 
   //login persistency
   useEffect(() => {
@@ -126,18 +103,6 @@ const Login = () => {
     localStorage.setItem("log", "a");
     window.location.reload();
   }
-
-  const onSuccess = response => {
-    console.log(response);
-    setLoggedIn(true);
-    setUser("Guest");
-    localStorage.setItem("log", "b");
-    localStorage.setItem('isLoggedIn', true);
-    localStorage.setItem('user', "Guest");
-    localStorage.setItem('employee', false);
-  }
-
-  const onFailure = response => console.error(response);
 
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
@@ -268,18 +233,6 @@ const Login = () => {
           
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
-
-          {/* <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-            <OAuth2Login
-              buttonText="Login with Google"
-              authorizationUrl="https://accounts.google.com/o/oauth2/auth"
-              responseType="token"
-              scope="email profile"
-              clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com"
-              redirectUri="http://localhost:3000/login"
-              onSuccess={login}
-              onFailure={onFailure}/>
-          </div> */}
 
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
               <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}>Login With Google</Button>
