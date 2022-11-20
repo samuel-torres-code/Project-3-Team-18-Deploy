@@ -36,8 +36,8 @@ import { useState, useEffect } from 'react';
 
 
 const useOrder = () => {
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const [orderLoading, setOrderLoading] = useState(true)
+    const [orderError, setOrderError] = useState(null)
     const [order, setOrder] = useState({
         order_info:{ 
             emp_id: "-1", 
@@ -81,6 +81,7 @@ const useOrder = () => {
             return
         }
         setOrder(JSON.parse(localStorage.getItem('order')));
+        setOrderLoading(false)
     }
 
     const setOrderName = (name) => {
@@ -96,8 +97,8 @@ const useOrder = () => {
 
     const updatePizza = (updatedPizza,index) => {
         setPizzas(order.pizzas.map((currPizza,i) => 
-        index===i ? updatedPizza:currPizza
-    ))
+            index===i ? updatedPizza:currPizza
+        ))
         
     }
 
@@ -128,8 +129,8 @@ const useOrder = () => {
 
 
     return {
-        loading,
-        error,
+        orderLoading,
+        orderError,
         order,
         setOrderName,
         addNewPizza,
