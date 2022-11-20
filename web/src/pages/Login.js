@@ -180,6 +180,68 @@ const Login = () => {
     }
   }
 
+  //check with backend for user and determine who it is
+  const registerGoogleLogin = async (event) => {
+    const loginData = await client.post('/api/login/google/login',{
+        user: event.name,
+        email: event.email,
+    }).then(res => {
+      if(res.data === true){
+        setLoggedIn(true);
+        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('user', event.name);
+        localStorage.setItem('email', event.email);
+        localStorage.setItem('employee', false);
+        localStorage.setItem("log", "b");
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
+    if(localStorage.getItem('isLoggedIn') === 'false')
+      registerGoogleLoginSecondary(event);
+    localStorage.setItem("log", "b");
+    window.location.reload();
+  };
+
+  //check with backend for user and determine who it is
+  const registerGoogleLoginSecondary =  (event) => {
+    const loginData = client.post('/api/login/google/login/secondary',{
+        user: event.name,
+        email: event.email,
+    }).then(res => {
+      if(res.data === true){
+        setLoggedIn(true);
+        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('user', event.name);
+        localStorage.setItem('email', event.email);
+        localStorage.setItem('employee', false);
+        localStorage.setItem("log", "b");
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
+    localStorage.setItem("log", "b");
+    window.location.reload();
+  };
+
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -191,8 +253,8 @@ const Login = () => {
         
       var data = userInfo.data;
       var username = data.name;
-
-      
+      var email = data.email;
+      registerGoogleLogin(data);
     },
     onError: errorResponse => console.log(errorResponse),
   });
