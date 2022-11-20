@@ -1,9 +1,9 @@
 import { Outlet } from "react-router-dom";
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
-import Container from 'react-bootstrap/Container'
-import { LinkContainer } from 'react-router-bootstrap';
-import { useState, useEffect } from "react";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import Container from "react-bootstrap/Container";
+import { LinkContainer } from "react-router-bootstrap";
+import { useEffect } from "react";
 
 const Layout = () => {
   useEffect(() => {
@@ -25,7 +25,6 @@ const Layout = () => {
 
   return (
     <>
-
         <Navbar className="shadow-sm" bg="light" expand="lg">
             <Container>
             <LinkContainer to="/">
@@ -46,24 +45,33 @@ const Layout = () => {
             {(localStorage.getItem('manager') === 'true') && (localStorage.getItem('isLoggedIn') === 'true') && (localStorage.getItem('employee') === 'true') && 
               <LinkContainer to="/manager">
                 <Nav.Link active={false}>Manager</Nav.Link>
-              </LinkContainer>
-            }    
+                </LinkContainer>
+              }    
             {(localStorage.getItem('employee') === 'true') && (localStorage.getItem('isLoggedIn') === 'true') &&
               <LinkContainer to="/server">
                 <Nav.Link active={false}>Server</Nav.Link>
-              </LinkContainer>
-            }
+                </LinkContainer>
+              }
             <LinkContainer to="/login">
                 <Nav.Link active={false}>Login</Nav.Link>
-            </LinkContainer>
+              </LinkContainer>
+              <LinkContainer to="/order">
+                <Nav.Link active={false}>Order</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/pizza">
+                <Nav.Link active={false}>Pizza</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/pickup">
+                <Nav.Link active={false}>Pickup</Nav.Link>
+              </LinkContainer>
             </Nav>
-            </Navbar.Collapse>
-            </Container>
-        </Navbar>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
       <Outlet />
     </>
-  )
+  );
 };
 
 export default Layout;
