@@ -17,15 +17,15 @@ const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleuserc
 
 function App() {
 
-  useEffect(() => {
-    const initClient = () => {
-          gapi.auth2.init({
-          clientId: clientId,
-          scope: 'email'
-        });
-    };
-    gapi.load('client:auth2', initClient);
-  });
+  // useEffect(() => {
+  //   const initClient = () => {
+  //         gapi.auth2.init({
+  //         clientId: clientId,
+  //         scope: 'email'
+  //       });
+  //   };
+  //   gapi.load('client:auth2', initClient);
+  // });
 
   return (
     <div className="App">

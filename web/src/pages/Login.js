@@ -16,15 +16,15 @@ const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
 
 const Login = () => {
 
-  const options = {
-    clientId: clientId,
-    redirectUri: "http://localhost:3000/react-google-Oauth2.0/dist/index.html",
-    scopes: ["profile", "email"],
-    includeGrantedScopes: true,
-    accessType: "offline",
-  };
+  // const options = {
+  //   clientId: clientId,
+  //   redirectUri: "http://localhost:3000/react-google-Oauth2.0/dist/index.html",
+  //   scopes: ["profile", "email"],
+  //   includeGrantedScopes: true,
+  //   accessType: "offline",
+  // };
 
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  //<script src="https://accounts.google.com/gsi/client" async defer></script>
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -41,15 +41,15 @@ const Login = () => {
   })
 
 
-  useEffect(() => {
-    function start() {
-      gapi.auth2.init({
-        clientId: clientId,
-        scope: "email",
-      });
-    }
-    gapi.load("client:auth2", start);
-  });
+  // useEffect(() => {
+  //   function start() {
+  //     gapi.auth2.init({
+  //       clientId: clientId,
+  //       scope: "email",
+  //     });
+  //   }
+  //   gapi.load("client:auth2", start);
+  // });
 
   //login persistency
   useEffect(() => {
@@ -114,10 +114,6 @@ const Login = () => {
     setUser('');
   };
 
-  const handleRequest = () => {
-    setLoading("Please Wait.");
-  }
-
   function changeLog(){
     localStorage.setItem("log", "a");
   }
@@ -129,35 +125,6 @@ const Login = () => {
     localStorage.clear();
     localStorage.setItem("log", "a");
     window.location.reload();
-  }
-
-  const handleLogoutFailure = error => {
-    console.log("Logout Failure ", error);
-    setLogoutFailure(true);
-  }
-
-  const handleLoginSuccess = (event) => {
-    console.log("Google Login Successful.", event);
-    //setUser(event.profileObj);
-    //return {googleLogIn};
-  }
-
-  function googleLogIn(){
-    setLoading();
-    setLoggedIn(true);
-    localStorage.setItem("log", "b");
-    localStorage.setItem('isLoggedIn', true);
-    localStorage.setItem('user', 'guest');
-    localStorage.setItem('employee', false);
-  }
-
-  const handleLoginFailure = (error) => {
-    console.log("Login Failure ", error);
-    //setLoading();
-  }
-
-  const handleAutoLoadFinished = () => {
-    setLoading();
   }
 
   const onSuccess = response => {
@@ -250,17 +217,25 @@ const Login = () => {
 
 
   const login = useGoogleLogin({
-    onSuccess: codeResponse => {
-      console.log(codeResponse);
-      var decoded = jwt_decode(codeResponse.access_token, {header : true});  
-      console.log(decoded);
+    onSuccess: async (tokenResponse) => {
+      console.log(tokenResponse);
+      const userInfo = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
+      );
+        
+      var data = userInfo.data;
+      var username = data.name;
+
+      
     },
+    onError: errorResponse => console.log(errorResponse),
   });
 
 
   return(
     <div>
-
+      <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
       {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
         (<Form>
 
@@ -302,7 +277,7 @@ const Login = () => {
               scope="email profile"
               clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com"
               redirectUri="http://localhost:3000/login"
-              onSuccess={onSuccess}
+              onSuccess={login}
               onFailure={onFailure}/>
           </div> */}
 
@@ -348,6 +323,7 @@ const Login = () => {
           
         </Form>)
       }
+    </GoogleOAuthProvider>
     </div>
   );
 
