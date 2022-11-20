@@ -52,9 +52,6 @@ const Layout = () => {
                 <Nav.Link active={false}>Server</Nav.Link>
                 </LinkContainer>
               }
-            <LinkContainer to="/login">
-                <Nav.Link active={false}>Login</Nav.Link>
-              </LinkContainer>
               <LinkContainer to="/order">
                 <Nav.Link active={false}>Order</Nav.Link>
               </LinkContainer>
@@ -64,6 +61,16 @@ const Layout = () => {
               <LinkContainer to="/pickup">
                 <Nav.Link active={false}>Pickup</Nav.Link>
               </LinkContainer>
+            {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) &&
+              <LinkContainer to="/login">
+                <Nav.Link active={false}>Login</Nav.Link>
+              </LinkContainer>
+            }
+            {(localStorage.getItem('isLoggedIn') === 'true') &&
+              <LinkContainer to="/login">
+                <Nav.Link active={false}>Logout</Nav.Link>
+              </LinkContainer>
+            }  
             </Nav>
           </Navbar.Collapse>
         </Container>
