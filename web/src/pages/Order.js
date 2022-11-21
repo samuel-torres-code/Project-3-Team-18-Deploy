@@ -41,6 +41,10 @@ const Order = () => {
     }
   }
 
+  function handleAddPizzaClick() {
+    alert("Add Pizza");
+  }
+
   function handleAddDrinkClick(event) {
     if (event.target.value === "Fountain") {
       alert("Add Fountain Drink");
@@ -82,7 +86,8 @@ const Order = () => {
         <AddItemCard
           seasonalItems={seasonalItems}
           drinkFunction={handleAddDrinkClick}
-          itemButtonFunction={buttonClick}></AddItemCard>
+          itemButtonFunction={buttonClick}
+          addPizzaFunction={handleAddPizzaClick}></AddItemCard>
       ) : (
         <UserOrderCard></UserOrderCard>
       )}

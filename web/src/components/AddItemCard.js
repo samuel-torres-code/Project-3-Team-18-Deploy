@@ -1,10 +1,17 @@
 import ItemButton from "./ItemButton";
 
-const AddItemCard = ({ seasonalItems, drinkFunction, itemButtonFunction }) => {
+const AddItemCard = ({
+  seasonalItems,
+  drinkFunction,
+  itemButtonFunction,
+  addPizzaFunction,
+}) => {
   return (
     <div className="container">
       <div className="d-flex justify-content-center my-4">
-        <button className="btn btn-primary">Add Pizza</button>
+        <button className="btn btn-primary" onClick={addPizzaFunction}>
+          Add Pizza
+        </button>
       </div>
       <div className="row gap-4 w-50 mx-auto justify-content-center my-3">
         {seasonalItems.map((item_name) => {
