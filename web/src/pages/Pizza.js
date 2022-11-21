@@ -132,6 +132,7 @@ const Pizza = () => {
             onClick={() => setDropdownStates(dropdownStates.map((s,ind) => ind === i+1? !s: false))}
             aria-controls="pizza-type-collapse"
             aria-expanded={dropdownStates[i+1]}
+            
               >
                 {convertWord(type)}
               </Button>
