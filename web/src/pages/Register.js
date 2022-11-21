@@ -81,6 +81,7 @@ const Register = () => {
       localStorage.setItem('isLoggedIn', res.data);
       localStorage.setItem('user', user);
       localStorage.setItem('email', email);
+      localStorage.setItem('log', 'b');
     })
     .catch((error) => {
       if (error.response) {
@@ -94,13 +95,14 @@ const Register = () => {
       }
     });
     reg = "b";
+    window.location.reload();
     //clearValues();
   };
 
 
   return(
     <div>
-      {(!registered) && 
+      {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && 
         <Form>
 
         <Form.Group className="mt-3 mx-auto" controlId="registerEmail" style={{width: '50%'}}>
@@ -145,7 +147,7 @@ const Register = () => {
         </div>
         </Form>
       }
-      {(registered) && 
+      {(localStorage.getItem('isLoggedIn') === 'true') && 
         <Form>
           <div className="mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
             <div style={{color: 'blue', fontSize: '40'}}>Thanks For Signing Up!</div>
