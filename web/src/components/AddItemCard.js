@@ -7,17 +7,17 @@ const AddItemCard = ({
   addPizzaFunction,
 }) => {
   return (
-    <div className="container">
+    <div className="container px-0">
       <div className="d-flex justify-content-center my-4">
         <button className="btn btn-primary" onClick={addPizzaFunction}>
           Add Pizza
         </button>
       </div>
-      <div className="row gap-4 w-50 mx-auto justify-content-center my-3">
+      <div className="row gap-4 w-50 mx-auto justify-content-center my-3" style={{minWidth:"300px"}}>
         {seasonalItems.map((item_name) => {
-          console.log(seasonalItems);
           return (
             <ItemButton
+              key={item_name}
               imgName={"scary_pizza.png"}
               cardText={item_name.replace(/([a-z])([A-Z])/g, "$1 $2")}
               onClick={itemButtonFunction}></ItemButton>

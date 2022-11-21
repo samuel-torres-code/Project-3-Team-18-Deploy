@@ -47,11 +47,11 @@ const Layout = () => {
                 <Nav.Link active={false}>Manager</Nav.Link>
                 </LinkContainer>
               }    
-            {(localStorage.getItem('employee') === 'true') && (localStorage.getItem('isLoggedIn') === 'true') &&
+            {/* {(localStorage.getItem('employee') === 'true') && (localStorage.getItem('isLoggedIn') === 'true') && */}
               <LinkContainer to="/server">
                 <Nav.Link active={false}>Server</Nav.Link>
                 </LinkContainer>
-              }
+               {/* } */}
               <LinkContainer to="/order">
                 <Nav.Link active={false}>Order</Nav.Link>
               </LinkContainer>
