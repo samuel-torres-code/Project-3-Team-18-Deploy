@@ -15,3 +15,11 @@ In another shell, run the following commands to start the frontend:
 ```cd web```
 ```npm i```
 ```npm start```
+
+
+# Accessing Manager/Server View
+
+To access our manager and server pages, you need to be a manager or employee,
+use the following credentials to login as a manager:
+Username:```Arlo Prado```
+Password:```6543```
