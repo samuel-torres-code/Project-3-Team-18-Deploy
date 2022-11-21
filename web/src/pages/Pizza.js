@@ -10,6 +10,17 @@ import {
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 
+const convertWord = (str) => {
+  return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
+}
+
+const customCase = (str) => {
+  
+}
+
+const orderTypes = (arr) => {
+  return ['Dough',...arr.filter((ing) => ing !== 'Other' && ing !== 'Dough')]
+}
 
 const Pizza = () => {
   
@@ -50,6 +61,13 @@ const Pizza = () => {
     console.log(order)
     setPizza(order.pizzas[pizzaIndex]);
   },[pizzaIndex,order])
+
+  useEffect(() => {
+    if(menuLoading === false) {
+      setDropdownStates(Array(Object.keys(ingredients_by_type).length).fill(false))
+      
+    }
+  },[menuLoading])
   if (menuError || orderError) {
     return (<div>
       <p>
@@ -109,6 +127,30 @@ const Pizza = () => {
           </Collapse>
 
           {/* Pizza Ingredients Dropdowns */}
+          {ingredients_by_type ? orderTypes(Object.keys(ingredients_by_type)).map((type,i) => {
+            return (<div key={`${type}_${i}`} className="my-2"><Button
+            onClick={() => setDropdownStates(dropdownStates.map((s,ind) => ind === i+1? !s: false))}
+            aria-controls="pizza-type-collapse"
+            aria-expanded={dropdownStates[i+1]}
+              >
+                {convertWord(type)}
+              </Button>
+              <Collapse in={dropdownStates[i+1]}>
+                <div id="pizza-type-collapse">
+                  <div className="row justify-content-center">
+    
+                  
+                  {ingredients_by_type[type].map((ingredient,i) => <ItemButton selected={false} key={`${ingredient.ingredient_name}_${i}`} cardText ={convertWord(ingredient.ingredient_name)} imgName={`${ingredient.ingredient_name}.png`} onClick={() => {
+                    
+                    setPizza({...pizza,ingredients:[...pizza.ingredients,{ingredient_id:`${ingredient.ingredient_id}`}]})
+                    console.log({...pizza,ingredients:[...pizza.ingredients,{ingredient_id:`${ingredient.ingredient_id}`}]})
+                    
+                  }}></ItemButton>)}
+                  </div>
+                </div>
+              </Collapse></div>)
+          }) : <p>no menu yet</p>}
+          
 
           {/* Order Collapse */}
           
