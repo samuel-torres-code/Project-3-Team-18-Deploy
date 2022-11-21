@@ -7,18 +7,19 @@ import {
   getItemTypes,
   postOrder,
 } from "../api/ServerAPI";
+import Button from 'react-bootstrap/Button';
+import Collapse from 'react-bootstrap/Collapse';
+
 
 const Pizza = () => {
-  const buttonClick = () => {
-    alert("button click");
-  };
+  
   const [pizzaIndex, setPizzaIndex] = useState(0);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
-
+  const [dropdownStates,setDropdownStates] =  useState([false])
   const [pizza, setPizza] = useState(null);
   const {
     orderLoading,
-    error,
+    orderError,
     order,
     addNewPizza,
     updatePizza,
@@ -30,12 +31,36 @@ const Pizza = () => {
   //For Testing, remove later with dynamic url
   useEffect(() => {
     addNewPizza();
-    setPizzaIndex(order.pizzas.length - 1);
-    setPizza(order.pizzas[order.pizzas.length - 1]);
+    setPizzaIndex(order.pizzas.length);
+    
     addDrink("Fountain", "2.45");
   }, []);
 
-  if (menuLoading || orderLoading) {
+  useEffect(() => {
+    if(typeof(pizza) !== 'undefined' && pizza != null) {
+      console.log('updating pizza')
+      updatePizza(pizza,pizzaIndex)
+    }
+    console.log("Pizza")
+    console.log(pizza)
+    
+  }, [pizza]);
+
+  useEffect(() => {
+    console.log(order)
+    setPizza(order.pizzas[pizzaIndex]);
+  },[pizzaIndex,order])
+  if (menuError || orderError) {
+    return (<div>
+      <p>
+        Menu Error: {menuError}
+      </p>
+      <p>
+        Order Error: {orderError}
+      </p>
+    </div>)
+  }
+  else if (menuLoading || orderLoading) {
     return (
       <div
         style={{
@@ -58,9 +83,31 @@ const Pizza = () => {
       <div className="container">
         <h1 className="text-center">Create Pizza Page</h1>
         <div className="row">
+        
           
 
           {/* Pizza Types Dropdowns */}
+          <Button
+        onClick={() => setDropdownStates(dropdownStates.map((s,i) => i === 0? !s: s))}
+        aria-controls="pizza-type-collapse"
+        aria-expanded={dropdownStates[0]}
+          >
+            Pizza Types
+          </Button>
+          <Collapse in={dropdownStates[0]}>
+            <div id="pizza-type-collapse">
+              <div className="row">
+
+              
+              {itemTypes.pizza_types.map((type,i) => <ItemButton key={`${type}_${i}`} cardText ={`${type.pizza_type} - $${type.pizza_price}`} imgName={`${type.pizza_type}.png`} onClick={() => {
+                
+                setPizza({...type, ingredients:pizza.ingredients})
+                // console.log({...pizza, pizza_type:type})
+              }}></ItemButton>)}
+              </div>
+            </div>
+          </Collapse>
+
           {/* Pizza Ingredients Dropdowns */}
 
           {/* Order Collapse */}

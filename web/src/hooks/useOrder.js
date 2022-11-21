@@ -54,6 +54,7 @@ const useOrder = () => {
     },[])
 
     useEffect(() => {
+        console.log("updating storage")
         updateStorage()
     },[order])
 
