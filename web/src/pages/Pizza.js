@@ -41,25 +41,46 @@ const Pizza = () => {
 
   //For Testing, remove later with dynamic url
   useEffect(() => {
-    addNewPizza();
-    setPizzaIndex(order.pizzas.length);
+    if(!orderLoading) {
+      if(order.pizzas.length < 1) {
+
+      
+        addNewPizza();
+      }
+      setPizzaIndex(order.pizzas.length-1);
+      if(order.drinks.length < 1) {
+
+      
+        addDrink("Fountain", "2.45");
+      }
+    }
     
-    addDrink("Fountain", "2.45");
-  }, []);
+  }, [orderLoading]);
 
   useEffect(() => {
     if(typeof(pizza) !== 'undefined' && pizza != null) {
       console.log('updating pizza')
       updatePizza(pizza,pizzaIndex)
     }
-    console.log("Pizza")
-    console.log(pizza)
+
     
   }, [pizza]);
 
   useEffect(() => {
-    console.log(order)
-    setPizza(order.pizzas[pizzaIndex]);
+    if(!orderLoading) {
+
+    
+      console.log(order)
+      console.log('setting pizza to index')
+      console.log(pizzaIndex)
+      if(pizzaIndex < order.pizzas.length) {
+        
+        setPizza(order.pizzas[pizzaIndex]);
+      }
+    }
+
+    
+    
   },[pizzaIndex,order])
 
   useEffect(() => {
@@ -141,7 +162,7 @@ const Pizza = () => {
                   <div className="row justify-content-center">
     
                   
-                  {ingredients_by_type[type].map((ingredient,i) => <ItemButton selected={false} key={`${ingredient.ingredient_name}_${i}`} cardText ={convertWord(ingredient.ingredient_name)} imgName={`${ingredient.ingredient_name}.png`} onClick={() => {
+                  {ingredients_by_type[type].map((ingredient,i) => <ItemButton selected={pizza.ingredients.filter((ing) => ing.ingredient_id === ''+ingredient.ingredient_id).length} key={`${ingredient.ingredient_name}_${i}`} cardText ={convertWord(ingredient.ingredient_name)} onClick={() => {
                     
                     setPizza({...pizza,ingredients:[...pizza.ingredients,{ingredient_id:`${ingredient.ingredient_id}`}]})
                     console.log({...pizza,ingredients:[...pizza.ingredients,{ingredient_id:`${ingredient.ingredient_id}`}]})

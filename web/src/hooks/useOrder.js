@@ -39,12 +39,12 @@ const useOrder = () => {
     const [orderLoading, setOrderLoading] = useState(true)
     const [orderError, setOrderError] = useState(null)
     const [order, setOrder] = useState({
-        order_info:{ 
-            emp_id: "-1", 
-            cust_name: ""
-        },
-        pizzas:[],
-        drinks:[]
+        // order_info:{ 
+        //     emp_id: "-1", 
+        //     cust_name: ""
+        // },
+        // pizzas:[],
+        // drinks:[]
     })
     const [pizzas,setPizzas] = useState([])
     const [drinks,setDrinks] = useState([])
@@ -54,20 +54,27 @@ const useOrder = () => {
     },[])
 
     useEffect(() => {
-        console.log("updating storage")
-        updateStorage()
+        if(!orderLoading) {
+            console.log('done loading')
+            updateStorage()
+        }
+        
     },[order])
 
     useEffect(() => {
-        setOrder({
-            order_info: {...order.order_info},
-            pizzas: pizzas,
-            drinks: drinks,
-        })
+        if(!orderLoading) {
+            setOrder({
+                order_info: {...order.order_info},
+                pizzas: pizzas,
+                drinks: drinks,
+            })
+        }
     },[pizzas,drinks])
 
     const updateStorage = () => {
         try {
+            console.log("updating storage with")
+            console.log(order)
             localStorage.setItem('order', JSON.stringify(order));
         }
         catch(e) {
@@ -79,9 +86,20 @@ const useOrder = () => {
 
     const loadStorage = () => {
         if(localStorage.getItem("order") == null) {
-            return
+            console.log('default order added')
+            setOrder({
+                order_info:{ 
+                    emp_id: "-1", 
+                    cust_name: ""
+                },
+                pizzas:[],
+                drinks:[]})
         }
-        setOrder(JSON.parse(localStorage.getItem('order')));
+        else {
+            setOrder(JSON.parse(localStorage.getItem('order')));
+            console.log(JSON.parse(localStorage.getItem('order')))
+        }
+        console.log("orderr loaded")
         setOrderLoading(false)
     }
 
