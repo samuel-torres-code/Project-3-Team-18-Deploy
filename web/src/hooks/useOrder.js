@@ -105,6 +105,18 @@ const useOrder = () => {
     });
   };
 
+  const clearOrder = () => {
+    setOrder({
+      order_info: {
+        ...order.order_info,
+        cust_name: order.order_info.cust_name,
+      },
+      pizzas: [],
+      drinks: [],
+      seasonal_items: [],
+    });
+  };
+
   const updatePizza = (updatedPizza, index) => {
     setPizzas(
       order.pizzas.map((currPizza, i) =>
@@ -168,6 +180,7 @@ const useOrder = () => {
     addItem,
     deleteItem,
     deleteDrink,
+    clearOrder,
   };
 };
 

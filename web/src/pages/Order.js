@@ -26,6 +26,7 @@ const Order = () => {
     addItem,
     deleteItem,
     deleteDrink,
+    clearOrder,
   } = useOrder([]);
   const { menuLoading, menuError, itemTypes } = useMenu([]);
 
@@ -35,7 +36,11 @@ const Order = () => {
   });
 
   useEffect(() => {
-    setOrderName(localStorage.getItem("user"));
+    if (localStorage.getItem("user") !== null) {
+      setOrderName(localStorage.getItem("user"));
+    } else {
+      setOrderName("Guest");
+    }
   }, []);
 
   function handleSwitchTab(event) {
@@ -48,6 +53,10 @@ const Order = () => {
 
   function handleAddPizzaClick() {
     navigate("/pizza");
+  }
+
+  function handleEditPizzaClick(index) {
+    console.log("Edit Pizza " + index);
   }
 
   function handleAddDrinkClick(event) {
@@ -76,6 +85,10 @@ const Order = () => {
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
+  }
+
+  function handleCheckout() {
+    alert("Checkout");
   }
 
   if (menuError || orderError) {
@@ -156,7 +169,10 @@ const Order = () => {
             seasonal_items={order.seasonal_items}
             deleteDrink={deleteDrink}
             deleteItem={deleteItem}
-            deletePizza={deletePizza}></UserOrderCard>
+            deletePizza={deletePizza}
+            editPizza={handleEditPizzaClick}
+            handleCheckout={handleCheckout}
+            handleResetPage={clearOrder}></UserOrderCard>
         )}
       </div>
     );
