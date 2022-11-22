@@ -4,6 +4,7 @@ import { Link, useAsyncError } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { API_URL } from "../API";
 
 var reg = "a";
 
@@ -14,7 +15,7 @@ const Register = () => {
   const [confPass, setConfPass] = useState('');
   const [registered, setIsRegistered] = useState('');
   const client = axios.create({
-    baseURL: "http://localhost:2000"
+    baseURL: API_URL
   })
 
   //login persistency

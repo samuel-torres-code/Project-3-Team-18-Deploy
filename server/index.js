@@ -7,7 +7,7 @@ const { Pool } = require('pg');
 const dotenv = require('dotenv').config();
 const port = 2000;
 var corsOptions ={
-    origin: 'http://localhost:3000',
+    origin: process.env.PUBLIC_URL? process.env.PUBLIC_URL :'http://localhost:3000',
     credentials: true,
     optionSuccessStatus:200
 }
