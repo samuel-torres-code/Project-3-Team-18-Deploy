@@ -5,15 +5,15 @@ import { useEffect, useState } from "react";
 const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
   return drinks.map((drink, index) => {
     return (
-      <div key={drink.name + index} className="row my-2">
-        <div className="col-10">
-          <p className="my-0">{drink.name}</p>
-          <p className="my-0"> {drink.price} </p>
+      <div key={drink.drink_name + index} className="row my-2">
+        <div className="col-9">
+          <strong className="my-0">{drink.drink_name}</strong>
+          <p className="my-0"> ${drink.drink_price} </p>
         </div>
-        <div className="col-2">
+        <div className="col-2 text-end p-0">
           <button
             onClick={() => handleDeleteDrink(index)}
-            className="btn btn-primary">
+            className="btn btn-primary mx-2">
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
@@ -25,15 +25,15 @@ const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
 const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => {
     return (
-      <div key={item.name + index} className="row my-2">
-        <div className="col-10">
-          <p className="my-0">{item.name}</p>
-          <p className="my-0"> {item.price} </p>
+      <div key={item.item_name + index} className="row my-2">
+        <div className="col-9">
+          <strong className="my-0">{item.item_name}</strong>
+          <p className="my-0"> ${item.item_price} </p>
         </div>
-        <div className="col-2">
+        <div className="col-2 text-end p-0">
           <button
             onClick={() => handleDeleteSeasonalItem(index)}
-            className="btn btn-primary">
+            className="btn btn-primary mx-2">
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
@@ -50,27 +50,27 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza }) => {
   return pizzas.map((pizza, index) => {
     return (
       <div key={pizza.pizza_type + index} className="row my-2">
-        <div className="col-8">
-          <p className="text-left my-0">{pizza.type}</p>
-          <p className="text-left mb-1">${pizza.price}</p>
+        <div className="col-7">
+          <strong className="text-left my-0">{pizza.pizza_type}</strong>
+          <p className="text-left mb-1">${pizza.pizza_price}</p>
 
           {pizza.ingredients?.map((ingredient, index) => (
-            <p key={ingredient + pizza.type + index} className="text-left my-0">
+            <p
+              key={ingredient + pizza.pizza_type + index}
+              className="text-left my-0">
               {convertWord(ingredient)}
             </p>
           ))}
         </div>
-        <div className="col-2">
+        <div className="col-4 d-flex-inline p-0 text-end">
           <button
             onClick={() => handleEditPizza(index)}
-            className="btn btn-primary">
+            className="btn btn-primary mx-2 mb-2">
             <FontAwesomeIcon icon={faPencil} />
           </button>
-        </div>
-        <div className="col-2">
           <button
             onClick={() => handleDeletePizza(index)}
-            className="btn btn-primary">
+            className="btn btn-primary mx-2 mb-2">
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
@@ -108,14 +108,15 @@ const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
 
   function calculatePrice() {
     var total_price = 0.0;
-    pizzas.forEach((element) => {
-      total_price += Number(element.price);
+    console.log(pizzas);
+    pizzas.forEach((pizza) => {
+      total_price += Number(pizza.pizza_price);
     });
-    drinks.forEach((element) => {
-      total_price += Number(element.price);
+    drinks.forEach((drink) => {
+      total_price += Number(drink.drink_price);
     });
-    seasonal_items.forEach((element) => {
-      total_price += Number(element.price);
+    seasonal_items.forEach((item) => {
+      total_price += Number(item.item_price);
     });
     return `${total_price.toFixed(2)}`;
   }
@@ -132,15 +133,15 @@ const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
     <div className="container w-50">
       <div className="card">
         <ul className="list-group list-group-flush">
-          <div style={{ maxHeight: "80vh", overflowY: "scroll" }}>
+          <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
             <li className="list-group-item drinks">
-              <strong>Drinks:</strong>
+              <strong className="fs-5">Drinks:</strong>
               <UserDrinkRows
                 drinks={drinks}
                 handleDeleteDrink={handleDeleteDrink}></UserDrinkRows>
             </li>
             <li className="list-group-item seasonal_items">
-              <strong>Seasonal Items:</strong>
+              <strong className="fs-5">Seasonal Items:</strong>
               <UserSeasonalItemRows
                 seasonal_items={seasonal_items}
                 handleDeleteSeasonalItem={
@@ -148,29 +149,27 @@ const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
                 }></UserSeasonalItemRows>
             </li>
             <li className="list-group-item pizzas">
-              <strong>Pizzas:</strong>
+              <strong className="fs-5">Pizzas:</strong>
               <UserPizzaRows
                 pizzas={pizzas}
                 handleEditPizza={handleEditPizza}
                 handleDeletePizza={handleDeletePizza}></UserPizzaRows>
             </li>
-            <li className="list-group-item">
-              <div className="col-6">
-                <strong>Total Price: ${calculatePrice()}</strong>
-              </div>
-              <div className="col-3">
-                <button className="btn btn-primary" onClick={handleCheckout}>
-                  Checkout
-                </button>
-              </div>
-              <div className="col-3">
-                <button className="btn btn-secondary" onClick={resetPage}>
-                  Cancel
-                </button>
-              </div>
-            </li>
           </div>
         </ul>
+        <div className="list-group-item row mx-0 d-flex">
+          <div className="col-sm-12 col-lg-6 my-2 fs-5">
+            <strong className="align-middle">Total Price: ${calculatePrice()}</strong>
+          </div>
+          <div className="col-sm-12 col-lg-6 px-0 text-center my-2 d-flex justify-content-evenly">
+            <button className="btn btn-secondary" onClick={resetPage}>
+              Cancel
+            </button>
+            <button className="btn btn-primary" onClick={handleCheckout}>
+              Checkout
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

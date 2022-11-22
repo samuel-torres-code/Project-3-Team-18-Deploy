@@ -3,27 +3,31 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
-import { pizzas } from "../api/ExampleData";
 
 const Order = () => {
   const [seasonalItems, setSeasonalItems] = useState([]);
   const [loadMenu, setLoadMenu] = useState(false);
   const [pizzasOnOrder, setPizzasOnOrder] = useState([
     {
-      type: "one-topping",
-      price: "12.99",
+      pizza_type: "one-topping",
+      pizza_price: "12.99",
       ingredients: ["Pepperoni", "Dough"],
+    },
+    {
+      pizza_type: "build-your-own",
+      pizza_price: "4.50",
+      ingredients: ["Dough", "Red", "Oregano", "House Blend"],
     },
   ]);
   const [itemsOnOrder, setItemsOnOrder] = useState([
     {
-      name: "chicken wings",
-      price: "12.99",
+      item_name: "chicken wings",
+      item_price: "12.99",
     },
   ]);
   const [drinksOnOrder, setDrinksOnOrder] = useState([
-    { name: "Fountain", price: "2.39" },
-    { name: "Bottle", price: "2.79" },
+    { drink_name: "Fountain", drink_price: "2.39" },
+    { drink_name: "Bottle", drink_price: "2.79" },
   ]);
 
   const client = axios.create({
