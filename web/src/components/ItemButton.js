@@ -9,11 +9,11 @@ const ItemButton = ({ selected = false, cardText, imgName, onClick }) => {
     <div
       className={`col-3 mx-3 my-3 card grow ${selected ? "selected" : ""}`}
       onClick={onClick}>
-      <img
+      {/* <img
         src={loading ? "../images/loader_pizza.gif" : image}
         alt={cardText ? (error ? error : cardText) : "No alt text"}
-      />
-      <div className="card-body text-center mx-4 my-2" data-user={cardText}>
+      /> */}
+      <div className="card-body text-center my-2" data-user={cardText}>
         {cardText ? cardText : "No text"}
       </div>
     </div>
