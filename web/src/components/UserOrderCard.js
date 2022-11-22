@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
   return drinks.map((drink, index) => {
     return (
-      <div key={drink.drink_name + index} className="row my-2">
+      <div key={drink.drink_type + index} className="row my-2">
         <div className="col-9">
-          <strong className="my-0">{drink.drink_name}</strong>
+          <strong className="my-0">{drink.drink_type}</strong>
           <p className="my-0"> ${drink.drink_price} </p>
         </div>
         <div className="col-2 text-end p-0">
@@ -79,30 +79,22 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza }) => {
   });
 };
 
-const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
+const UserOrderCard = ({
+  drinks,
+  pizzas,
+  seasonal_items,
+  deleteDrink,
+  deleteItem,
+  deletePizza,
+}) => {
   const [load, setLoad] = useState(true);
 
   useEffect(() => {
     setLoad(false);
   }, [load]);
 
-  function handleDeleteDrink(index) {
-    drinks.splice(index, 1);
-    setLoad(true);
-  }
-
-  function handleDeleteSeasonalItem(index) {
-    seasonal_items.splice(index, 1);
-    setLoad(true);
-  }
-
   function handleEditPizza(index) {
     console.log("Edit pizza:" + index);
-    setLoad(true);
-  }
-
-  function handleDeletePizza(index) {
-    pizzas.splice(index, 1);
     setLoad(true);
   }
 
@@ -129,36 +121,36 @@ const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
   }
 
   return (
-    <div className="container w-50">
-      <div className="card">
+    <div className="container row">
+      <div className="card col-lg-6 col-md-8 col-sm-12 mx-auto p-0">
         <ul className="list-group list-group-flush">
           <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
             <li className="list-group-item drinks">
               <strong className="fs-5">Drinks:</strong>
               <UserDrinkRows
                 drinks={drinks}
-                handleDeleteDrink={handleDeleteDrink}></UserDrinkRows>
+                handleDeleteDrink={deleteDrink}></UserDrinkRows>
             </li>
             <li className="list-group-item seasonal_items">
               <strong className="fs-5">Seasonal Items:</strong>
               <UserSeasonalItemRows
                 seasonal_items={seasonal_items}
-                handleDeleteSeasonalItem={
-                  handleDeleteSeasonalItem
-                }></UserSeasonalItemRows>
+                handleDeleteSeasonalItem={deleteItem}></UserSeasonalItemRows>
             </li>
             <li className="list-group-item pizzas">
               <strong className="fs-5">Pizzas:</strong>
               <UserPizzaRows
                 pizzas={pizzas}
                 handleEditPizza={handleEditPizza}
-                handleDeletePizza={handleDeletePizza}></UserPizzaRows>
+                handleDeletePizza={deletePizza}></UserPizzaRows>
             </li>
           </div>
         </ul>
         <div className="list-group-item row mx-0 d-flex">
           <div className="col-sm-12 col-lg-6 my-2 fs-5">
-            <strong className="align-middle">Total Price: ${calculatePrice()}</strong>
+            <strong className="align-middle">
+              Total Price: ${calculatePrice()}
+            </strong>
           </div>
           <div className="col-sm-12 col-lg-6 px-0 text-center my-2 d-flex justify-content-evenly">
             <button className="btn btn-secondary" onClick={resetPage}>

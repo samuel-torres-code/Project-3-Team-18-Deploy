@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
@@ -6,9 +6,13 @@ import { API_URL } from "../API";
 import { getItemTypes, postOrder } from "../api/ServerAPI";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
+import Alert from "react-bootstrap/Alert";
 
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState(false);
+
   const {
     orderLoading,
     orderError,
@@ -18,35 +22,15 @@ const Order = () => {
     updatePizza,
     deletePizza,
     addDrink,
-    addNewItem,
+    addItem,
     deleteItem,
     deleteDrink,
   } = useOrder([]);
-  const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu(
-    []
-  );
+  const { menuLoading, menuError, itemTypes } = useMenu([]);
 
   const client = axios.create({
     baseURL: API_URL,
   });
-
-  useEffect(() => {
-    loadSeasonalItems();
-  }, []);
-
-  // function loadSeasonalItems() {
-  //   client.get("/api/manager/load_prices").then((res) => {
-  //     const items = [];
-  //     for (var i = 0; i < res.data["seasonal_items"].length; i++) {
-  //       items.push(res.data["seasonal_items"][i]["item_name"]);
-  //     }
-  //     setSeasonalItems(items);
-  //   });
-  // }
-
-  const buttonClick = (event) => {
-    alert(event.target.dataset.user);
-  };
 
   function handleSwitchTab(event) {
     if (event.target.value === "Menu") {
@@ -57,60 +41,123 @@ const Order = () => {
   }
 
   function handleAddPizzaClick() {
-    alert("Add Pizza");
+    // TODO: Add Pizza
+
+    setAlertText("Added Pizza to Order!");
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
   }
 
   function handleAddDrinkClick(event) {
-    if (event.target.value === "Fountain") {
-      alert("Add Fountain Drink");
-    } else if (event.target.value === "Bottle") {
-      alert("Add Bottle Drink");
-    }
+    addDrink(
+      itemTypes.drink_types.find(
+        (drink) => drink.drink_type === event.target.value
+      )
+    );
+
+    setAlertText(`Added ${event.target.value} Drink to Order!`);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
   }
 
-  return (
-    <div className="container">
-      <ul className="nav nav-tabs justify-content-center my-3">
-        <li className="nav-item">
-          <button
-            className={
-              loadMenu
-                ? "nav-link fw-bolder fs-5 active"
-                : "nav-link fw-bolder fs-5 link-primary"
-            }
-            value="Menu"
-            aria-current="page"
-            onClick={handleSwitchTab}>
-            Menu
-          </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={
-              loadMenu
-                ? "nav-link fw-bolder fs-5 link-primary"
-                : "nav-link fw-bolder fs-5 active"
-            }
-            value="Cart"
-            onClick={handleSwitchTab}>
-            Current Order
-          </button>
-        </li>
-      </ul>
-      {loadMenu ? (
-        <AddItemCard
-          seasonalItems={order}
-          drinkFunction={handleAddDrinkClick}
-          itemButtonFunction={buttonClick}
-          addPizzaFunction={handleAddPizzaClick}></AddItemCard>
-      ) : (
-        <UserOrderCard
-          drinks={drinksOnOrder}
-          pizzas={pizzasOnOrder}
-          seasonal_items={itemsOnOrder}></UserOrderCard>
-      )}
-    </div>
-  );
+  function handleAddItemClick(event) {
+    addItem(
+      itemTypes.seasonal_item_types.find(
+        (item) => item.item_name === event.target.dataset.user
+      )
+    );
+
+    setAlertText(`Added ${event.target.dataset.user} to Order!`);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  }
+
+  if (menuError || orderError) {
+    return (
+      <div>
+        <p>Menu Error: {menuError}</p>
+        <p>Order Error: {orderError}</p>
+      </div>
+    );
+  } else if (menuLoading || orderLoading) {
+    return (
+      <div
+        style={{
+          width: "100vw",
+          height: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+        <img
+          src={require("../loader_pizza.gif")}
+          alt="Loading"
+          style={{ width: "15vw", height: "auto" }}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="container">
+        {showAlert && (
+          <Alert
+            variant="primary"
+            onClose={() => setShowAlert(false)}
+            dismissible>
+            {alertText}
+          </Alert>
+        )}
+        <ul className="nav nav-tabs justify-content-center my-3">
+          <li className="nav-item">
+            <button
+              className={
+                loadMenu
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Menu"
+              aria-current="page"
+              onClick={handleSwitchTab}>
+              Menu
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={
+                loadMenu
+                  ? "nav-link fw-bolder fs-5 link-secondary"
+                  : "nav-link fw-bolder fs-5 active link-primary"
+              }
+              value="Cart"
+              onClick={handleSwitchTab}>
+              Current Order
+            </button>
+          </li>
+        </ul>
+        {loadMenu ? (
+          <AddItemCard
+            seasonalItems={itemTypes.seasonal_item_types}
+            drinkFunction={handleAddDrinkClick}
+            itemButtonFunction={handleAddItemClick}
+            addPizzaFunction={handleAddPizzaClick}></AddItemCard>
+        ) : (
+          <UserOrderCard
+            drinks={order.drinks}
+            pizzas={order.pizzas}
+            seasonal_items={order.seasonal_items}
+            deleteDrink={deleteDrink}
+            deleteItem={deleteItem}
+            deletePizza={deletePizza}></UserOrderCard>
+        )}
+      </div>
+    );
+  }
 };
 
 export default Order;

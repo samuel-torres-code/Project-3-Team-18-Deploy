@@ -65,6 +65,7 @@ const Pizza = () => {
       );
     }
   }, [menuLoading]);
+  
   if (menuError || orderError) {
     return (
       <div>

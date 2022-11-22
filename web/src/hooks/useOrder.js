@@ -74,7 +74,7 @@ const useOrder = () => {
       drinks: drinks,
       seasonal_items: seasonalItems,
     });
-  }, [pizzas, drinks]);
+  }, [pizzas, drinks, seasonalItems]);
 
   const updateStorage = () => {
     try {
@@ -125,35 +125,35 @@ const useOrder = () => {
   };
 
   const deletePizza = (index) => {
-    setPizzas([order.pizzas.filter((pizza, i) => i !== index)]);
+    setPizzas(order.pizzas.filter((pizza, i) => i !== index));
   };
 
-  const addNewItem = () => {
+  const addItem = (item) => {
     setSeasonalItems([
       ...order.seasonal_items,
       {
-        item_name: "",
-        item_price: "0.00",
+        item_name: item.item_name,
+        item_price: item.item_price,
       },
     ]);
   };
 
   const deleteItem = (index) => {
-    setSeasonalItems([order.seasonal_items.filter((item, i) => i !== index)]);
+    setSeasonalItems(order.seasonal_items.filter((item, i) => i !== index));
   };
 
-  const addDrink = (drink_type, drink_price) => {
+  const addDrink = (drink) => {
     setDrinks([
       ...order.drinks,
       {
-        drink_type: drink_type,
-        drink_price: drink_price,
+        drink_type: drink.drink_type,
+        drink_price: drink.drink_price,
       },
     ]);
   };
 
   const deleteDrink = (index) => {
-    setDrinks([order.drinks.filter((item, i) => i !== index)]);
+    setDrinks(order.drinks.filter((item, i) => i !== index));
   };
 
   return {
@@ -165,7 +165,7 @@ const useOrder = () => {
     updatePizza,
     deletePizza,
     addDrink,
-    addNewItem,
+    addItem,
     deleteItem,
     deleteDrink,
   };

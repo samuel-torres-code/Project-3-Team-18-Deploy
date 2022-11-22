@@ -13,13 +13,15 @@ const AddItemCard = ({
           Add Pizza
         </button>
       </div>
-      <div className="row gap-3 w-50 mx-auto justify-content-center my-3" style={{minWidth:"300px"}}>
-        {seasonalItems.map((item_name) => {
+      <div
+        className="row gap-3 w-50 mx-auto justify-content-center my-3"
+        style={{ minWidth: "300px" }}>
+        {seasonalItems.map((item) => {
           return (
             <ItemButton
-              key={item_name}
+              key={item.item_name}
               imgName={"scary_pizza.png"}
-              cardText={item_name.replace(/([a-z])([A-Z])/g, "$1 $2")}
+              cardText={item.item_name}
               onClick={itemButtonFunction}></ItemButton>
           );
         })}
