@@ -5,6 +5,7 @@ import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
+import { API_URL } from "../API";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import jwt_decode from "jwt-decode";
 
@@ -25,7 +26,7 @@ const Login = () => {
   const [logoutFailure, setLogoutFailure] = useState(false);
 
   const client = axios.create({
-    baseURL: "http://localhost:2000"
+    baseURL: API_URL
   })
 
   //login persistency
