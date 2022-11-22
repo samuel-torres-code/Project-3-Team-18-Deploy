@@ -108,7 +108,6 @@ const UserOrderCard = ({ drinks, pizzas, seasonal_items }) => {
 
   function calculatePrice() {
     var total_price = 0.0;
-    console.log(pizzas);
     pizzas.forEach((pizza) => {
       total_price += Number(pizza.pizza_price);
     });

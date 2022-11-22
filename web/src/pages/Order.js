@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-// import ItemButton from "../components/ItemButton";
 import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
+import { API_URL } from "../API";
 
 const Order = () => {
   const [seasonalItems, setSeasonalItems] = useState([]);
@@ -31,7 +31,7 @@ const Order = () => {
   ]);
 
   const client = axios.create({
-    baseURL: "http://localhost:2000",
+    baseURL: API_URL,
   });
 
   useEffect(() => {
