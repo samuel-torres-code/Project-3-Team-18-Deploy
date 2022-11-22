@@ -118,7 +118,7 @@ router.get('/', function(req, res){
     //add inventory amount to existing value
     var ingredients_dec_query = "UPDATE ingredients_web set ingredient_inventory" +
                                 " = ingredient_inventory + $1 WHERE ingredient_name = $2";
-    res.json({requestBody: req.body});
+    // res.json({requestBody: req.body});
     var ingredient_ids = req.body["ingredients"];
     var amount = req.body["amount"];
     for(let i = 0; i < ingredient_ids.length; i++)
@@ -130,7 +130,7 @@ router.get('/', function(req, res){
  
  router.post('/add_ingredient', function(req, res){
     //add new ingredient to database
-    res.json({requestBody: req.body});
+    // res.json({requestBody: req.body});
     var ingredient_name = req.body["ingredient_name"];
     var ingredient_type = req.body["ingredient_type"];
 
@@ -142,7 +142,7 @@ router.get('/', function(req, res){
  
  router.post('/remove_ingredient', function(req, res){
     //remove ingredients from db
-    res.json({requestBody: req.body});
+    // res.json({requestBody: req.body});
     var ingredient_names = req.body["ingredients"];
     var remove_ing_query = "DELETE FROM ingredients_web WHERE ingredient_name = $1";
     for(let i = 0; i < ingredient_names.length; i++)
@@ -211,7 +211,7 @@ router.get('/', function(req, res){
  
  router.post('/update_menu_items', function(req, res){
     //TODO
-    res.json({requestBody: req.body});
+    // res.json({requestBody: req.body});
     var menu_items = req.body["menu_items"];
     var new_price = req.body["new_price"];
 
