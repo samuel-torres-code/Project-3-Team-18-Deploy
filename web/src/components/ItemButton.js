@@ -7,6 +7,7 @@ const ItemButton = ({ selected = false, cardText, imgName, onClick }) => {
   const { loading, error, image } = useImage(imgName);
   return (
     <div
+      style={{ minWidth: "130px" }}
       className={`col-3 mx-3 my-3 card grow ${selected ? "selected" : ""}`}
       onClick={onClick}>
       {/* <img

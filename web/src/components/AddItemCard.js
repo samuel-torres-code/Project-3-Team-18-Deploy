@@ -13,9 +13,7 @@ const AddItemCard = ({
           Add Pizza
         </button>
       </div>
-      <div
-        className="row gap-3 w-50 mx-auto justify-content-center my-3"
-        style={{ minWidth: "300px" }}>
+      <div className="row gap-3 col-lg-6 col-md-8 col-sm-12 mx-auto justify-content-center my-3">
         {seasonalItems.map((item) => {
           return (
             <ItemButton

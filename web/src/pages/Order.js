@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
@@ -7,6 +7,7 @@ import { getItemTypes, postOrder } from "../api/ServerAPI";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
+import { useNavigate } from "react-router-dom";
 
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
@@ -28,9 +29,14 @@ const Order = () => {
   } = useOrder([]);
   const { menuLoading, menuError, itemTypes } = useMenu([]);
 
+  const navigate = useNavigate();
   const client = axios.create({
     baseURL: API_URL,
   });
+
+  useEffect(() => {
+    setOrderName(localStorage.getItem("user"));
+  }, []);
 
   function handleSwitchTab(event) {
     if (event.target.value === "Menu") {
@@ -41,13 +47,7 @@ const Order = () => {
   }
 
   function handleAddPizzaClick() {
-    // TODO: Add Pizza
-
-    setAlertText("Added Pizza to Order!");
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
+    navigate("/pizza");
   }
 
   function handleAddDrinkClick(event) {
@@ -105,14 +105,6 @@ const Order = () => {
   } else {
     return (
       <div className="container">
-        {showAlert && (
-          <Alert
-            variant="primary"
-            onClose={() => setShowAlert(false)}
-            dismissible>
-            {alertText}
-          </Alert>
-        )}
         <ul className="nav nav-tabs justify-content-center my-3">
           <li className="nav-item">
             <button
@@ -140,6 +132,17 @@ const Order = () => {
             </button>
           </li>
         </ul>
+        {showAlert ? (
+          <Alert
+            variant="primary"
+            onClose={() => setShowAlert(false)}
+            dismissible>
+            {alertText}
+          </Alert>
+        ) : (
+          // add spacing for alert
+          <div style={{ height: "58px" }}></div>
+        )}
         {loadMenu ? (
           <AddItemCard
             seasonalItems={itemTypes.seasonal_item_types}

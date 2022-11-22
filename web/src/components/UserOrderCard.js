@@ -125,11 +125,12 @@ const UserOrderCard = ({
       <div className="card col-lg-6 col-md-8 col-sm-12 mx-auto p-0">
         <ul className="list-group list-group-flush">
           <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
-            <li className="list-group-item drinks">
-              <strong className="fs-5">Drinks:</strong>
-              <UserDrinkRows
-                drinks={drinks}
-                handleDeleteDrink={deleteDrink}></UserDrinkRows>
+            <li className="list-group-item pizzas">
+              <strong className="fs-5">Pizzas:</strong>
+              <UserPizzaRows
+                pizzas={pizzas}
+                handleEditPizza={handleEditPizza}
+                handleDeletePizza={deletePizza}></UserPizzaRows>
             </li>
             <li className="list-group-item seasonal_items">
               <strong className="fs-5">Seasonal Items:</strong>
@@ -137,12 +138,11 @@ const UserOrderCard = ({
                 seasonal_items={seasonal_items}
                 handleDeleteSeasonalItem={deleteItem}></UserSeasonalItemRows>
             </li>
-            <li className="list-group-item pizzas">
-              <strong className="fs-5">Pizzas:</strong>
-              <UserPizzaRows
-                pizzas={pizzas}
-                handleEditPizza={handleEditPizza}
-                handleDeletePizza={deletePizza}></UserPizzaRows>
+            <li className="list-group-item drinks">
+              <strong className="fs-5">Drinks:</strong>
+              <UserDrinkRows
+                drinks={drinks}
+                handleDeleteDrink={deleteDrink}></UserDrinkRows>
             </li>
           </div>
         </ul>
