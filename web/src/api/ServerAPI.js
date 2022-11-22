@@ -23,6 +23,7 @@ export const postOrder = (reqJson) => {
       order: reqJson.order,
       pizzas: reqJson.pizzas[0],
       drinks: reqJson.drinks,
+      seasonal_items: reqJson.seasonal_items,
     })
     .catch((error) => {
       console.log(error);
