@@ -49,7 +49,7 @@ const Order = () => {
   }
 
   const buttonClick = (event) => {
-    alert(event.target.key);
+    alert(event.target.dataset.user);
   };
 
   function handleSwitchTab(event) {
