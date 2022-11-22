@@ -229,7 +229,6 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const userInfo = await axios.get(
