@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
-import { API_URL } from "../API";
-import { getItemTypes, postOrder } from "../api/ServerAPI";
+import { postOrder } from "../api/ServerAPI";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
@@ -19,8 +17,8 @@ const Order = () => {
     orderError,
     order,
     setOrderName,
-    addNewPizza,
-    updatePizza,
+    // addNewPizza,
+    // updatePizza,
     deletePizza,
     addDrink,
     addItem,
@@ -31,9 +29,6 @@ const Order = () => {
   const { menuLoading, menuError, itemTypes } = useMenu([]);
 
   const navigate = useNavigate();
-  const client = axios.create({
-    baseURL: API_URL,
-  });
 
   useEffect(() => {
     if (localStorage.getItem("user") !== null) {
@@ -88,7 +83,16 @@ const Order = () => {
   }
 
   function handleCheckout() {
-    alert("Checkout");
+    if (
+      order.drinks.length > 0 ||
+      order.pizzas.length > 0 ||
+      order.seasonal_items.length > 0
+    ) {
+      postOrder(order);
+      navigate("/pickup");
+    } else {
+      console.error("No items selected in order");
+    }
   }
 
   if (menuError || orderError) {
