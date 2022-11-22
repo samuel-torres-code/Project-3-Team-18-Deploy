@@ -1,4 +1,4 @@
-import ItemButton from "../components/ItemButton";
+import ItemButton from "../components/IngredientItemButton";
 
 const Order = () => {
   const buttonClick = () => {
