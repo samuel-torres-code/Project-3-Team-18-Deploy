@@ -43,24 +43,6 @@ const Login = () => {
       setEmployee(true);
     }
   }, []);
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("isLoggedIn");
-    const manager = localStorage.getItem("manager");
-    const employee = localStorage.getItem("employee");
-    if (loggedInUser === 'true') {
-      setLoggedIn(true);
-      setUser(localStorage.getItem("user"));
-    }
-    else{
-      localStorage.setItem("log", "a");
-    }
-    if(manager === 'true'){
-      setManager(true);
-    }
-    if(employee === 'true'){
-      setEmployee(true);
-    }
-  }, []);
 
   //confirm that information is entered
   function infoCompleted() {
