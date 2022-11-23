@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import ToggleButton from 'react-bootstrap/ToggleButton';
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import ToggleButton from "react-bootstrap/ToggleButton";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import axios from "axios";
 import { API_URL } from "../API";
+import useMenu from "../hooks/useMenu";
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -13,23 +14,24 @@ function Manager() {
   const [newItemPrice, setNewItemPrice] = useState("");
   const [ingredientData, setIngredientData] = useState([]);
   const [menuItemData, setMenuItemData] = useState([]);
+
   const [addEmployeeName, setNewEmployeeName] = useState("");
   const [addEmployeePassword, setNewEmployeePassword] = useState("");
   const [addAsManager, setAsManager] = useState([false, false]);
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
 
+  const [load, setLoad] = useState(true);
+
+  const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu(
+    []
+  );
+
   const client = axios.create({
     baseURL: API_URL,
   });
 
-  const [load, setLoad] = useState(false);
-
   useEffect(() => {
-    loadIngredients();
-    loadMenuItems();
-  }, []);
-
-  useEffect(() => {
+    setLoad(false);
     loadIngredients();
     loadMenuItems();
   }, [load]);
@@ -89,6 +91,12 @@ function Manager() {
             price: res.data["drink_types"][i]["drink_price"],
           });
         }
+        for (i = 0; i < res.data["seasonal_items"].length; i++) {
+          items.push({
+            name: res.data["seasonal_items"][i]["item_name"],
+            price: res.data["seasonal_items"][i]["item_price"],
+          });
+        }
         setMenuItemData(items);
       })
       .catch((error) => {
@@ -144,15 +152,15 @@ function Manager() {
     setNewItemPrice(event.target.value);
   }
 
-  function handleAddEmployeeName(event){
+  function handleAddEmployeeName(event) {
     setNewEmployeeName(event.target.value);
   }
 
-  function handleAddEmployeePassword(event){
+  function handleAddEmployeePassword(event) {
     setNewEmployeePassword(event.target.value);
   }
 
-  function handleAddAsManager(event){
+  function handleAddAsManager(event) {
     setAsManager(event);
     console.log(event);
   }
@@ -188,7 +196,7 @@ function Manager() {
           }
         });
       setRestockAmount("");
-      setLoad(!load);
+      setLoad(true);
       unCheckIngredients();
     }
   }
@@ -214,7 +222,7 @@ function Manager() {
             console.log(error);
           }
         });
-      setLoad(!load);
+      setLoad(true);
       unCheckIngredients();
     }
   }
@@ -245,7 +253,7 @@ function Manager() {
             console.log(error);
           }
         });
-      setLoad(!load);
+      setLoad(true);
       loadIngredients();
       setNewIngredientName("");
       // setNewIngredientType("");
@@ -282,7 +290,7 @@ function Manager() {
             console.log(error);
           }
         });
-      setLoad(!load);
+      setLoad(true);
       setNewItemPrice("");
       unCheckMenuItems();
     }
@@ -290,24 +298,20 @@ function Manager() {
 
   function handleAddNewEmployee() {
     if (addEmployeeName.length === 0) {
-      console.error(
-        "Invalid Input for Employee Name: No name is given."
-      );
+      console.error("Invalid Input for Employee Name: No name is given.");
     } else if (isNaN(addEmployeePassword)) {
-      console.error(
-        "Invalid Input for Employee Password: Password is Nan."
-      );
+      console.error("Invalid Input for Employee Password: Password is NaN.");
     } else {
       client
         .post("/api/manager/addEmployee", {
           emp: addEmployeeName,
           pass: addEmployeePassword,
-          status: (addAsManager.length > 2) ? "true" : "false",
-        }).then(res => {
-          if(res.data === true){
+          status: addAsManager.length > 2 ? "true" : "false",
+        })
+        .then((res) => {
+          if (res.data === true) {
             setAddedEmployeeDatabase(true);
-          }
-          else{
+          } else {
             setAddedEmployeeDatabase(false);
           }
         })
@@ -322,10 +326,10 @@ function Manager() {
             console.log(error);
           }
         });
-      setLoad(!load);
+      setLoad(true);
       setAsManager([false, false]);
-      setNewEmployeeName('');
-      setNewEmployeePassword('');
+      setNewEmployeeName("");
+      setNewEmployeePassword("");
     }
   }
 
@@ -346,216 +350,250 @@ function Manager() {
       x[i].checked = false;
     }
   }
-
-  return (
-    <div className="row w-100">
-      <div className="col my-5">
-        {/* Ingredient Table */}
-        <div
-          className="border border-dark mx-5"
-          style={{ maxHeight: "80vh", overflowY: "auto" }}>
-          <table className="w-100">
-            <thead className="table-header position-sticky">
-              <tr>
-                <th className="px-1">Ingredient</th>
-                <th className="px-1">Type</th>
-                <th className="px-1">Inventory</th>
-                <th className="px-1">Select</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ingredientData.map((val, key) => {
-                return (
-                  <tr
-                    key={key}
-                    className="table-row border-top border-secondary">
-                    <td>{val.name}</td>
-                    <td>{val.type}</td>
-                    <td>{val.inventory}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="ing-checkbox"
-                        value={val.name}
-                        onChange={handleSelectIngredientChange}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+  if (menuError) {
+    return (
+      <div>
+        <p>Menu Error: {menuError}</p>
       </div>
-
-      <div className="col my-auto">
-        {/* Restock Ingredients */}
-        <div
-          className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
-          style={{ width: "80%" }}>
-          <h4 className="text-center">Restock Selected Ingredient</h4>
-          <div className="d-flex justify-content-center flex-wrap">
-            <input
-              type="text"
-              placeholder="Restock Amount"
-              className="m-2"
-              value={restockAmount}
-              onChange={handleRestockChange}></input>
-            <input
-              type="button"
-              className="btn btn-primary my-2"
-              value="Restock"
-              onClick={handleRestockClick}></input>
+    );
+  } else if (menuLoading) {
+    return (
+      <div
+        style={{
+          width: "100vw",
+          height: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}>
+        <img
+          src={require("../loader_pizza.gif")}
+          alt="Loading"
+          style={{ width: "15vw", height: "auto" }}
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="row w-100">
+        <div className="col my-5">
+          {/* Ingredient Table */}
+          <div
+            className="border border-dark mx-5"
+            style={{ maxHeight: "80vh", overflowY: "auto" }}>
+            <table className="w-100">
+              <thead className="table-header position-sticky">
+                <tr>
+                  <th className="px-1">Ingredient</th>
+                  <th className="px-1">Type</th>
+                  <th className="px-1">Inventory</th>
+                  <th className="px-1">Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ingredientData.map((val, key) => {
+                  return (
+                    <tr
+                      key={key}
+                      className="table-row border-top border-secondary">
+                      <td>{val.name}</td>
+                      <td>{val.type}</td>
+                      <td>{val.inventory}</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          className="ing-checkbox"
+                          value={val.name}
+                          onChange={handleSelectIngredientChange}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Remove Ingredients */}
-        <div
-          className="border border-secondary rounded p-3 my-3 mx-auto"
-          style={{ width: "80%" }}>
-          <h4 className="text-center">Remove Selected Ingredient</h4>
-          <div className="d-flex justify-content-center flex-wrap">
-            <input
-              type="button"
-              className="btn btn-primary my-2"
-              value="Remove Ingredient"
-              onClick={handleRemoveClick}></input>
-          </div>
-        </div>
-
-        {/* Add Ingredients */}
-        <div
-          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-          style={{ width: "80%" }}>
-          <h4 className="text-center">Add Ingredient</h4>
-          <div className="d-flex justify-content-center flex-wrap">
-            <div className="d-flex flex-wrap justify-content-center">
+        <div className="col my-auto">
+          {/* Restock Ingredients */}
+          <div
+            className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
+            style={{ width: "80%" }}>
+            <h4 className="text-center">Restock Selected Ingredient</h4>
+            <div className="d-flex justify-content-center flex-wrap">
               <input
                 type="text"
-                placeholder="Ingredient Name"
+                placeholder="Restock Amount"
                 className="m-2"
-                value={newIngredientName}
-                onChange={handleAddNameChange}></input>
-              <select
-                className="form-select w-auto my-2"
-                onChange={handleAddTypeChange}
-                defaultValue={""}>
-                <option value="">Select Type</option>
-                <option value="Sauce">Sauce</option>
-                <option value="Cheese">Cheese</option>
-                <option value="Dough">Dough</option>
-                <option value="Drizzle">Drizzle</option>
-                <option value="Meats">Meats</option>
-                <option value="Raw Veggies">Raw Veggies</option>
-                <option value="Roasted Veggies">Roasted Veggies</option>
-                <option value="Other">Other</option>
-              </select>
+                value={restockAmount}
+                onChange={handleRestockChange}></input>
+              <input
+                type="button"
+                className="btn btn-primary my-2"
+                value="Restock"
+                onClick={handleRestockClick}></input>
             </div>
-            <input
-              type="button"
-              className="btn btn-primary my-2"
-              value="Add Ingredient"
-              onClick={handleAddIngredientClick}></input>
           </div>
-        </div>
-      </div>
-      <div className="col my-auto">
-        {/* Menu Items Table */}
-        <div className="mx-5 mt-5">
-          <table className="w-75 border border-dark mx-auto">
-            <thead className="table-header position-sticky">
-              <tr>
-                <th className="px-1">Menu Item</th>
-                <th className="px-1">Price</th>
-                <th className="px-1">Select</th>
-              </tr>
-            </thead>
-            <tbody>
-              {menuItemData.map((val, key) => {
-                return (
-                  <tr key={key} className="border-top border-secondary">
-                    <td>{val.name}</td>
-                    <td>{val.price}</td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        className="item-checkbox"
-                        value={val.name}
-                        onChange={handleSelectMenuItemChange}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
 
-        {/* Change Menu Item Price */}
-        <div
-          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-          style={{ width: "80%" }}>
-          <h4 className="text-center">Change Selected Menu Item Price</h4>
-          <div className="d-flex justify-content-center flex-wrap">
-            <input
-              type="text"
-              placeholder="New Price"
-              className="m-2"
-              value={newItemPrice}
-              onChange={handleItemPriceChange}></input>
-            <input
-              type="button"
-              className="btn btn-primary my-2"
-              value="Change Price"
-              onClick={handleItemPriceClick}></input>
+          {/* Remove Ingredients */}
+          <div
+            className="border border-secondary rounded p-3 my-3 mx-auto"
+            style={{ width: "80%" }}>
+            <h4 className="text-center">Remove Selected Ingredient</h4>
+            <div className="d-flex justify-content-center flex-wrap">
+              <input
+                type="button"
+                className="btn btn-primary my-2"
+                value="Remove Ingredient"
+                onClick={handleRemoveClick}></input>
+            </div>
+          </div>
+
+          {/* Add Ingredients */}
+          <div
+            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+            style={{ width: "80%" }}>
+            <h4 className="text-center">Add Ingredient</h4>
+            <div className="d-flex justify-content-center flex-wrap">
+              <div className="d-flex flex-wrap justify-content-center">
+                <input
+                  type="text"
+                  placeholder="Ingredient Name"
+                  className="m-2"
+                  value={newIngredientName}
+                  onChange={handleAddNameChange}></input>
+                <select
+                  className="form-select w-auto my-2"
+                  onChange={handleAddTypeChange}
+                  defaultValue={""}>
+                  <option value="">Select Type</option>
+                  <option value="Sauce">Sauce</option>
+                  <option value="Cheese">Cheese</option>
+                  <option value="Dough">Dough</option>
+                  <option value="Drizzle">Drizzle</option>
+                  <option value="Meats">Meats</option>
+                  <option value="Raw Veggies">Raw Veggies</option>
+                  <option value="Roasted Veggies">Roasted Veggies</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <input
+                type="button"
+                className="btn btn-primary my-2"
+                value="Add Ingredient"
+                onClick={handleAddIngredientClick}></input>
+            </div>
           </div>
         </div>
-
-        {/* Add New Employee to System */}
-        <div
-          className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-          style={{ width: "80%" }}>
-          <h4 className="text-center">Add Employee to System</h4>
-          <div className="d-flex justify-content-center flex-wrap">
-            <input
-              type="text"
-              placeholder="Employee Name"
-              className="m-2"
-              value={addEmployeeName}
-              onChange={handleAddEmployeeName}></input>
-            <input
-              type="text"
-              placeholder="Employee Passcode"
-              className="m-2"
-              value={addEmployeePassword}
-              onChange={handleAddEmployeePassword}></input>
-            <ToggleButtonGroup type="checkbox" value={addAsManager} onChange={handleAddAsManager}>
-              <ToggleButton id="tbg-btn-1 m-2" value={true} onChange={handleAddAsManager}>
-                Add as Manager?
-              </ToggleButton>
-            </ToggleButtonGroup>
+        <div className="col my-auto">
+          {/* Menu Items Table */}
+          <div className="mx-5 mt-5">
+            <table className="w-75 border border-dark mx-auto">
+              <thead className="table-header position-sticky">
+                <tr>
+                  <th className="px-1">Menu Item</th>
+                  <th className="px-1">Price</th>
+                  <th className="px-1">Select</th>
+                </tr>
+              </thead>
+              <tbody>
+                {menuItemData.map((val, key) => {
+                  return (
+                    <tr key={key} className="border-top border-secondary">
+                      <td>{val.name}</td>
+                      <td>{val.price}</td>
+                      <td>
+                        <input
+                          type="checkbox"
+                          className="item-checkbox"
+                          value={val.name}
+                          onChange={handleSelectMenuItemChange}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-          <div className="d-flex justify-content-center flex-wrap">
-            <input
+
+          {/* Change Menu Item Price */}
+          <div
+            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+            style={{ width: "80%" }}>
+            <h4 className="text-center">Change Selected Menu Item Price</h4>
+            <div className="d-flex justify-content-center flex-wrap">
+              <input
+                type="text"
+                placeholder="New Price"
+                className="m-2"
+                value={newItemPrice}
+                onChange={handleItemPriceChange}></input>
+              <input
+                type="button"
+                className="btn btn-primary my-2"
+                value="Change Price"
+                onClick={handleItemPriceClick}></input>
+            </div>
+          </div>
+
+          {/* Add New Employee to System */}
+          <div
+            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+            style={{ width: "80%" }}>
+            <h4 className="text-center">Add Employee to System</h4>
+            <div className="d-flex justify-content-center flex-wrap">
+              <input
+                type="text"
+                placeholder="Employee Name"
+                className="m-2"
+                value={addEmployeeName}
+                onChange={handleAddEmployeeName}></input>
+              <input
+                type="text"
+                placeholder="Employee Passcode"
+                className="m-2"
+                value={addEmployeePassword}
+                onChange={handleAddEmployeePassword}></input>
+              <ToggleButtonGroup
+                type="checkbox"
+                value={addAsManager}
+                onChange={handleAddAsManager}>
+                <ToggleButton
+                  id="tbg-btn-1 m-2"
+                  value={true}
+                  onChange={handleAddAsManager}>
+                  Add as Manager?
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </div>
+            <div className="d-flex justify-content-center flex-wrap">
+              <input
                 type="button"
                 className="btn btn-primary my-2"
                 value="Add Employee"
                 onClick={handleAddNewEmployee}></input>
-          </div>
-          {(addedEmployeeDatabase === true) &&
-            <div className="d-flex justify-content-center flex-wrap" style={{color: 'blue',}}>
-              Added New Employee.
             </div>
-          }
-          {(addedEmployeeDatabase === false) &&
-          <div className="d-flex justify-content-center flex-wrap" style={{color: 'red',}}>
-            Failed to Add New Employee. Try Different Passcode.
+            {addedEmployeeDatabase === true && (
+              <div
+                className="d-flex justify-content-center flex-wrap"
+                style={{ color: "blue" }}>
+                Added New Employee.
+              </div>
+            )}
+            {addedEmployeeDatabase === false && (
+              <div
+                className="d-flex justify-content-center flex-wrap"
+                style={{ color: "red" }}>
+                Failed to Add New Employee. Try Different Passcode.
+              </div>
+            )}
           </div>
-          }
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default Manager;

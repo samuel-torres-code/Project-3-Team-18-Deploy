@@ -30,24 +30,24 @@ const Login = () => {
   })
 
   //login persistency
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("isLoggedIn");
-    const manager = localStorage.getItem("manager");
-    const employee = localStorage.getItem("employee");
-    if (loggedInUser === 'true') {
-      setLoggedIn(true);
-      setUser(localStorage.getItem("user"));
-    }
-    else{
-      localStorage.setItem("log", "a");
-    }
-    if(manager === 'true'){
-      setManager(true);
-    }
-    if(employee === 'true'){
-      setEmployee(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const loggedInUser = localStorage.getItem("isLoggedIn");
+  //   const manager = localStorage.getItem("manager");
+  //   const employee = localStorage.getItem("employee");
+  //   if (loggedInUser === 'true') {
+  //     setLoggedIn(true);
+  //     setUser(localStorage.getItem("user"));
+  //   }
+  //   else{
+  //     localStorage.setItem("log", "a");
+  //   }
+  //   if(manager === 'true'){
+  //     setManager(true);
+  //   }
+  //   if(employee === 'true'){
+  //     setEmployee(true);
+  //   }
+  // }, []);
 
   //confirm that information is entered
   function infoCompleted() {
@@ -120,6 +120,7 @@ const Login = () => {
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
         localStorage.setItem('employee', false);
+        window.location.reload();
       }
       else{
         var b = res.data[0];
@@ -131,6 +132,7 @@ const Login = () => {
         localStorage.setItem('email', email);
         localStorage.setItem('manager', c);
         localStorage.setItem('employee', true);
+        window.location.reload();
       }
     })
     .catch((error) => {
@@ -148,7 +150,6 @@ const Login = () => {
     if(!loggedIn)
       secondaryLoginVerification();
     localStorage.setItem("log", "b");
-    window.location.reload();
     //clearValues();
   };
 
@@ -194,6 +195,10 @@ const Login = () => {
         localStorage.setItem('email', event.email);
         localStorage.setItem('employee', false);
         localStorage.setItem("log", "b");
+        window.location.reload();
+      }
+      else{
+        registerGoogleLoginSecondary(event);
       }
     })
     .catch((error) => {
@@ -207,25 +212,25 @@ const Login = () => {
         console.log(error);
       }
     });
-    if(localStorage.getItem('isLoggedIn') === 'false')
-      registerGoogleLoginSecondary(event);
     localStorage.setItem("log", "b");
-    window.location.reload();
   };
 
   //check with backend for user and determine who it is
-  const registerGoogleLoginSecondary =  (event) => {
+  const registerGoogleLoginSecondary = (event) => {
+    console.log(event);
     const loginData = client.post('/api/login/google/login/secondary',{
         user: event.name,
         email: event.email,
     }).then(res => {
       if(res.data === true){
         setLoggedIn(true);
+        setUser(event.name);
         localStorage.setItem('isLoggedIn', true);
         localStorage.setItem('user', event.name);
         localStorage.setItem('email', event.email);
         localStorage.setItem('employee', false);
         localStorage.setItem("log", "b");
+        window.location.reload();
       }
     })
     .catch((error) => {
@@ -240,18 +245,15 @@ const Login = () => {
       }
     });
     localStorage.setItem("log", "b");
-    window.location.reload();
   };
 
 
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log(tokenResponse);
       const userInfo = await axios.get(
         'https://www.googleapis.com/oauth2/v3/userinfo',
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
       );
-        
       var data = userInfo.data;
       var username = data.name;
       var email = data.email;
@@ -308,7 +310,7 @@ const Login = () => {
         (<Form>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome, {user}!</div>
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome, {localStorage.getItem('user')}!</div>
           }
           {(isEmployee) && (!isManager) && 
             <div style={{color: 'blue', fontSize: '40'}}>Welcome, Server!</div>

@@ -97,8 +97,10 @@ router.post('/google/login', (req, res, next) => {
                 return res.send(true);
             }
         }
-        if(!send)
+        if(!send){
             return res.send(false);
+        }
+            
     });
 })
 
@@ -107,7 +109,6 @@ router.post('/google/login/secondary', (req, res, next) => {
     pool.query(queryStringTwo).then(query_res => {
         return res.send(true);
     });
-    return res.send(true);
 })
 
 router.get('/', function(req, res){
