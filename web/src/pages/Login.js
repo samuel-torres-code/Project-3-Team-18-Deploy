@@ -8,12 +8,10 @@ import axios from 'axios';
 import { API_URL } from "../API";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import jwt_decode from "jwt-decode";
-
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
-
 const Login = () => {
-
+  
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -21,81 +19,70 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isEmployee, setEmployee] = useState(false);
   const [isManager, setManager] = useState(false);
-
   const [loading, setLoading] = useState('Please Wait.');
   const [logoutFailure, setLogoutFailure] = useState(false);
-
   const client = axios.create({
     baseURL: API_URL
   })
 
   //login persistency
-  // useEffect(() => {
-  //   const loggedInUser = localStorage.getItem("isLoggedIn");
-  //   const manager = localStorage.getItem("manager");
-  //   const employee = localStorage.getItem("employee");
-  //   if (loggedInUser === 'true') {
-  //     setLoggedIn(true);
-  //     setUser(localStorage.getItem("user"));
-  //   }
-  //   else{
-  //     localStorage.setItem("log", "a");
-  //   }
-  //   if(manager === 'true'){
-  //     setManager(true);
-  //   }
-  //   if(employee === 'true'){
-  //     setEmployee(true);
-  //   }
-  // }, []);
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("isLoggedIn");
+    const manager = localStorage.getItem("manager");
+    const employee = localStorage.getItem("employee");
+    if (loggedInUser === 'true') {
+      setLoggedIn(true);
+      setUser(localStorage.getItem("user"));
+    }
+    else{
+      localStorage.setItem("log", "a");
+    }
+    if(manager === 'true'){
+      setManager(true);
+    }
+    if(employee === 'true'){
+      setEmployee(true);
+    }
+  }, []);
 
   //confirm that information is entered
   function infoCompleted() {
     return user.length > 0 && pass.length > 0;
   }
-
   //update the user to the given user
   const changeUser = (event) => {
     setUser(event.target.value);
     changeEmail(event);
   };
-
   //update email to the given email
   const changeEmail = (event) => {
     setEmail(event.target.value);
   };
-
   //update the password to the given password
   const changePass = (event) => {
     setPass(event.target.value);
   };
-
   //determine if user login was successful
   const changeLoggedIn = (event) => {
     setLoggedIn(event.target.value);
   }
-
   //set the employee is user is an employee
   const changeEmployee = (event) => {
     setEmployee(event);
   }
-
   //update the manager value is necessary
   const changeManager = (event) => {
     setManager(event);
   };
-
   //In the event we need to immediately clear for some reason
   const clearValues = () => {
     setEmail('');
     setPass('');
     setUser('');
   };
-
   function changeLog(){
     localStorage.setItem("log", "a");
   }
-
   function logOut(){
     setLoggedIn(false);
     localStorage.setItem('employee', false);
@@ -104,7 +91,6 @@ const Login = () => {
     localStorage.setItem("log", "a");
     window.location.reload();
   }
-
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
@@ -146,11 +132,9 @@ const Login = () => {
         console.log(error);
       }
     });
-
     if(!loggedIn)
       secondaryLoginVerification();
     localStorage.setItem("log", "b");
-    //clearValues();
   };
 
   const secondaryLoginVerification = (event) =>{
@@ -181,7 +165,6 @@ const Login = () => {
       });
     }
   }
-
   //check with backend for user and determine who it is
   const registerGoogleLogin = async (event) => {
     const loginData = await client.post('/api/login/google/login',{
@@ -247,13 +230,13 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const userInfo = await axios.get(
         'https://www.googleapis.com/oauth2/v3/userinfo',
         { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
       );
+
       var data = userInfo.data;
       var username = data.name;
       var email = data.email;
@@ -261,24 +244,19 @@ const Login = () => {
     },
     onError: errorResponse => console.log(errorResponse),
   });
-
-
   return(
     <div>
       <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
       {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
         (<Form>
-
           <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
             <Form.Label>Email or Username</Form.Label>
             <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
           </Form.Group>
-
           <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
             <Form.Label>Password</Form.Label>
             <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
           </Form.Group>
-
           {(localStorage.getItem('log') === "b") &&
             (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
               <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
@@ -286,11 +264,9 @@ const Login = () => {
               </Form.Group>
             </div>)
           }
-
           <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
             <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
           </Form.Group>
-
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
             <Link to={'/Home'}>
               <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
@@ -298,13 +274,10 @@ const Login = () => {
           
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
-
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
               <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}>Login With Google</Button>
           </div>
-
         </Form>)
-
       }
       {(localStorage.getItem('isLoggedIn') === 'true') &&
         (<Form>
@@ -332,7 +305,6 @@ const Login = () => {
             <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
           </div>
-
           {(logoutFailure) &&
             <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
               <Form.Label style={{color: 'red',}}>Logout Failed. Perhaps You Signed In Without Google?</Form.Label>
@@ -344,8 +316,6 @@ const Login = () => {
     </GoogleOAuthProvider>
     </div>
   );
-
 };
   
-
   export default Login;
