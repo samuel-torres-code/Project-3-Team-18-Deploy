@@ -18,10 +18,19 @@ export const getItemTypes = () => {
 };
 
 export const postOrder = (reqJson) => {
+    if(reqJson.pizzas.length) {
+        if(Array.isArray(reqJson.pizzas[0])) {
+            reqJson.pizzas = reqJson.pizzas[0]
+        }
+    }
+    console.log(reqJson)
+    if(reqJson.order ==null || typeof(reqJson.order) === 'undefined') {
+        reqJson.order= reqJson.order_info
+    }
   client
     .post("/api/checkout/", {
       order: reqJson.order,
-      pizzas: reqJson.pizzas[0],
+      pizzas: reqJson.pizzas,
       drinks: reqJson.drinks,
       seasonal_items: reqJson.seasonal_items,
     })

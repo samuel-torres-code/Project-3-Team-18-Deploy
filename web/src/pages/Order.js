@@ -17,7 +17,7 @@ const Order = () => {
     orderError,
     order,
     setOrderName,
-    // addNewPizza,
+    addNewPizza,
     // updatePizza,
     deletePizza,
     addDrink,
@@ -26,17 +26,23 @@ const Order = () => {
     deleteDrink,
     clearOrder,
   } = useOrder([]);
-  const { menuLoading, menuError, itemTypes } = useMenu([]);
+  const { menuLoading, menuError, itemTypes, ingredients_by_type } = useMenu([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    if(!orderLoading) {
+
+    
     if (localStorage.getItem("user") !== null) {
-      setOrderName(localStorage.getItem("user"));
+      
+        setOrderName(localStorage.getItem("user"));
+      
     } else {
       setOrderName("Guest");
     }
-  }, []);
+  }
+  }, [orderLoading]);
 
   function handleSwitchTab(event) {
     if (event.target.value === "Menu") {
@@ -47,10 +53,12 @@ const Order = () => {
   }
 
   function handleAddPizzaClick() {
-    navigate("/pizza");
+    addNewPizza();
+    navigate(`/pizza`);
   }
 
   function handleEditPizzaClick(index) {
+    navigate(`/pizza?index=${index}`);
     console.log("Edit Pizza " + index);
   }
 
@@ -176,7 +184,8 @@ const Order = () => {
             deletePizza={deletePizza}
             editPizza={handleEditPizzaClick}
             handleCheckout={handleCheckout}
-            handleResetPage={clearOrder}></UserOrderCard>
+            handleResetPage={clearOrder}
+            ingredients_by_type={ingredients_by_type}></UserOrderCard>
         )}
       </div>
     );

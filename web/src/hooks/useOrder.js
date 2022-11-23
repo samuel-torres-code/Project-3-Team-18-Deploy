@@ -46,13 +46,12 @@ const useOrder = () => {
   const [orderLoading, setOrderLoading] = useState(true);
   const [orderError, setOrderError] = useState(null);
   const [order, setOrder] = useState({
-    order_info: {
-      emp_id: "-1",
-      cust_name: "",
-    },
-    pizzas: [],
-    drinks: [],
-    seasonal_items: [],
+    // order_info:{
+    //     emp_id: "-1",
+    //     cust_name: ""
+    // },
+    // pizzas:[],
+    // drinks:[]
   });
   const [pizzas, setPizzas] = useState([]);
   const [drinks, setDrinks] = useState([]);
@@ -63,17 +62,20 @@ const useOrder = () => {
   }, []);
 
   useEffect(() => {
-    console.log("updating storage");
-    updateStorage();
+    if (!orderLoading) {
+      updateStorage();
+    }
   }, [order]);
 
   useEffect(() => {
-    setOrder({
-      order_info: { ...order.order_info },
-      pizzas: pizzas,
-      drinks: drinks,
-      seasonal_items: seasonalItems,
-    });
+    if (!orderLoading) {
+      setOrder({
+        order_info: { ...order.order_info },
+        pizzas: pizzas,
+        drinks: drinks,
+        seasonal_items: seasonalItems,
+      });
+    }
   }, [pizzas, drinks, seasonalItems]);
 
   const updateStorage = () => {
@@ -87,9 +89,23 @@ const useOrder = () => {
 
   const loadStorage = () => {
     if (localStorage.getItem("order") == null) {
-      return;
+      setOrder({
+        order_info: {
+          emp_id: "-1",
+          cust_name: "",
+        },
+        pizzas: [],
+        drinks: [],
+        seasonal_items: [],
+      });
+    } else {
+      const orderJSON = JSON.parse(localStorage.getItem("order"));
+      setOrder(orderJSON);
+      setPizzas(orderJSON.pizzas);
+      setSeasonalItems(orderJSON.seasonal_items);
+      setDrinks(orderJSON.drinks);
     }
-    setOrder(JSON.parse(localStorage.getItem("order")));
+
     setOrderLoading(false);
   };
 
@@ -118,11 +134,16 @@ const useOrder = () => {
   };
 
   const updatePizza = (updatedPizza, index) => {
-    setPizzas(
-      order.pizzas.map((currPizza, i) =>
-        index === i ? updatedPizza : currPizza
-      )
-    );
+    if (
+      updatedPizza != null &&
+      typeof updatedPizza !== "undefined" &&
+      index < pizzas.length
+    )
+      setPizzas(
+        order.pizzas.map((currPizza, i) =>
+          index === i ? updatedPizza : currPizza
+        )
+      );
   };
 
   const addNewPizza = () => {
@@ -134,6 +155,7 @@ const useOrder = () => {
         ingredients: [],
       },
     ]);
+    return pizzas.length;
   };
 
   const deletePizza = (index) => {

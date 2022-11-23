@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ItemButton from "../components/ItemButton";
+import IngredientItemButton from "../components/IngredientItemButton";
 import useOrder from "../hooks/useOrder";
 import useMenu from "../hooks/useMenu";
 import {
@@ -9,9 +9,20 @@ import {
 } from "../api/ServerAPI";
 import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import "./Pizza.css";
 
 const convertWord = (str) => {
-  return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
+  return str
+    .replace(/([a-z])([A-Z])/g, `$1 $2`)
+    .replace(/-([a-z])/g, (g) => {
+      return " " + g.substr(1).toUpperCase();
+    })
+    .replace(/(^[a-z])/g, (g) => {
+      return g.toUpperCase();
+    });
 };
 
 const customCase = (str) => {};
@@ -21,10 +32,15 @@ const orderTypes = (arr) => {
 };
 
 const Pizza = () => {
-  const [pizzaIndex, setPizzaIndex] = useState(0);
+  const [pizzaIndex, setPizzaIndex] = useState(-1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [dropdownStates, setDropdownStates] = useState([false]);
-  const [pizza, setPizza] = useState(null);
+  const [pizza, setPizza] = useState({
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  });
+  const navigate = useNavigate();
   const {
     orderLoading,
     orderError,
@@ -36,26 +52,56 @@ const Pizza = () => {
   } = useOrder([]);
   const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu();
 
-  //For Testing, remove later with dynamic url
-  useEffect(() => {
-    addNewPizza();
-    setPizzaIndex(order.pizzas.length);
+  const [queryParameters] = useSearchParams();
+  const indexURL = queryParameters.get("index");
 
-    addDrink("Fountain", "2.45");
-  }, []);
-
-  useEffect(() => {
+  const containsIngredient = (ingredient_id_int) => {
     if (typeof pizza !== "undefined" && pizza != null) {
-      console.log("updating pizza");
+      return (
+        pizza.ingredients.filter(
+          (ing) => ing.ingredient_id === "" + ingredient_id_int
+        ).length >= 1
+      );
+    }
+    return false;
+  };
+  
+  useEffect(() => {
+    if (!orderLoading) {
+      if (indexURL != null && typeof indexURL !== "undefined") {
+        setPizzaIndex(indexURL);
+      } else {
+        if (order.pizzas.length === 0) {
+          addNewPizza();
+          setPizzaIndex(0);
+        } else {
+          addNewPizza();
+          setPizzaIndex(order.pizzas.length);
+        }
+      }
+    }
+  }, [orderLoading]);
+
+  useEffect(() => {
+    if (!orderLoading && pizzaIndex >= 0) {
       updatePizza(pizza, pizzaIndex);
     }
-    console.log("Pizza");
-    console.log(pizza);
   }, [pizza]);
 
   useEffect(() => {
-    console.log(order);
-    setPizza(order.pizzas[pizzaIndex]);
+    if (!orderLoading) {
+      if (
+        pizzaIndex == -1 &&
+        order.pizzas.length > 0 &&
+        indexURL != null &&
+        typeof indexURL !== "undefined"
+      ) {
+        setPizzaIndex(order.pizzas.length - 1);
+      }
+      if (pizzaIndex < order.pizzas.length && pizzaIndex >= 0) {
+        setPizza(order.pizzas[pizzaIndex]);
+      }
+    }
   }, [pizzaIndex, order]);
 
   useEffect(() => {
@@ -65,7 +111,6 @@ const Pizza = () => {
       );
     }
   }, [menuLoading]);
-  
   if (menuError || orderError) {
     return (
       <div>
@@ -82,7 +127,8 @@ const Pizza = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <img
           src={require("../loader_pizza.gif")}
           alt="Loading"
@@ -93,42 +139,83 @@ const Pizza = () => {
   } else {
     return (
       <div className="container">
-        <h1 className="text-center">Create Pizza Page</h1>
+        <div className="row justify-content-between my-2">
+          <div className="col-3">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                navigate("/order");
+              }}
+            >
+              Back
+            </Button>
+          </div>
+
+          <div className="col-3 text-end">
+            <Button
+              onClick={() => {
+                navigate("/order");
+              }}
+            >
+              Finish
+            </Button>
+          </div>
+        </div>
         <div className="row">
-          {/* Pizza Types Dropdowns */}
-          <Button
-            onClick={() =>
-              setDropdownStates(
-                dropdownStates.map((s, i) => (i === 0 ? !s : s))
-              )
-            }
-            aria-controls="pizza-type-collapse"
-            aria-expanded={dropdownStates[0]}>
-            Pizza Types
-          </Button>
-          <Collapse in={dropdownStates[0]}>
-            <div id="pizza-type-collapse">
-              <div className="row">
-                {itemTypes.pizza_types.map((type, i) => (
-                  <ItemButton
-                    key={`${type}_${i}`}
-                    cardText={`${type.pizza_type} - $${type.pizza_price}`}
-                    imgName={`${type.pizza_type}.png`}
-                    onClick={() => {
-                      setPizza({ ...type, ingredients: pizza.ingredients });
-                      // console.log({...pizza, pizza_type:type})
-                    }}></ItemButton>
-                ))}
+
+          {/* Pizza Types Dropdown */}
+          <div className="ingredientDropdownContainer my-2">
+            <Button
+              onClick={() =>
+                setDropdownStates(
+                  dropdownStates.map((s, i) => (i === 0 ? !s : s))
+                )
+              }
+              aria-controls="pizza-type-collapse"
+              aria-expanded={dropdownStates[0]}
+              className="ingredientDropdown shadow-none"
+              variant="link"
+            >
+              Pizza Type
+              {!dropdownStates[0] ? (
+                <FontAwesomeIcon className="mx-2" icon={faCaretDown} />
+              ) : (
+                <FontAwesomeIcon className="mx-2" icon={faCaretUp} />
+              )}
+            </Button>
+
+            <Collapse in={dropdownStates[0]}>
+              <div id="pizza-type-collapse">
+                <div className="row justify-content-center">
+                  {itemTypes.pizza_types.map((type, i) => (
+                    <IngredientItemButton
+                      key={`${type}_${i}`}
+                      cardText={`${convertWord(type.pizza_type)} $${
+                        type.pizza_price
+                      }`}
+                      
+                      selected={pizza.pizza_type === type.pizza_type}
+                      onClick={() => {
+                        setPizza({ ...type, ingredients: pizza.ingredients });
+                        // console.log({...pizza, pizza_type:type})
+                      }}
+                    ></IngredientItemButton>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Collapse>
+            </Collapse>
+          </div>
 
           {/* Pizza Ingredients Dropdowns */}
           {ingredients_by_type ? (
             orderTypes(Object.keys(ingredients_by_type)).map((type, i) => {
               return (
-                <div key={`${type}_${i}`} className="my-2">
+                <div
+                  key={`${type}_${i}`}
+                  className="ingredientDropdownContainer my-2"
+                >
                   <Button
+                    variant="link"
                     onClick={() =>
                       setDropdownStates(
                         dropdownStates.map((s, ind) =>
@@ -137,38 +224,51 @@ const Pizza = () => {
                       )
                     }
                     aria-controls="pizza-type-collapse"
-                    aria-expanded={dropdownStates[i + 1]}>
+                    aria-expanded={dropdownStates[i + 1]}
+                    className="ingredientDropdown shadow-none"
+                  >
                     {convertWord(type)}
+                    {!dropdownStates[i + 1] ? (
+                      <FontAwesomeIcon className="mx-2" icon={faCaretDown} />
+                    ) : (
+                      <FontAwesomeIcon className="mx-2" icon={faCaretUp} />
+                    )}
                   </Button>
                   <Collapse in={dropdownStates[i + 1]}>
                     <div id="pizza-type-collapse">
                       <div className="row justify-content-center">
                         {ingredients_by_type[type].map((ingredient, i) => (
-                          <ItemButton
-                            selected={false}
+                          <IngredientItemButton
+                            selected={containsIngredient(
+                              ingredient.ingredient_id
+                            )}
                             key={`${ingredient.ingredient_name}_${i}`}
                             cardText={convertWord(ingredient.ingredient_name)}
-                            imgName={`${ingredient.ingredient_name}.png`}
                             onClick={() => {
-                              setPizza({
-                                ...pizza,
-                                ingredients: [
-                                  ...pizza.ingredients,
-                                  {
-                                    ingredient_id: `${ingredient.ingredient_id}`,
-                                  },
-                                ],
-                              });
-                              console.log({
-                                ...pizza,
-                                ingredients: [
-                                  ...pizza.ingredients,
-                                  {
-                                    ingredient_id: `${ingredient.ingredient_id}`,
-                                  },
-                                ],
-                              });
-                            }}></ItemButton>
+                              if (
+                                !containsIngredient(ingredient.ingredient_id)
+                              ) {
+                                setPizza({
+                                  ...pizza,
+                                  ingredients: [
+                                    ...pizza.ingredients,
+                                    {
+                                      ingredient_id: `${ingredient.ingredient_id}`,
+                                    },
+                                  ],
+                                });
+                              } else {
+                                setPizza({
+                                  ...pizza,
+                                  ingredients: pizza.ingredients.filter(
+                                    (ing) =>
+                                      ing.ingredient_id !==
+                                      "" + ingredient.ingredient_id
+                                  ),
+                                });
+                              }
+                            }}
+                          ></IngredientItemButton>
                         ))}
                       </div>
                     </div>
@@ -180,7 +280,6 @@ const Pizza = () => {
             <p>no menu yet</p>
           )}
 
-          {/* Order Collapse */}
         </div>
       </div>
     );
