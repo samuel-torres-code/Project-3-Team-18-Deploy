@@ -34,10 +34,12 @@ const Pickup = () => {
   return (
     <div className="container">
       <h1 className="text-center">Pickup Order Page</h1>
-      <div className="row g-4 py-5 row-cols-1 row-cols-sm-2">
+      <div className="row g-4 py-5 row-cols-1 row-cols-sm-1">
         <div className="feature col">
           {/* <h4><br></br></h4> */}
           <h4>Order Number: {orderid}</h4>
+          </div>
+          <div className="feature col">
           <h4>Estimated Pickup Time: {!loaded ? "--:--": ordertimehours + ":" + ordertimemins} {orderam}</h4>
 
           <p>
@@ -56,7 +58,6 @@ const Pickup = () => {
         {/* <p>
             <br></br>Want to create a new order? Click "New Order" Below:
           </p> */}
-          <p></p>
           <a href="/order">
             <Button variant="primary">Create New Order</Button>{' '}
           </a>
