@@ -53,6 +53,7 @@ const Order = () => {
   }
 
   function handleAddPizzaClick() {
+    addNewPizza();
     navigate(`/pizza`);
   }
 

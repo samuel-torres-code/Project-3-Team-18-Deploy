@@ -43,81 +43,71 @@ import { useState, useEffect } from "react";
 // }
 
 const useOrder = () => {
-    const [orderLoading, setOrderLoading] = useState(true)
-    const [orderError, setOrderError] = useState(null)
-    const [order, setOrder] = useState({
-        // order_info:{ 
-        //     emp_id: "-1", 
-        //     cust_name: ""
-        // },
-        // pizzas:[],
-        // drinks:[]
-    })
-    const [pizzas,setPizzas] = useState([])
-    const [drinks,setDrinks] = useState([])
-    const [seasonalItems, setSeasonalItems] = useState([]);
+  const [orderLoading, setOrderLoading] = useState(true);
+  const [orderError, setOrderError] = useState(null);
+  const [order, setOrder] = useState({
+    // order_info:{
+    //     emp_id: "-1",
+    //     cust_name: ""
+    // },
+    // pizzas:[],
+    // drinks:[]
+  });
+  const [pizzas, setPizzas] = useState([]);
+  const [drinks, setDrinks] = useState([]);
+  const [seasonalItems, setSeasonalItems] = useState([]);
 
-    useEffect(() => {
-        loadStorage()
-    },[])
+  useEffect(() => {
+    loadStorage();
+  }, []);
 
-    useEffect(() => {
-        if(!orderLoading) {
-            console.log('done loading')
-            updateStorage()
-        }
-        
-    },[order])
+  useEffect(() => {
+    if (!orderLoading) {
+      updateStorage();
+    }
+  }, [order]);
 
-    useEffect(() => {
-        console.log(orderLoading)
-        if(!orderLoading) {
-            
-            console.log(pizzas)
-            setOrder({
-                order_info: {...order.order_info},
-                pizzas: pizzas,
-                drinks: drinks,
-                seasonal_items: seasonalItems,
-            })
-        }
-    },[pizzas,drinks,seasonalItems])
+  useEffect(() => {
+    if (!orderLoading) {
+      setOrder({
+        order_info: { ...order.order_info },
+        pizzas: pizzas,
+        drinks: drinks,
+        seasonal_items: seasonalItems,
+      });
+    }
+  }, [pizzas, drinks, seasonalItems]);
 
-    const updateStorage = () => {
-        try {
-            console.log("updating storage with")
-            console.log(order)
-            localStorage.setItem('order', JSON.stringify(order));
-        }
-        catch(e) {
-            console.log("Trouble updating localStorage")
-            console.log(e);
-        }
-        
+  const updateStorage = () => {
+    try {
+      localStorage.setItem("order", JSON.stringify(order));
+    } catch (e) {
+      console.log("Trouble updating localStorage");
+      console.log(e);
+    }
+  };
+
+  const loadStorage = () => {
+    if (localStorage.getItem("order") == null) {
+      setOrder({
+        order_info: {
+          emp_id: "-1",
+          cust_name: "",
+        },
+        pizzas: [],
+        drinks: [],
+        seasonal_items: [],
+      });
+    } else {
+      const orderJSON = JSON.parse(localStorage.getItem("order"));
+      setOrder(orderJSON);
+      setPizzas(orderJSON.pizzas);
+      setSeasonalItems(orderJSON.seasonal_items);
+      setDrinks(orderJSON.drinks);
     }
 
-    const loadStorage = () => {
-        if(localStorage.getItem("order") == null) {
-            console.log('default order added')
-            setOrder({
-                order_info:{ 
-                    emp_id: "-1", 
-                    cust_name: ""
-                },
-                pizzas:[],
-                drinks:[],
-                seasonal_items: []})
-        }
-        else {
-            setOrder(JSON.parse(localStorage.getItem('order')));
-            console.log(JSON.parse(localStorage.getItem('order')))
-        }
-        console.log("orderr loaded")
-        setOrderLoading(false)
-    }
-
-
-  
+    setOrderLoading(false);
+  };
 
   const setOrderName = (name) => {
     setOrder({
@@ -144,19 +134,19 @@ const useOrder = () => {
   };
 
   const updatePizza = (updatedPizza, index) => {
-    
-    if(updatedPizza != null && typeof(updatedPizza) !== "undefined" && index < pizzas.length)
-    console.log('updating pizza with')
-    console.log(updatedPizza)
-    setPizzas(
-      pizzas.map((currPizza, i) =>
-        index === i ? updatedPizza : currPizza
-      )
-    );
+    if (
+      updatedPizza != null &&
+      typeof updatedPizza !== "undefined" &&
+      index < pizzas.length
+    )
+      setPizzas(
+        order.pizzas.map((currPizza, i) =>
+          index === i ? updatedPizza : currPizza
+        )
+      );
   };
 
   const addNewPizza = () => {
-    console.log('adding pizza')
     setPizzas([
       ...order.pizzas,
       {
@@ -165,7 +155,7 @@ const useOrder = () => {
         ingredients: [],
       },
     ]);
-    return pizzas.length
+    return pizzas.length;
   };
 
   const deletePizza = (index) => {
