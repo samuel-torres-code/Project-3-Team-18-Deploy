@@ -15,14 +15,13 @@ const pool = new Pool({
 
 
 router.post('/', function(req, res){
-    res.json({requestBody:  req.body});
     //extract main elements
     var order_details = req.body["order"];
     var pizza_details = req.body["pizzas"];
     var drink_details = req.body["drinks"];
     //update order table
     var order_insert = "INSERT INTO orders_web (emp_id, cust_name, order_num, time_stamp)"  +
-                        "VALUES ($1, $2, $3, Now()) RETURNING order_id";
+                        "VALUES ($1, $2, $3, Now()) RETURNING order_id, time_stamp";
     var emp_id = order_details["emp_id"]
     var cust_name = order_details["cust_name"];
     var order_num = -1;
@@ -31,7 +30,10 @@ router.post('/', function(req, res){
     {
         //extract id
 
-        var order_id = id['rows'][0]['order_id']
+        var order_id = id['rows'][0]['order_id'];
+        var order_time = id['rows'][0]['time_stamp'];
+        var response_obj = {'order_id': order_id, 'order_time': order_time};
+        res.json(response_obj)
         //send pizzas with order id
         var pizza_query = "INSERT INTO pizzas_web (order_id, pizza_type, pizza_price)" +  
                             "VALUES ($1, $2, $3) RETURNING pizza_id";

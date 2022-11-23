@@ -16,10 +16,12 @@ In another shell, run the following commands to start the frontend:
 ```npm i```
 ```npm start```
 
+To access our manager and employee pages, you will need a manager login.
 
-# Accessing Manager/Server View
+Please use the following:
 
-To access our manager and server pages, you need to be a manager or employee,
-use the following credentials to login as a manager:
-Username:```Arlo Prado```
+User:```Arlo Prado```
+
 Password:```6543```
+
+**Make sure you select the employee checkbox**
