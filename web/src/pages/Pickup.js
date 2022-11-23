@@ -41,6 +41,8 @@ const Pickup = () => {
           </div>
           <div className="feature col">
           <h4>Estimated Pickup Time: {!loaded ? "--:--": ordertimehours + ":" + ordertimemins} {orderam}</h4>
+          </div>
+          <div className="feature col">
 
           <p>
             Give your order number(or name) at the specified time to pickup your order!
@@ -49,15 +51,9 @@ const Pickup = () => {
           
         <div className="feature col">
         
-        {/* <p>
-          Return Home:
-        </p> */}
         <a href="/home">
           <Button variant="primary">Return Home</Button>{' '}
         </a>
-        {/* <p>
-            <br></br>Want to create a new order? Click "New Order" Below:
-          </p> */}
           <a href="/order">
             <Button variant="primary">Create New Order</Button>{' '}
           </a>
