@@ -6,7 +6,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
   const convertWord = (str) => {
     return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
   };
-  console.log(ingredient_dict)
+  
   return pizzas.map((pizza, index) => {
     return (
       <div key={pizza.pizza_type + index} className="row my-2">
@@ -97,10 +97,10 @@ const UserOrderCard = ({
     setLoad(false);
   }, [load]);
 
-  function handleEditPizza(index) {
-    console.log("Edit pizza:" + index);
-    setLoad(true);
-  }
+  // function handleEditPizza(index) {
+  //   console.log("Edit pizza:" + index);
+  //   setLoad(true);
+  // }
 
   function calculatePrice() {
     var total_price = 0.0;
