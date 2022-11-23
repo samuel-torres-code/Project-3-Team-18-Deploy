@@ -26,7 +26,7 @@ const Order = () => {
     deleteDrink,
     clearOrder,
   } = useOrder([]);
-  const { menuLoading, menuError, itemTypes } = useMenu([]);
+  const { menuLoading, menuError, itemTypes, ingredients_by_type } = useMenu([]);
 
   const navigate = useNavigate();
 
@@ -184,7 +184,8 @@ const Order = () => {
             deletePizza={deletePizza}
             editPizza={handleEditPizzaClick}
             handleCheckout={handleCheckout}
-            handleResetPage={clearOrder}></UserOrderCard>
+            handleResetPage={clearOrder}
+            ingredients_by_type={ingredients_by_type}></UserOrderCard>
         )}
       </div>
     );

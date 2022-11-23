@@ -186,14 +186,14 @@ const Pizza = () => {
 
             <Collapse in={dropdownStates[0]}>
               <div id="pizza-type-collapse">
-                <div className="row">
+                <div className="row justify-content-center">
                   {itemTypes.pizza_types.map((type, i) => (
                     <IngredientItemButton
                       key={`${type}_${i}`}
                       cardText={`${convertWord(type.pizza_type)} $${
                         type.pizza_price
                       }`}
-                      imgName={`${type.pizza_type}.png`}
+                      
                       selected={pizza.pizza_type === type.pizza_type}
                       onClick={() => {
                         setPizza({ ...type, ingredients: pizza.ingredients });

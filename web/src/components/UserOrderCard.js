@@ -2,11 +2,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 
-const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza }) => {
+const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_dict }) => {
   const convertWord = (str) => {
     return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
   };
-
+  console.log(ingredient_dict)
   return pizzas.map((pizza, index) => {
     return (
       <div key={pizza.pizza_type + index} className="row my-2">
@@ -18,7 +18,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza }) => {
             <p
               key={ingredient + pizza.pizza_type + index}
               className="text-left my-0">
-              {convertWord(''+ingredient.ingredient_id)}
+              {convertWord(ingredient_dict[ingredient.ingredient_id].ingredient_name)}
             </p>
           ))}
         </div>
@@ -89,6 +89,7 @@ const UserOrderCard = ({
   editPizza,
   handleResetPage,
   handleCheckout,
+  ingredients_by_type
 }) => {
   const [load, setLoad] = useState(true);
 
@@ -125,7 +126,11 @@ const UserOrderCard = ({
               <UserPizzaRows
                 pizzas={pizzas}
                 handleEditPizza={editPizza}
-                handleDeletePizza={deletePizza}></UserPizzaRows>
+                handleDeletePizza={deletePizza}
+                ingredient_dict={Object.values(ingredients_by_type).flat().reduce(function(map, obj) {
+                  map[obj.ingredient_id] = obj;
+                  return map;
+              }, {})}></UserPizzaRows>
             </li>
             <li className="list-group-item seasonal_items">
               <strong className="fs-5">Seasonal Items:</strong>
