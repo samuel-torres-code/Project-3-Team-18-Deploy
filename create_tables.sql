@@ -167,6 +167,12 @@ CREATE TABLE drink_types_web (
 
 INSERT INTO drink_types_web (drink_type, drink_price) SELECT drink_type, drink_price FROM drink_types;
 
+DROP TABLE IF EXISTS users_web_oauth;
+CREATE TABLE users_web_oauth (
+    user_id serial PRIMARY KEY,
+    username VARCHAR (255) UNIQUE NOT NULL,
+    email VARCHAR (255) UNIQUE NOT NULL
+);
 
 -- manual insert into orders_web
 insert into orders_web (emp_id, cust_name, order_num, time_stamp) VALUES (2, 'testcopy', 57, '2022-10-19') returning order_id;

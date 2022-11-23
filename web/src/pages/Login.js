@@ -1,12 +1,19 @@
 import bootstrap from "bootstrap";
+import ReactDOM from 'react-dom'
 import { useState, useEffect } from "react";
 import { Link, useAsyncError, useRouteLoaderData } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { API_URL } from "../API";
+import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import jwt_decode from "jwt-decode";
+
+const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
+const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
 
 const Login = () => {
+
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -14,28 +21,33 @@ const Login = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [isEmployee, setEmployee] = useState(false);
   const [isManager, setManager] = useState(false);
+
+  const [loading, setLoading] = useState('Please Wait.');
+  const [logoutFailure, setLogoutFailure] = useState(false);
+
   const client = axios.create({
     baseURL: API_URL
   })
 
   //login persistency
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("isLoggedIn");
-    const manager = localStorage.getItem("manager");
-    const employee = localStorage.getItem("employee");
-    if (loggedInUser === 'true') {
-      setLoggedIn(true);
-    }
-    else{
-      localStorage.setItem("log", "a");
-    }
-    if(manager === 'true'){
-      setManager(true);
-    }
-    if(employee === 'true'){
-      setEmployee(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const loggedInUser = localStorage.getItem("isLoggedIn");
+  //   const manager = localStorage.getItem("manager");
+  //   const employee = localStorage.getItem("employee");
+  //   if (loggedInUser === 'true') {
+  //     setLoggedIn(true);
+  //     setUser(localStorage.getItem("user"));
+  //   }
+  //   else{
+  //     localStorage.setItem("log", "a");
+  //   }
+  //   if(manager === 'true'){
+  //     setManager(true);
+  //   }
+  //   if(employee === 'true'){
+  //     setEmployee(true);
+  //   }
+  // }, []);
 
   //confirm that information is entered
   function infoCompleted() {
@@ -85,8 +97,12 @@ const Login = () => {
   }
 
   function logOut(){
+    setLoggedIn(false);
+    localStorage.setItem('employee', false);
+    localStorage.setItem('manager', false);
     localStorage.clear();
     localStorage.setItem("log", "a");
+    window.location.reload();
   }
 
   //cancel default login button function and handle it ourself
@@ -104,6 +120,7 @@ const Login = () => {
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
         localStorage.setItem('employee', false);
+        window.location.reload();
       }
       else{
         var b = res.data[0];
@@ -115,6 +132,7 @@ const Login = () => {
         localStorage.setItem('email', email);
         localStorage.setItem('manager', c);
         localStorage.setItem('employee', true);
+        window.location.reload();
       }
     })
     .catch((error) => {
@@ -132,7 +150,6 @@ const Login = () => {
     if(!loggedIn)
       secondaryLoginVerification();
     localStorage.setItem("log", "b");
-    window.location.reload();
     //clearValues();
   };
 
@@ -165,9 +182,91 @@ const Login = () => {
     }
   }
 
+  //check with backend for user and determine who it is
+  const registerGoogleLogin = async (event) => {
+    const loginData = await client.post('/api/login/google/login',{
+        user: event.name,
+        email: event.email,
+    }).then(res => {
+      if(res.data === true){
+        setLoggedIn(true);
+        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('user', event.name);
+        localStorage.setItem('email', event.email);
+        localStorage.setItem('employee', false);
+        localStorage.setItem("log", "b");
+        window.location.reload();
+      }
+      else{
+        registerGoogleLoginSecondary(event);
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
+    localStorage.setItem("log", "b");
+  };
+
+  //check with backend for user and determine who it is
+  const registerGoogleLoginSecondary = (event) => {
+    console.log(event);
+    const loginData = client.post('/api/login/google/login/secondary',{
+        user: event.name,
+        email: event.email,
+    }).then(res => {
+      if(res.data === true){
+        setLoggedIn(true);
+        setUser(event.name);
+        localStorage.setItem('isLoggedIn', true);
+        localStorage.setItem('user', event.name);
+        localStorage.setItem('email', event.email);
+        localStorage.setItem('employee', false);
+        localStorage.setItem("log", "b");
+        window.location.reload();
+      }
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
+    localStorage.setItem("log", "b");
+  };
+
+
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      const userInfo = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        { headers: { Authorization: `Bearer ${tokenResponse.access_token}` } },
+      );
+      var data = userInfo.data;
+      var username = data.name;
+      var email = data.email;
+      registerGoogleLogin(data);
+    },
+    onError: errorResponse => console.log(errorResponse),
+  });
+
+
   return(
     <div>
-      {((localStorage.getItem('isLoggedin') === 'false') || (localStorage.getItem('isLoggedin') === null)) && (loggedIn === false) &&
+      <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
+      {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
         (<Form>
 
           <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
@@ -199,13 +298,19 @@ const Login = () => {
           
             <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
           </div>
+
+          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+              <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}>Login With Google</Button>
+          </div>
+
         </Form>)
+
       }
       {(localStorage.getItem('isLoggedIn') === 'true') &&
         (<Form>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
           {(!isEmployee) && 
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome Back!</div>
+            <div style={{color: 'blue', fontSize: '40'}}>Welcome, {localStorage.getItem('user')}!</div>
           }
           {(isEmployee) && (!isManager) && 
             <div style={{color: 'blue', fontSize: '40'}}>Welcome, Server!</div>
@@ -223,18 +328,24 @@ const Login = () => {
           <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
           </div>
           <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <Link to={'/Home'}>
+          <Link to={'/Login'}>
             <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
           </Link>
           </div>
+
+          {(logoutFailure) &&
+            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+              <Form.Label style={{color: 'red',}}>Logout Failed. Perhaps You Signed In Without Google?</Form.Label>
+            </Form.Group>
+          }
           
         </Form>)
       }
+    </GoogleOAuthProvider>
     </div>
   );
 
 };
   
-
 
   export default Login;

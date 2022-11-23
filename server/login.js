@@ -87,6 +87,30 @@ router.post('/email', (req, res, next) => {
     });
 })
 
+router.post('/google/login', (req, res, next) => {
+    var queryStringTwo = "SELECT * FROM users_web_oauth where email='" + req.body.email + "';";
+    var send = false;
+    pool.query(queryStringTwo).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++) {
+            if(query_res.rows[i].email === req.body.email){
+                send = true;
+                return res.send(true);
+            }
+        }
+        if(!send){
+            return res.send(false);
+        }
+            
+    });
+})
+
+router.post('/google/login/secondary', (req, res, next) => {
+    var queryStringTwo = "insert into users_web_oauth (username, email) values ('" + req.body.user + "', '" + req.body.email + "');";
+    pool.query(queryStringTwo).then(query_res => {
+        return res.send(true);
+    });
+})
+
 router.get('/', function(req, res){
     res.send('default route /api/login');
 });

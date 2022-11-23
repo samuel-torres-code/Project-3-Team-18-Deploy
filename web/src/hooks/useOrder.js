@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect } from "react";
 
 // Example JSON Structure
 // {
@@ -29,11 +28,19 @@ import { useState, useEffect } from 'react';
 //             "drink_price": "2.49",
 //         },
 //         ...
+//     ],
+//     "seasonal_items": [
+//         {
+//             "item_name": "Chicken Wings",
+//             "item_price": "12.99",
+//         },
+//         {
+//             "item_name": "Lobster Mac",
+//             "item_price": "8.49",
+//         },
+//         ...
 //     ]
-
 // }
-
-
 
 const useOrder = () => {
     const [orderLoading, setOrderLoading] = useState(true)
@@ -48,6 +55,7 @@ const useOrder = () => {
     })
     const [pizzas,setPizzas] = useState([])
     const [drinks,setDrinks] = useState([])
+    const [seasonalItems, setSeasonalItems] = useState([]);
 
     useEffect(() => {
         loadStorage()
@@ -62,14 +70,18 @@ const useOrder = () => {
     },[order])
 
     useEffect(() => {
+        console.log(orderLoading)
         if(!orderLoading) {
+            
+            console.log(pizzas)
             setOrder({
                 order_info: {...order.order_info},
                 pizzas: pizzas,
                 drinks: drinks,
+                seasonal_items: seasonalItems,
             })
         }
-    },[pizzas,drinks])
+    },[pizzas,drinks,seasonalItems])
 
     const updateStorage = () => {
         try {
@@ -93,7 +105,8 @@ const useOrder = () => {
                     cust_name: ""
                 },
                 pizzas:[],
-                drinks:[]})
+                drinks:[],
+                seasonal_items: []})
         }
         else {
             setOrder(JSON.parse(localStorage.getItem('order')));
@@ -103,60 +116,104 @@ const useOrder = () => {
         setOrderLoading(false)
     }
 
-    const setOrderName = (name) => {
-        setOrder({
-            order_info: {
-                ...order.order_info,
-                cust_name: name,
-            },
-            pizzas:[...order.pizzas],
-            drinks:[...order.drinks]
-        })
-    }
 
-    const updatePizza = (updatedPizza,index) => {
-        setPizzas(order.pizzas.map((currPizza,i) => 
-            index===i ? updatedPizza:currPizza
-        ))
-        
-    }
+  
 
-    const addNewPizza = () => {
-        setPizzas([...order.pizzas,{
-            pizza_type: "",
-            pizza_price: "0.00",
-            ingredients: []
-        }])
-        
-    }
+  const setOrderName = (name) => {
+    setOrder({
+      order_info: {
+        ...order.order_info,
+        cust_name: name,
+      },
+      pizzas: [...order.pizzas],
+      drinks: [...order.drinks],
+      seasonal_items: [...order.seasonal_items],
+    });
+  };
 
-    const deletePizza = (index) => {
-        setPizzas([order.pizzas.filter((pizza,i) => i !== index)])
-        
-    }
+  const clearOrder = () => {
+    setOrder({
+      order_info: {
+        ...order.order_info,
+        cust_name: order.order_info.cust_name,
+      },
+      pizzas: [],
+      drinks: [],
+      seasonal_items: [],
+    });
+  };
 
-    const addDrink = (drink_type,drink_price) => {
-        setDrinks([
-            ...order.drinks,
-            {
-                drink_type:drink_type,
-                drink_price:drink_price,
-            }
-        ])
-        
-    }
+  const updatePizza = (updatedPizza, index) => {
+    
+    if(updatedPizza != null && typeof(updatedPizza) !== "undefined" && index < pizzas.length)
+    console.log('updating pizza with')
+    console.log(updatedPizza)
+    setPizzas(
+      pizzas.map((currPizza, i) =>
+        index === i ? updatedPizza : currPizza
+      )
+    );
+  };
 
+  const addNewPizza = () => {
+    console.log('adding pizza')
+    setPizzas([
+      ...order.pizzas,
+      {
+        pizza_type: "",
+        pizza_price: "0.00",
+        ingredients: [],
+      },
+    ]);
+    return pizzas.length
+  };
 
-    return {
-        orderLoading,
-        orderError,
-        order,
-        setOrderName,
-        addNewPizza,
-        updatePizza,
-        addDrink,
-        deletePizza,
-    }
-}
+  const deletePizza = (index) => {
+    setPizzas(order.pizzas.filter((pizza, i) => i !== index));
+  };
+
+  const addItem = (item) => {
+    setSeasonalItems([
+      ...order.seasonal_items,
+      {
+        item_name: item.item_name,
+        item_price: item.item_price,
+      },
+    ]);
+  };
+
+  const deleteItem = (index) => {
+    setSeasonalItems(order.seasonal_items.filter((item, i) => i !== index));
+  };
+
+  const addDrink = (drink) => {
+    setDrinks([
+      ...order.drinks,
+      {
+        drink_type: drink.drink_type,
+        drink_price: drink.drink_price,
+      },
+    ]);
+  };
+
+  const deleteDrink = (index) => {
+    setDrinks(order.drinks.filter((item, i) => i !== index));
+  };
+
+  return {
+    orderLoading,
+    orderError,
+    order,
+    setOrderName,
+    addNewPizza,
+    updatePizza,
+    deletePizza,
+    addDrink,
+    addItem,
+    deleteItem,
+    deleteDrink,
+    clearOrder,
+  };
+};
 
 export default useOrder;

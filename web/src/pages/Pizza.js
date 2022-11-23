@@ -11,6 +11,11 @@ import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import {
+
+  useSearchParams,
+
+} from "react-router-dom"
 import './Pizza.css'
 
 const convertWord = (str) => {
@@ -24,10 +29,14 @@ const orderTypes = (arr) => {
 };
 
 const Pizza = () => {
-  const [pizzaIndex, setPizzaIndex] = useState(0);
+  const [pizzaIndex, setPizzaIndex] = useState(-1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [dropdownStates, setDropdownStates] = useState([false]);
-  const [pizza, setPizza] = useState(null);
+  const [pizza, setPizza] = useState({
+    pizza_type: "",
+        pizza_price: "0.00",
+        ingredients: [],
+  });
   const {
     orderLoading,
     orderError,
@@ -38,8 +47,9 @@ const Pizza = () => {
     addDrink,
   } = useOrder([]);
   const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu();
-
   
+  const [queryParameters] = useSearchParams()
+  const indexURL = queryParameters.get("index")
 
   const containsIngredient = (ingredient_id_int) => {
     if (typeof pizza !== "undefined" && pizza != null) {
@@ -54,18 +64,27 @@ const Pizza = () => {
   //For Testing, remove later with dynamic url
   useEffect(() => {
     if (!orderLoading) {
-      if (order.pizzas.length < 1) {
-        addNewPizza();
+      if(indexURL) {
+        setPizzaIndex(indexURL);
       }
-      setPizzaIndex(order.pizzas.length - 1);
-      if (order.drinks.length < 1) {
-        addDrink("Fountain", "2.45");
+      else {
+        if(order.pizzas.length <1) {
+          addNewPizza()
+          setPizzaIndex(order.pizzas.length)
+        }
+        else {
+          setPizzaIndex(order.pizzas.length-1)
+        }
+          
+        
       }
+      
+      
     }
   }, [orderLoading]);
 
   useEffect(() => {
-    if (typeof pizza !== "undefined" && pizza != null) {
+    if (!orderLoading && pizzaIndex >= 0 ) {
       console.log("updating pizza");
       updatePizza(pizza, pizzaIndex);
     }
@@ -77,6 +96,7 @@ const Pizza = () => {
       console.log("setting pizza to index");
       console.log(pizzaIndex);
       if (pizzaIndex < order.pizzas.length) {
+        console.log(order.pizzas[pizzaIndex])
         setPizza(order.pizzas[pizzaIndex]);
       }
     }
@@ -105,8 +125,7 @@ const Pizza = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}
-      >
+        }}>
         <img
           src={require("../loader_pizza.gif")}
           alt="Loading"
