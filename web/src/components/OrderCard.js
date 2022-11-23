@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 const convertWord = (str) => {
   return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
-}
+};
 const DrinkCountRows = ({ drink_counts }) => {
   return drink_counts.map((drink, index) => {
     return (
@@ -27,8 +27,7 @@ const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
       <div className="col-2">
         <button
           onClick={() => handleDeleteSeasonalItem(index)}
-          className="btn btn-primary"
-        >
+          className="btn btn-primary">
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
@@ -57,8 +56,7 @@ const PizzaRows = ({
         {pizza.ingredients.map((ingredient, index) => (
           <p
             key={ingredient.ingredient_name + pizza.pizza_type + index}
-            className="text-left my-0"
-          >
+            className="text-left my-0">
             {convertWord(ingredient.ingredient_name)}
           </p>
         ))}
@@ -66,16 +64,14 @@ const PizzaRows = ({
       <div className="col-2 mx-1">
         <button
           onClick={() => handleEditPizza(pizza.pizza_id)}
-          className="btn btn-primary"
-        >
+          className="btn btn-primary">
           <FontAwesomeIcon icon={faPencil} />
         </button>
       </div>
       <div className="col-2 mx-1">
         <button
           onClick={() => handleDeletePizza(pizza.pizza_id)}
-          className="btn btn-primary"
-        >
+          className="btn btn-primary">
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
@@ -104,42 +100,36 @@ const OrderInfo = ({
         <Button
           onClick={() => handleSubmitName()}
           variant="outline-primary"
-          id="customer-enter-name"
-        >
+          id="customer-enter-name">
           Start Order
         </Button>
       </InputGroup>
     );
   } else {
     return (
-      
       <div className="container">
-        
         <div className="row">
           <div className="col-12">
-        <strong>Order Name: {order_info.name}</strong>
+            <strong>Order Name: {order_info.name}</strong>
+          </div>
+          <div className="col-xs-12 col-md-6">
+            <button
+              disabled={disabled}
+              className="btn btn-primary"
+              onClick={() => handleCheckout()}>
+              Checkout
+            </button>
+          </div>
+          <div className="col-xs-12 col-md-6">
+            <button
+              disabled={disabled}
+              className="btn btn-secondary"
+              onClick={() => resetPage()}>
+              Cancel
+            </button>
+          </div>
         </div>
-        <div className="col-xs-12 col-md-6">
-        <button
-          disabled={disabled}
-          className="btn btn-primary"
-          onClick={() => handleCheckout()}
-        >
-          Checkout
-        </button>
-        </div>
-        <div className="col-xs-12 col-md-6">
-        <button
-          disabled={disabled}
-          className="btn btn-secondary"
-          onClick={() => resetPage()}
-        >
-          Cancel
-        </button>
-        </div>
-        </div>
-        </div>
-      
+      </div>
     );
   }
 };
