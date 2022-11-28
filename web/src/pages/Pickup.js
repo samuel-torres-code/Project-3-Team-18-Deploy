@@ -1,5 +1,7 @@
 import Button from 'react-bootstrap/Button';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import GoogleMapsComp from "../components/GoogleMapsComp";
 
 
 const Pickup = () => {
@@ -9,6 +11,7 @@ const Pickup = () => {
   const [ordertimemins, setOrderTimeMins] = useState("--");
   const [orderam, setOrderam] = useState("");
   const [loaded, setLoaded] = useState(false);
+
   useEffect(() =>
   {
     if(!loaded && localStorage.getItem("order_id") !== null)
@@ -27,10 +30,8 @@ const Pickup = () => {
       setOrderam(order_am);
       setLoaded(true);
     }
-    
-    
-
   })
+
   return (
     <div className="container">
       <h1 className="text-center">Pickup Order Page</h1>
@@ -48,9 +49,10 @@ const Pickup = () => {
             Give your order number(or name) at the specified time to pickup your order!
           </p>
         </div>
-          
+        <div>
+          <GoogleMapsComp></GoogleMapsComp>
+        </div>  
         <div className="feature col">
-        
         <a href="/home">
           <Button variant="primary">Return Home</Button>{' '}
         </a>
@@ -58,7 +60,7 @@ const Pickup = () => {
             <Button variant="primary">Create New Order</Button>{' '}
           </a>
         </div>
-
+        
       </div>
     </div>
 
