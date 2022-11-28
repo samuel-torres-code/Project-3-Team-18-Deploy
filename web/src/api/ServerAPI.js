@@ -36,5 +36,10 @@ export const postOrder = (reqJson) => {
     })
     .catch((error) => {
       console.log(error);
+    }).then((res) =>
+    {
+        localStorage.setItem("order_id", res.data["order_id"]);
+        localStorage.setItem("order_time_hours", res.data["order_time_hours"]);
+        localStorage.setItem("order_time_mins", res.data["order_time_mins"]);
     });
 };
