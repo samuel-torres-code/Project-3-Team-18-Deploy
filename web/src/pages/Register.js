@@ -26,11 +26,15 @@ const Register = () => {
     }
   }, []);
 
+  /* Set the reg component for the system, allows us to check for registration statuses
+   */
   function setReg(){
     reg = "a";
   }
 
-  //confirm that infomation is entered and passwords match
+  /* Ensure that the username, email, password, and confirmation password have actually been filled
+   * @return bool with the above state
+   */
   function infoCompleted() {
     return user.length > 0 && pass.length > 0 && email.length > 0 && confPass.length > 0 && confPass === pass;
   }

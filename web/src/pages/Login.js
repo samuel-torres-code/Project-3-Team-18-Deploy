@@ -10,8 +10,9 @@ import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/g
 import jwt_decode from "jwt-decode";
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 const API_KEY = 'AIzaSyCefZMhaCPEy7b22mkXdHMOs4Vodctx9W8';
+
 const Login = () => {
-  
+
   //initialize necessary settings for useState functions
   const [user, setUser] = useState('');
   const [email, setEmail] = useState('');
@@ -45,44 +46,59 @@ const Login = () => {
     }
   }, []);
 
-  //confirm that information is entered
+  /* confirm that information is entered
+   * @return a bool ensuring username and password were actually input
+   */
   function infoCompleted() {
     return user.length > 0 && pass.length > 0;
   }
+
   //update the user to the given user
   const changeUser = (event) => {
     setUser(event.target.value);
     changeEmail(event);
   };
+
   //update email to the given email
   const changeEmail = (event) => {
     setEmail(event.target.value);
   };
+
   //update the password to the given password
   const changePass = (event) => {
     setPass(event.target.value);
   };
+
   //determine if user login was successful
   const changeLoggedIn = (event) => {
     setLoggedIn(event.target.value);
   }
+
   //set the employee is user is an employee
   const changeEmployee = (event) => {
     setEmployee(event);
   }
+
   //update the manager value is necessary
   const changeManager = (event) => {
     setManager(event);
   };
+
   //In the event we need to immediately clear for some reason
   const clearValues = () => {
     setEmail('');
     setPass('');
     setUser('');
   };
+
+  /* Function to ensure that we change log of the system
+   */
   function changeLog(){
     localStorage.setItem("log", "a");
   }
+
+  /* Function to log the user out of the system to allow for logging back in
+   */
   function logOut(){
     setLoggedIn(false);
     localStorage.setItem('employee', false);
@@ -91,6 +107,7 @@ const Login = () => {
     localStorage.setItem("log", "a");
     window.location.reload();
   }
+
   //cancel default login button function and handle it ourself
   const registerLogin = async (event) => {
     event.preventDefault();
@@ -137,6 +154,7 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
+  //If primary verification fails then check for email login usage
   const secondaryLoginVerification = (event) =>{
     if(!loggedIn){
       const emailData = client.post('/api/login/email',{
@@ -165,6 +183,7 @@ const Login = () => {
       });
     }
   }
+
   //check with backend for user and determine who it is
   const registerGoogleLogin = async (event) => {
     const loginData = await client.post('/api/login/google/login',{
@@ -198,7 +217,7 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-  //check with backend for user and determine who it is
+  //If user who logged in with Google does not exist, create an account for them and log them in
   const registerGoogleLoginSecondary = (event) => {
     console.log(event);
     const loginData = client.post('/api/login/google/login/secondary',{
@@ -230,6 +249,11 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
+  /* Google Login Function. We ping Google API and get user information when they try to log in
+   * This gives us user's name and email so we may verify they exist in our system or create them an account
+   * On a successful login on Google's side, we ping our own database for the user.
+   * On a failed login we respond with an error log. This likely means the error happened on Google's end and we can't fix.
+   */
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       const userInfo = await axios.get(
@@ -244,6 +268,7 @@ const Login = () => {
     },
     onError: errorResponse => console.log(errorResponse),
   });
+
   return(
     <div>
       <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
