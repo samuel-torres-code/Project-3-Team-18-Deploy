@@ -28,7 +28,7 @@ const markLoader = marker => {
 function GoogleMapsComp() {
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: 'AIzaSyCVpSE69FdbZzPIptE2_T0pXIePBa-W5Og'
+        googleMapsApiKey: process.env.REACT_APP_API_KEY
     })
     const [zoomUse, setZoom] = useState(0)
     const [map, setMap] = useState(null)
