@@ -7,7 +7,6 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { API_URL } from "../API";
 import { GoogleOAuthProvider, GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import jwt_decode from "jwt-decode";
 const clientId = "353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com";
 
 const Login = () => {
