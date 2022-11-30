@@ -34,7 +34,7 @@ const Login = () => {
       setUser(localStorage.getItem("user"));
     }
     else{
-      localStorage.setItem("log", "a");
+      //localStorage.setItem("log", "a");
     }
     if(manager === 'true'){
       setManager(true);
