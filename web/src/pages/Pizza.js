@@ -2,11 +2,6 @@ import { useState, useEffect } from "react";
 import IngredientItemButton from "../components/IngredientItemButton";
 import useOrder from "../hooks/useOrder";
 import useMenu from "../hooks/useMenu";
-import {
-  getIngredientsByType,
-  getItemTypes,
-  postOrder,
-} from "../api/ServerAPI";
 import Button from "react-bootstrap/Button";
 import Collapse from "react-bootstrap/Collapse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,10 +40,11 @@ const Pizza = () => {
     orderLoading,
     orderError,
     order,
-    addNewPizza,
-    updatePizza,
+    addNewPizzaAsync,
+    updatePizzaAsync,
     deletePizza,
     addDrink,
+    saving
   } = useOrder([]);
   const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu();
 
@@ -70,47 +66,89 @@ const Pizza = () => {
     if (!orderLoading) {
       if (indexURL != null && typeof indexURL !== "undefined") {
         setPizzaIndex(indexURL);
-      } else {
-        if (order.pizzas.length === 0) {
-          addNewPizza();
-          setPizzaIndex(0);
-        } else {
-          addNewPizza();
-          setPizzaIndex(order.pizzas.length);
-        }
-      }
+        setPizza(order.pizzas[indexURL]);
+      } 
+      
+      // else {
+      //   // if (order.pizzas.length === 0) {
+      //   //   addNewPizza();
+      //   //   setPizzaIndex(0);
+      //   // } else {
+      //   //   addNewPizza();
+      //   //   setPizzaIndex(order.pizzas.length);
+      //   // }
+      //}
     }
   }, [orderLoading]);
 
   useEffect(() => {
-    if (!orderLoading && pizzaIndex >= 0) {
-      updatePizza(pizza, pizzaIndex);
-    }
+    // console.log(pizzaIndex)
+    // if (!orderLoading && pizzaIndex >= 0) {
+    //   console.log('update pizza')
+    //   console.log(pizza)
+    //   updatePizza(pizza, pizzaIndex);
+    // }
   }, [pizza]);
 
   useEffect(() => {
-    if (!orderLoading) {
-      if (
-        pizzaIndex == -1 &&
-        order.pizzas.length > 0 &&
-        indexURL != null &&
-        typeof indexURL !== "undefined"
-      ) {
-        setPizzaIndex(order.pizzas.length - 1);
-      }
-      if (pizzaIndex < order.pizzas.length && pizzaIndex >= 0) {
-        setPizza(order.pizzas[pizzaIndex]);
-      }
-    }
+    // if (!orderLoading) {
+    //   if (
+    //     pizzaIndex == -1 &&
+    //     order.pizzas.length > 0 &&
+    //     indexURL != null &&
+    //     typeof indexURL !== "undefined"
+    //   ) {
+    //     //setPizzaIndex(order.pizzas.length - 1);
+    //   }
+    //   if (pizzaIndex < order.pizzas.length && pizzaIndex >= 0) {
+    //     setPizza(order.pizzas[pizzaIndex]);
+    //   }
+    // }
   }, [pizzaIndex, order]);
 
   useEffect(() => {
     if (menuLoading === false) {
+      console.log("resetting buttons")
       setDropdownStates(
         Array(Object.keys(ingredients_by_type).length).fill(false)
       );
     }
   }, [menuLoading]);
+
+  const handleSavePizza = () => {
+    //If index == -1
+    if(pizzaIndex === -1) {
+      //  add pizza
+      addNewPizzaAsync(pizza).then(() => {
+        //Cheeky little workaround
+        //Not professional at all
+        //Needed because navigate rerenders useOrder before it can update the order state
+        // and put in local storage
+        setTimeout(() => {
+          navigate('/order');
+        },100)
+      });
+      
+    }
+    else {
+      
+      //  Save pizza
+      //  Same workaround needed
+      updatePizzaAsync(pizza,pizzaIndex).then(() => {
+        setTimeout(() => {
+          navigate('/order');
+        },100)
+        
+      });
+    }
+    
+
+     
+
+    //Redirect to order
+    //navigate('/order');
+  }
+
   if (menuError || orderError) {
     return (
       <div>
@@ -154,7 +192,7 @@ const Pizza = () => {
           <div className="col-3 text-end">
             <Button
               onClick={() => {
-                navigate("/order");
+               handleSavePizza();
               }}
             >
               Finish
@@ -245,9 +283,11 @@ const Pizza = () => {
                             key={`${ingredient.ingredient_name}_${i}`}
                             cardText={convertWord(ingredient.ingredient_name)}
                             onClick={() => {
+                              //console.log(containsIngredient(ingredient.ingredient_id))
                               if (
                                 !containsIngredient(ingredient.ingredient_id)
                               ) {
+                                //console.log("adding ingredient")
                                 setPizza({
                                   ...pizza,
                                   ingredients: [
@@ -258,6 +298,7 @@ const Pizza = () => {
                                   ],
                                 });
                               } else {
+                                console.log("removing ingredient")
                                 setPizza({
                                   ...pizza,
                                   ingredients: pizza.ingredients.filter(

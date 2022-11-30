@@ -63,12 +63,16 @@ const useOrder = () => {
 
   useEffect(() => {
     if (!orderLoading) {
+      console.log('order effect')
+      console.log(order)
       updateStorage();
     }
   }, [order]);
 
   useEffect(() => {
     if (!orderLoading) {
+      console.log('updating order')
+      console.log(pizzas)
       setOrder({
         order_info: { ...order.order_info },
         pizzas: pizzas,
@@ -80,7 +84,10 @@ const useOrder = () => {
 
   const updateStorage = () => {
     try {
+      
       localStorage.setItem("order", JSON.stringify(order));
+      console.log(order)
+      console.log('updated order')
     } catch (e) {
       console.log("Trouble updating localStorage");
       console.log(e);
@@ -138,22 +145,49 @@ const useOrder = () => {
       updatedPizza != null &&
       typeof updatedPizza !== "undefined" &&
       index < pizzas.length
-    )
+    ) {
+    const newPizzas = order.pizzas.map((currPizza, i) => Number(index) === i ? updatedPizza : currPizza)
+
       setPizzas(
-        order.pizzas.map((currPizza, i) =>
-          index === i ? updatedPizza : currPizza
-        )
+        newPizzas
       );
+    }
   };
 
-  const addNewPizza = () => {
+  const updatePizzaAsync = async (updatedPizza, index) => {
+    if (
+      updatedPizza != null &&
+      typeof updatedPizza !== "undefined" &&
+      index < pizzas.length
+    ) {
+    const newPizzas = order.pizzas.map((currPizza, i) => Number(index) === i ? updatedPizza : currPizza)
+
+      setPizzas(
+        newPizzas
+      );
+    }
+  };
+
+  const addNewPizza = (pizza = {
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  }) => {
     setPizzas([
       ...order.pizzas,
-      {
-        pizza_type: "",
-        pizza_price: "0.00",
-        ingredients: [],
-      },
+      pizza,
+    ]);
+    return pizzas.length;
+  };
+
+  const addNewPizzaAsync = async (pizza = {
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  }) => {
+    setPizzas([
+      ...order.pizzas,
+      pizza,
     ]);
     return pizzas.length;
   };
@@ -197,6 +231,8 @@ const useOrder = () => {
     setOrderName,
     addNewPizza,
     updatePizza,
+    addNewPizzaAsync,
+    updatePizzaAsync,
     deletePizza,
     addDrink,
     addItem,

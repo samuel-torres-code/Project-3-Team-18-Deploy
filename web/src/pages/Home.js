@@ -1,6 +1,8 @@
-
+import { useNavigate } from 'react-router';
 import './Home.css';
 const Home = () => {
+    const navigate = useNavigate();
+
     return (
       <div >
         <div className="homeContainer container-fluid" >
@@ -12,7 +14,7 @@ const Home = () => {
           <p>
             Vine-ripened tomato red sauce, antioxidant-rich cherry tomatoes, fresh basil leaves & fresh dough, made in-house daily.
           </p>
-          <button className="btn btn-primary"> Order Now </button>
+          <button onClick={() => navigate('/order')} className="btn btn-primary"> Order Now </button>
           </div>
           </div>
         </div>
