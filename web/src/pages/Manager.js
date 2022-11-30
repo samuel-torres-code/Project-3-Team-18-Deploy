@@ -22,6 +22,8 @@ function Manager() {
 
   const [load, setLoad] = useState(true);
 
+  const protectedIngredients = [];
+
   const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu(
     []
   );
@@ -202,9 +204,16 @@ function Manager() {
   }
 
   function handleRemoveClick() {
+    for (var i = 0; i < selectedIngredients.length; ++i) {
+      if (selectedIngredients[i] in protectedIngredients) {
+        console.error("Unable to remove ingredient: " + selectedIngredients[i] + ".");
+        selectedIngredients.splice(i, 1);
+        i--;
+      }
+    }
     if (selectedIngredients.length === 0) {
       console.error(
-        "Invalid Input for Remove Ingredients: No ingredients are selected."
+        "Invalid Input for Remove Ingredients: No valid ingredients are selected."
       );
     } else {
       client

@@ -44,9 +44,14 @@ const Layout = () => {
               {localStorage.getItem("manager") === "true" &&
                 localStorage.getItem("isLoggedIn") === "true" &&
                 localStorage.getItem("employee") === "true" && (
-                  <LinkContainer to="/manager">
-                    <Nav.Link active={false}>Manager</Nav.Link>
-                  </LinkContainer>
+                  <>
+                    <LinkContainer to="/manager">
+                      <Nav.Link active={false}>Manager</Nav.Link>
+                    </LinkContainer>
+                    <LinkContainer to="/reports">
+                      <Nav.Link active={false}>Reports</Nav.Link>
+                    </LinkContainer>
+                  </>
                 )}
               {localStorage.getItem("employee") === "true" &&
                 localStorage.getItem("isLoggedIn") === "true" && (
