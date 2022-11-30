@@ -385,10 +385,10 @@ function Manager() {
             <table className="w-100">
               <thead className="table-header position-sticky">
                 <tr>
-                  <th className="px-1"><span className='translate'>Ingredient</span></th>
-                  <th className="px-1"><span className='translate'>Type</span></th>
-                  <th className="px-1"><span className='translate'>Inventory</span></th>
-                  <th className="px-1"><span className='translate'>Select</span></th>
+                  <th className="px-1">Ingredient</th>
+                  <th className="px-1">Type</th>
+                  <th className="px-1">Inventory</th>
+                  <th className="px-1">Select</th>
                 </tr>
               </thead>
               <tbody>
@@ -397,8 +397,8 @@ function Manager() {
                     <tr
                       key={key}
                       className="table-row border-top border-secondary">
-                      <td><span className='translate'>{val.name}</span></td>
-                      <td><span className='translate'>{val.type}</span></td>
+                      <td>{val.name}</td>
+                      <td>{val.type}</td>
                       <td>{val.inventory}</td>
                       <td>
                         <input
