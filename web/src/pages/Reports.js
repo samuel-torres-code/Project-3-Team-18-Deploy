@@ -6,7 +6,7 @@ import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 
 const Reports = () => {
-  const [loadTab, setLoadTab] = useState("");
+  const [loadTab, setLoadTab] = useState("Sales Report");
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState(false);
 
