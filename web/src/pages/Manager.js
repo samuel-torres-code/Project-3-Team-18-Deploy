@@ -350,6 +350,8 @@ function Manager() {
       x[i].checked = false;
     }
   }
+  
+  if((localStorage.getItem("employee") === 'true'))
   if (menuError) {
     return (
       <div>
