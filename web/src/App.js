@@ -9,8 +9,9 @@ import Register from "./pages/Register.js";
 import Order from "./pages/Order.js";
 import Pizza from "./pages/Pizza.js";
 import Pickup from "./pages/Pickup.js";
+import Reports from "./pages/Reports.js";
 import "./App.scss";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
                 <Route path="home" element={<Home />} />
                 <Route path="server" element={<Server />} />
                 <Route path="manager" element={<Manager />} />
+                <Route path="reports" element={<Reports />} />
                 <Route path="login" element={<Login />} />
                 <Route path="order" element={<Order />} />
                 <Route path="pizza" element={<Pizza />} />
@@ -33,7 +35,8 @@ function App() {
               </Route>
             </Routes>
           </BrowserRouter>
-        </GoogleOAuthProvider>;
+        </GoogleOAuthProvider>
+      ;
       </div>
     </div>
   );

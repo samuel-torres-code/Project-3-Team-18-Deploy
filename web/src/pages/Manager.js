@@ -3,7 +3,6 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import axios from "axios";
 import { API_URL } from "../API";
-import useMenu from "../hooks/useMenu";
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -22,10 +21,9 @@ function Manager() {
   const [condrender, setcondrender] = useState(localStorage.getItem('manager'));
 
   const [load, setLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu(
-    []
-  );
+  const protectedIngredients = [];
 
   const client = axios.create({
     baseURL: API_URL,
@@ -35,6 +33,7 @@ function Manager() {
     setLoad(false);
     loadIngredients();
     loadMenuItems();
+    setLoading(false);
   }, [load]);
 
   function loadIngredients() {
@@ -206,9 +205,16 @@ function Manager() {
   }
 
   function handleRemoveClick() {
+    for (var i = 0; i < selectedIngredients.length; ++i) {
+      if (selectedIngredients[i] in protectedIngredients) {
+        console.error("Unable to remove ingredient: " + selectedIngredients[i] + ".");
+        selectedIngredients.splice(i, 1);
+        i--;
+      }
+    }
     if (selectedIngredients.length === 0) {
       console.error(
-        "Invalid Input for Remove Ingredients: No ingredients are selected."
+        "Invalid Input for Remove Ingredients: No valid ingredients are selected."
       );
     } else {
       client
@@ -356,13 +362,7 @@ function Manager() {
   }
   
   if(condrender === 'true'){
-    if (menuError) {
-      return (
-        <div>
-          <p>Menu Error: {menuError}</p>
-        </div>
-      );
-    } else if (menuLoading) {
+    if (loading) {
       return (
         <div
           style={{
