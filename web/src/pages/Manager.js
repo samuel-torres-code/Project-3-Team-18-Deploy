@@ -3,7 +3,6 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import axios from "axios";
 import { API_URL } from "../API";
-import useMenu from "../hooks/useMenu";
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -21,12 +20,9 @@ function Manager() {
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
 
   const [load, setLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const protectedIngredients = [];
-
-  const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu(
-    []
-  );
 
   const client = axios.create({
     baseURL: API_URL,
@@ -36,6 +32,7 @@ function Manager() {
     setLoad(false);
     loadIngredients();
     loadMenuItems();
+    setLoading(false);
   }, [load]);
 
   function loadIngredients() {
@@ -359,13 +356,7 @@ function Manager() {
       x[i].checked = false;
     }
   }
-  if (menuError) {
-    return (
-      <div>
-        <p>Menu Error: {menuError}</p>
-      </div>
-    );
-  } else if (menuLoading) {
+  if (loading) {
     return (
       <div
         style={{

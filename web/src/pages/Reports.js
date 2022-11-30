@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import AddItemCard from "../components/AddItemCard";
-import UserOrderCard from "../components/UserOrderCard";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
@@ -30,7 +28,7 @@ const Reports = () => {
   );
 
   function makeAlert(text) {
-    setAlertText(`Added ${text} to Order!`);
+    setAlertText(text);
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -77,7 +75,6 @@ const Reports = () => {
                   : "nav-link fw-bolder fs-5 link-secondary"
               }
               value="Sales Report"
-              aria-current="page"
               onClick={handleSwitchTab}>
               Sales Report
             </button>
