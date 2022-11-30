@@ -1,5 +1,5 @@
 # Project-3-Team-18
-Webpage for Spin 'N Stone Pizza built in Java Spring + React.js
+Webpage for Spin 'N Stone Pizza built with Node.js, Express.js, and React-Bootstrap.js
 
 # Running the project
 
