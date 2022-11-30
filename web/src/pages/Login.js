@@ -268,76 +268,76 @@ const Login = () => {
   });
 
   return(
-    <div>
-      <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
-      {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
-        (<Form>
-          <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
-            <Form.Label>Email or Username</Form.Label>
-            <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
-          </Form.Group>
-          <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" value={pass} onChange={changePass}/>
-          </Form.Group>
-          {(localStorage.getItem('log') === "b") &&
-            (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-              <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
-                <Form.Label style={{color: 'red',}}>Login Failed. Please Re-enter Credentials</Form.Label>
-              </Form.Group>
-            </div>)
-          }
-          <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
-            <Form.Check className="mx-auto" type={"checkbox"} label={"Employee?"} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
-          </Form.Group>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-            <Link to={'/Home'}>
-              <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}>Login</Button>
-            </Link>
-          
-            <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link">Need to Register?</Button></Link>
-          </div>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-              <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}>Login With Google</Button>
-          </div>
-        </Form>)
-      }
-      {(localStorage.getItem('isLoggedIn') === 'true') &&
-        (<Form>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          {(!isEmployee) && 
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome, {localStorage.getItem('user')}!</div>
-          }
-          {(isEmployee) && (!isManager) && 
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome, Server!</div>
-          }
-          {(isEmployee) && (isManager) &&
-            <div style={{color: 'blue', fontSize: '40'}}>Welcome, Manager!</div>
-          }
-          </div>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <Link to={'/Home'}>
-            <Button className="btn btn-primary mx-auto mt-1 mb-3" variant="primary" type="button" style={{width: '100%'}} onClick={changeLog}>Back To Home</Button>
-          </Link>
-          </div>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <div style={{color: 'blue', fontSize: '40'}}>Need to Log Out?</div>
-          </div>
-          <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
-          <Link to={'/Login'}>
-            <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}>Log Out</Button>
-          </Link>
-          </div>
-          {(logoutFailure) &&
-            <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
-              <Form.Label style={{color: 'red',}}>Logout Failed. Perhaps You Signed In Without Google?</Form.Label>
+      <div>
+        <GoogleOAuthProvider clientId="353017377567-v6vncaa13jatei1ngfk32gg371fgva5b.apps.googleusercontent.com">
+        {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) && (loggedIn === false) &&
+          (<Form>
+            <Form.Group className="mt-3 mx-auto" controlId="loginUser" style={{width: '50%'}}>
+              <Form.Label><span className='translate'>Email or Username</span></Form.Label>
+              <Form.Control type="email" placeholder="Email or Username" value={user} onChange={changeUser}/>
             </Form.Group>
-          }
-          
-        </Form>)
-      }
-    </GoogleOAuthProvider>
-    </div>
+            <Form.Group className="mt-3 mx-auto" controlId="loginPass" style={{width: '50%'}}>
+              <Form.Label><span className='translate'>Password</span></Form.Label>
+              <Form.Control type="password" placeholder={"Password"} value={pass} onChange={changePass}/>
+            </Form.Group>
+            {(localStorage.getItem('log') === "b") &&
+              (<div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+                <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+                  <Form.Label style={{color: 'red',}}><span className='translate'>Login Failed. Please Re-enter Credentials</span></Form.Label>
+                </Form.Group>
+              </div>)
+            }
+            <Form.Group className="mx-auto" style={{display: 'flex', align: 'center'}}>
+              <Form.Check className="mx-auto" type={"checkbox"} label={<span className='translate'>Employee?</span>} style={{display: 'flex', align: 'center'}} checked={isEmployee} onChange={(e) => setEmployee(e.target.checked)} />
+            </Form.Group>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+              <Link to={'/Home'}>
+                <Button className="btn btn-primary mx-3 mt-3" style={{width:'100%'}} variant="primary" type="submit" disabled={!infoCompleted()} onClick={registerLogin}><span className='translate'>Login</span></Button>
+              </Link>
+            
+              <Link to={'/Register'}><Button className="mx-3 mt-3"  style={{width:'90%'}} variant="link"><span className='translate'>Need to Register?</span></Button></Link>
+            </div>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+                <Button className="btn btn-primary mx-3 mt-3" style={{width:'50%'}} onClick={() => login()}><span className='translate'>Login With Google</span></Button>
+            </div>
+          </Form>)
+        }
+        {(localStorage.getItem('isLoggedIn') === 'true') &&
+          (<Form>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            {(!isEmployee) && 
+              <div style={{color: 'blue', fontSize: '40'}}><span className='translate'>Welcome, {localStorage.getItem('user')}!</span></div>
+            }
+            {(isEmployee) && (!isManager) && 
+              <div style={{color: 'blue', fontSize: '40'}}><span className='translate'>Welcome, Server!</span></div>
+            }
+            {(isEmployee) && (isManager) &&
+              <div style={{color: 'blue', fontSize: '40'}}><span className='translate'>Welcome, Manager!</span></div>
+            }
+            </div>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Link to={'/Home'}>
+              <Button className="btn btn-primary mx-auto mt-1 mb-3" variant="primary" type="button" style={{width: '100%'}} onClick={changeLog}><span className='translate'>Back To Home</span></Button>
+            </Link>
+            </div>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <div style={{color: 'blue', fontSize: '40'}}><span className='translate'>Need to Log Out?</span></div>
+            </div>
+            <div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            <Link to={'/Login'}>
+              <Button className="btn btn-primary mx-auto mt-1" variant="primary" type="button" style={{width: '100%'}} onClick={logOut}><span className='translate'>Log Out</span></Button>
+            </Link>
+            </div>
+            {(logoutFailure) &&
+              <Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+                <Form.Label style={{color: 'red',}}><span className='translate'>Logout Failed. Perhaps You Signed In Without Google?</span></Form.Label>
+              </Form.Group>
+            }
+            
+          </Form>)
+        }
+      </GoogleOAuthProvider>
+      </div>
   );
 };
   

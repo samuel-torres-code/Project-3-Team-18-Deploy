@@ -10,7 +10,7 @@ const DrinkCountRows = ({ drink_counts }) => {
   return drink_counts.map((drink, index) => {
     return (
       <p key={drink.drink_name + index} className="my-0">
-        {drink.drink_name} Drink: {drink.drink_count}
+        {drink.drink_name}<span className='translate'>Drink: </span>{drink.drink_count}
       </p>
     );
   });
@@ -101,23 +101,24 @@ const OrderInfo = ({
           onClick={() => handleSubmitName()}
           variant="outline-primary"
           id="customer-enter-name">
-          Start Order
+          <span className='translate'>Start Order</span>
         </Button>
       </InputGroup>
     );
   } else {
     return (
+      <span className='translate'>
       <div className="container">
         <div className="row">
           <div className="col-12">
-            <strong>Order Name: {order_info.name}</strong>
+            <strong><span className='translate'>Order Name: {order_info.name}</span></strong>
           </div>
           <div className="col-xs-12 col-md-6">
             <button
               disabled={disabled}
               className="btn btn-primary"
               onClick={() => handleCheckout()}>
-              Checkout
+              <span className='translate'>Checkout</span>
             </button>
           </div>
           <div className="col-xs-12 col-md-6">
@@ -125,11 +126,12 @@ const OrderInfo = ({
               disabled={disabled}
               className="btn btn-secondary"
               onClick={() => resetPage()}>
-              Cancel
+              <span className='translate'>Cancel</span>
             </button>
           </div>
         </div>
       </div>
+      </span>
     );
   }
 };
@@ -175,18 +177,18 @@ const OrderCard = ({
           </li>
           <div style={{ maxHeight: "80vh", overflowY: "scroll" }}>
             <li className="list-group-item">
-              <strong>Drink:</strong>
+              <strong><span className='translate'>Drink:</span></strong>
               <DrinkCountRows drink_counts={drink_counts} />
             </li>
             <li className="list-group-item">
-              <strong>Seasonal Item:</strong>
+              <strong><span className='translate'>Seasonal Item:</span></strong>
               <SeasonalItemRows
                 handleDeleteSeasonalItem={handleDeleteSeasonalItem}
                 seasonal_items={seasonal_items}
               />
             </li>
             <li className="list-group-item">
-              <strong>Pizza:</strong>
+              <strong><span className='translate'>Pizza:</span></strong>
               <PizzaRows
                 currentPizzaID={currentPizzaID}
                 pizzas={pizzas}
@@ -195,7 +197,7 @@ const OrderCard = ({
               />
             </li>
             <li className="list-group-item">
-              <strong>Total Price: {calculatePrice()}</strong>
+              <strong><span className='translate'>Total Price: </span>{calculatePrice()}</strong>
             </li>
           </div>
         </ul>

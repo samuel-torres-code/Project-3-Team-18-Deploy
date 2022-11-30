@@ -14,17 +14,9 @@ const Layout = () => {
     }
   }, []);
 
-  function setNavBar() {
-    var employ = localStorage.getItem("employee");
-    if (employ === null) {
-      localStorage.setItem("employee", false);
-      window.location.reload();
-    }
-    return true;
-  }
-
   return (
     <>
+    <div id="google_translate_element"></div>
       <Navbar className="shadow-sm" bg="light" expand="lg">
         <Container>
           <LinkContainer to="/">
@@ -45,40 +37,40 @@ const Layout = () => {
                 localStorage.getItem("isLoggedIn") === "true" &&
                 localStorage.getItem("employee") === "true" && (
                   <LinkContainer to="/manager">
-                    <Nav.Link active={false}>Manager</Nav.Link>
+                    <Nav.Link active={false}><span className='translate'>Manager</span></Nav.Link>
                   </LinkContainer>
                 )}
               {localStorage.getItem("employee") === "true" &&
                 localStorage.getItem("isLoggedIn") === "true" && (
                   <LinkContainer to="/server">
-                    <Nav.Link active={false}>Server</Nav.Link>
+                    <Nav.Link active={false}><span className='translate'>Server</span></Nav.Link>
                   </LinkContainer>
                 )}
               <LinkContainer to="/order">
-                <Nav.Link active={false}>Order</Nav.Link>
+                <Nav.Link active={false}><span className='translate'>Order</span></Nav.Link>
               </LinkContainer>
               <LinkContainer to="/pizza">
-                <Nav.Link active={false}>Pizza</Nav.Link>
+                <Nav.Link active={false}><span className='translate'>Pizza</span></Nav.Link>
               </LinkContainer>
               <LinkContainer to="/pickup">
-                <Nav.Link active={false}>Pickup</Nav.Link>
+                <Nav.Link active={false}><span className='translate'>Pickup</span></Nav.Link>
               </LinkContainer>
               {(localStorage.getItem("isLoggedIn") === "false" ||
                 localStorage.getItem("isLoggedIn") === null) && (
                 <LinkContainer to="/login">
-                  <Nav.Link active={false}>Login</Nav.Link>
+                  <Nav.Link active={false}><span className='translate'>Login</span></Nav.Link>
                 </LinkContainer>
               )}
               {localStorage.getItem("isLoggedIn") === "true" && (
                 <LinkContainer to="/login">
-                  <Nav.Link active={false}>Logout</Nav.Link>
+                  <Nav.Link active={false}><span className='translate'>Logout</span></Nav.Link>
                 </LinkContainer>
               )}
             </Nav>
           </Navbar.Collapse>
         </Container>
+        
       </Navbar>
-
       <Outlet />
     </>
   );

@@ -114,8 +114,8 @@ const Pizza = () => {
   if (menuError || orderError) {
     return (
       <div>
-        <p>Menu Error: {menuError}</p>
-        <p>Order Error: {orderError}</p>
+        <p><span className='translate'>Menu Error: {menuError}</span></p>
+        <p><span className='translate'>Order Error: {orderError}</span></p>
       </div>
     );
   } else if (menuLoading || orderLoading) {
@@ -147,7 +147,7 @@ const Pizza = () => {
                 navigate("/order");
               }}
             >
-              Back
+              <span className='translate'>Back</span>
             </Button>
           </div>
 
@@ -157,7 +157,7 @@ const Pizza = () => {
                 navigate("/order");
               }}
             >
-              Finish
+              <span className='translate'>Finish</span>
             </Button>
           </div>
         </div>
@@ -176,7 +176,7 @@ const Pizza = () => {
               className="ingredientDropdown shadow-none"
               variant="link"
             >
-              Pizza Type
+              <span className='translate'>Pizza Type</span>
               {!dropdownStates[0] ? (
                 <FontAwesomeIcon className="mx-2" icon={faCaretDown} />
               ) : (
@@ -277,7 +277,7 @@ const Pizza = () => {
               );
             })
           ) : (
-            <p>no menu yet</p>
+            <p><span className='translate'>no menu yet</span></p>
           )}
 
         </div>
