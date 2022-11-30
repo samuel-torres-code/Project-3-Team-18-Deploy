@@ -89,6 +89,7 @@ const OrderInfo = ({
 }) => {
   if (order_info.name === "") {
     return (
+      <span className='translate'>
       <InputGroup className="mb-3">
         <Form.Control
           placeholder="Customer's name"
@@ -104,6 +105,7 @@ const OrderInfo = ({
           <span className='translate'>Start Order</span>
         </Button>
       </InputGroup>
+      </span>
     );
   } else {
     return (
