@@ -37,7 +37,6 @@ function Manager() {
   }, [load]);
 
   function loadIngredients() {
-    console.log("ingreds");
     client
       .get("/api/manager/load_ingredients")
       .then((res) => {
@@ -76,7 +75,6 @@ function Manager() {
   }
 
   function loadMenuItems() {
-    console.log("menus");
     client
       .get("/api/manager/load_prices")
       .then((res) => {
@@ -112,7 +110,6 @@ function Manager() {
           console.log(error);
         }
       });
-      console.log("hi");
     }
 
   function handleSelectIngredientChange(event) {
