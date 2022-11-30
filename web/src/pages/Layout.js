@@ -41,7 +41,7 @@ const Layout = () => {
                       <Nav.Link active={false}><span className='translate'>Manager</span></Nav.Link>
                     </LinkContainer>
                     <LinkContainer to="/reports">
-                      <Nav.Link active={false}>Reports</Nav.Link>
+                      <Nav.Link active={false}><span className='translate'>Reports</span></Nav.Link>
                     </LinkContainer>
                   </>
                 )}

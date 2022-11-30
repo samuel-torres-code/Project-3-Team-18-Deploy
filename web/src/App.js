@@ -36,7 +36,6 @@ function App() {
             </Routes>
           </BrowserRouter>
         </GoogleOAuthProvider>
-      ;
       </div>
     </div>
   );
