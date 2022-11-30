@@ -138,6 +138,7 @@ const Pizza = () => {
     );
   } else {
     return (
+      <span className='translate'>
       <div className="container">
         <div className="row justify-content-between my-2">
           <div className="col-3">
@@ -282,6 +283,7 @@ const Pizza = () => {
 
         </div>
       </div>
+      </span>
     );
   }
 };
