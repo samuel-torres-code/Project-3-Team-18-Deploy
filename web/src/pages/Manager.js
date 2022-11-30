@@ -351,7 +351,7 @@ function Manager() {
     }
   }
   
-  if((localStorage.getItem("employee") === 'true'))
+  if((localStorage.getItem("manager") === 'true'))
   if (menuError) {
     return (
       <div>

@@ -224,6 +224,8 @@ const Server = () => {
       })
     );
   };
+
+  if((localStorage.getItem("employee") === 'true'))
   if (!isLoading) {
     return (
       <div className="container">
