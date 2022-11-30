@@ -7,10 +7,11 @@ const AddItemCard = ({
   addPizzaFunction,
 }) => {
   return (
+    <span className='translate'>
     <div className="container px-0">
       <div className="d-flex justify-content-center my-4">
         <button className="btn btn-primary" onClick={addPizzaFunction}>
-          Add Pizza
+        <span className='translate'>Add Pizza</span>
         </button>
       </div>
       <div className="row gap-3 col-lg-6 col-md-8 col-sm-12 mx-auto justify-content-center my-3">
@@ -29,16 +30,17 @@ const AddItemCard = ({
           className="btn btn-primary"
           value="Fountain"
           onClick={drinkFunction}>
-          Add Fountain Drink
+          <span className='translate'>Add Fountain Drink</span>
         </button>
         <button
           className="btn btn-primary"
           value="Bottle"
           onClick={drinkFunction}>
-          Add Bottle Drink
+          <span className='translate'>Add Bottle Drink</span>
         </button>
       </div>
     </div>
+    </span>
   );
 };
 

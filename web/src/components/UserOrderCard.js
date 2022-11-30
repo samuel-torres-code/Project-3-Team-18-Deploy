@@ -9,6 +9,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
   
   return pizzas.map((pizza, index) => {
     return (
+      <span className='translate'>
       <div key={pizza.pizza_type + index} className="row my-2">
         <div className="col-7">
           <strong className="text-left my-0">{pizza.pizza_type}</strong>
@@ -35,6 +36,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
           </button>
         </div>
       </div>
+      </span>
     );
   });
 };
@@ -42,6 +44,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
 const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => {
     return (
+      <span className='translate'>
       <div key={item.item_name + index} className="row my-2">
         <div className="col-9">
           <strong className="my-0">{item.item_name}</strong>
@@ -55,6 +58,7 @@ const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
           </button>
         </div>
       </div>
+      </span>
     );
   });
 };
@@ -62,6 +66,7 @@ const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
 const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
   return drinks.map((drink, index) => {
     return (
+      <span className='translate'>
       <div key={drink.drink_type + index} className="row my-2">
         <div className="col-9">
           <strong className="my-0">{drink.drink_type}</strong>
@@ -75,6 +80,7 @@ const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
           </button>
         </div>
       </div>
+      </span>
     );
   });
 };
@@ -117,12 +123,13 @@ const UserOrderCard = ({
   }
 
   return (
+    <span className='translate'>
     <div className="container row">
       <div className="card col-lg-6 col-md-8 col-sm-12 mx-auto p-0">
         <ul className="list-group list-group-flush">
           <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
             <li className="list-group-item pizzas">
-              <strong className="fs-5">Pizzas:</strong>
+              <strong className="fs-5"><span className='translate'>Pizzas:</span></strong>
               <UserPizzaRows
                 pizzas={pizzas}
                 handleEditPizza={editPizza}
@@ -133,13 +140,13 @@ const UserOrderCard = ({
               }, {})}></UserPizzaRows>
             </li>
             <li className="list-group-item seasonal_items">
-              <strong className="fs-5">Seasonal Items:</strong>
+              <strong className="fs-5"><span className='translate'>Seasonal Items:</span></strong>
               <UserSeasonalItemRows
                 seasonal_items={seasonal_items}
                 handleDeleteSeasonalItem={deleteItem}></UserSeasonalItemRows>
             </li>
             <li className="list-group-item drinks">
-              <strong className="fs-5">Drinks:</strong>
+              <strong className="fs-5"><span className='translate'>Drinks:</span></strong>
               <UserDrinkRows
                 drinks={drinks}
                 handleDeleteDrink={deleteDrink}></UserDrinkRows>
@@ -149,20 +156,21 @@ const UserOrderCard = ({
         <div className="list-group-item row mx-0 d-flex">
           <div className="col-sm-12 col-lg-6 my-2 fs-5">
             <strong className="align-middle">
-              Total Price: ${calculatePrice()}
+            <span className='translate'>Total Price: ${calculatePrice()}</span>
             </strong>
           </div>
           <div className="col-sm-12 col-lg-6 px-0 text-center my-2 d-flex justify-content-evenly">
             <button className="btn btn-secondary" onClick={handleResetPage}>
-              Cancel
+            <span className='translate'>Cancel</span>
             </button>
             <button className="btn btn-primary" onClick={handleCheckout}>
-              Checkout
+            <span className='translate'>Checkout</span>
             </button>
           </div>
         </div>
       </div>
     </div>
+    </span>
   );
 };
 
