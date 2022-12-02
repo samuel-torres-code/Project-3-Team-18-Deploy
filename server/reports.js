@@ -22,8 +22,103 @@ router.get('/', function(req, res){
     res.send('default route /api/reports');
 });
 
-router.get('/sales', function(req, res){
-    res.send('route /api/reports/sales');
+router.get('/sales', async function(req, res){
+    // res.send('route /api/reports/sales');
+    //iterate through all menu item types, add cost up for specific menu item, add to dict
+    var start_date = req.body["start_time"];
+    var end_date = req.body["end_time"];
+    var res_obj = {"sales" : []};
+    //iterate through pizza_types
+    var pizza_types_query = "SELECT * FROM pizza_types_web";
+    var pizza_sales_query = "SELECT SUM(pizza_price) AS total FROM pizzas_web INNER JOIN orders_web" +
+                            " ON pizzas_web.order_id = orders_web.order_id WHERE pizzas_web.pizza_type =" +
+                            " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
+    pizza_response = []
+    await pool
+        .query(pizza_types_query)
+        .then(async query_res =>  {
+            for(let i =0; i < query_res.rowCount; i++)
+            {
+                pizza_response.push(query_res.rows[i]["pizza_type"]);
+            }
+            for(let i = 0; i < pizza_response.length; i++)
+            {
+                var pizza_name = pizza_response[i];
+                await pool.query(pizza_sales_query, [pizza_name, start_date, end_date])
+                    .then(sales_res => {
+                        var add_obj = {"item_name" : pizza_name};
+                        add_obj['sales'] = sales_res.rows[0]["total"];
+                        if(add_obj["sales"] == null)
+                        {
+                            add_obj["sales"] = 0;
+                        }
+                        res_obj["sales"].push(add_obj);
+                    });
+                
+            }
+        });
+    //iterate through drinks
+    var drinks_types_query = "select * from drink_types_web";
+    var drink_sales_query = "SELECT SUM(drink_price) AS total FROM drinks_web INNER JOIN orders_web" + 
+                            " ON drinks_web.order_id = orders_web.order_id WHERE drinks_web.drink_type =" +
+                            " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
+    drinks_response = []
+    await pool
+        .query(drinks_types_query)
+        .then(async query_res => {
+            for(let i =0; i < query_res.rowCount; i++)
+            {
+                drinks_response.push(query_res.rows[i]["drink_type"]);
+            }
+            for(let i = 0; i < drinks_response.length; i++)
+            {
+                var drink_name = drinks_response[i];
+                await pool.query(drink_sales_query, [drink_name, start_date, end_date])
+                    .then(sales_res => {
+                        var add_obj = {"item_name": drink_name};
+                        add_obj["sales"] = sales_res.rows[0]["total"];
+                        if(add_obj["sales"] == null)
+                        {
+                            add_obj["sales"] = 0;
+                        }
+                        res_obj["sales"].push(add_obj);
+                    });
+            }
+    });
+
+    //iterate through seasonal
+    var seasonal_types_query = "select * from seasonal_item";
+    var seasonal_sales_query = "SELECT SUM(pizza_price) AS total FROM pizzas_web INNER JOIN orders_web" + 
+                               " ON pizzas_web.order_id = orders_web.order_id WHERE pizzas_web.pizza_type =" +
+                               " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
+    seasonal_response = []
+    await pool
+        .query(seasonal_types_query)
+        .then(async query_res => {
+            for(let i =0; i < query_res.rowCount; i++)
+            {
+                seasonal_response.push(query_res.rows[i]["item_name"]);
+            }
+            console.log(seasonal_response);
+            for(let i = 0; i < seasonal_response.length; i++)
+            {
+                var item_name = seasonal_response[i];
+                await pool.query(seasonal_sales_query, [item_name, start_date, end_date])
+                    .then(sales_res => {
+                        var add_obj = {"item_name": item_name};
+                        add_obj["sales"] = sales_res.rows[0]["total"];
+                        if(add_obj["sales"] == null)
+                        {
+                            add_obj["sales"] = 0;
+                        }
+                        res_obj["sales"].push(add_obj);
+                    });
+            }
+    });
+    res.send(res_obj);
+
+
+
 });
 
 router.get('/excess', function(req, res){
