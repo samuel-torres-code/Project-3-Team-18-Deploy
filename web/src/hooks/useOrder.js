@@ -63,16 +63,12 @@ const useOrder = () => {
 
   useEffect(() => {
     if (!orderLoading) {
-      console.log('order effect')
-      console.log(order)
       updateStorage();
     }
   }, [order]);
 
   useEffect(() => {
     if (!orderLoading) {
-      console.log('updating order')
-      console.log(pizzas)
       setOrder({
         order_info: { ...order.order_info },
         pizzas: pizzas,
@@ -86,8 +82,6 @@ const useOrder = () => {
     try {
       
       localStorage.setItem("order", JSON.stringify(order));
-      console.log(order)
-      console.log('updated order')
     } catch (e) {
       console.log("Trouble updating localStorage");
       console.log(e);

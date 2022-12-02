@@ -7,6 +7,7 @@ import Collapse from "react-bootstrap/Collapse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Alert from "react-bootstrap/Alert";
 import "./Pizza.css";
 
 const convertWord = (str) => {
@@ -23,18 +24,21 @@ const convertWord = (str) => {
 const customCase = (str) => {};
 
 const orderTypes = (arr) => {
-  return ["Dough", ...arr.filter((ing) => ing !== "Other" && ing !== "Dough")];
+  return ["Dough","Sauce", "Cheese", ...arr.filter((ing) => ing !== "Other" && ing !== "Dough" && ing !== "Sauce" && ing!== "Cheese" && ing !== "Drizzle"), "Drizzle"];
 };
 
 const Pizza = () => {
   const [pizzaIndex, setPizzaIndex] = useState(-1);
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  //const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [dropdownStates, setDropdownStates] = useState([false]);
   const [pizza, setPizza] = useState({
     pizza_type: "",
     pizza_price: "0.00",
     ingredients: [],
   });
+
+  const[showAlert,setShowAlert] = useState(false)
+  const[alertText,setAlertText] = useState("")
   const navigate = useNavigate();
   const {
     orderLoading,
@@ -42,14 +46,83 @@ const Pizza = () => {
     order,
     addNewPizzaAsync,
     updatePizzaAsync,
-    deletePizza,
-    addDrink,
-    saving
   } = useOrder([]);
   const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu();
-
   const [queryParameters] = useSearchParams();
   const indexURL = queryParameters.get("index");
+
+
+  if(!menuLoading && menuError !== "") {
+    
+
+  
+  }
+  
+  
+  
+
+  const checkToppings = (currentPizza,type) => {
+    if(type === "") {
+      
+      setAlertText("Please select a pizza type.");
+      setShowAlert(true);
+      return true;
+    }
+    if(menuLoading && menuError === "") {
+      setAlertText("Toppings haven't loaded yet. Stand by.")
+      setShowAlert(true);
+      return true;
+    }
+
+    const topping_types = Object.keys(ingredients_by_type).filter((ing) => ing !== "Other" && ing !== "Dough" && ing !== "Sauce" && ing!== "Cheese" && ing !== "Drizzle")
+    
+    const toppings = Object.keys(ingredients_by_type)
+    .filter(key => topping_types.includes(key))
+    .reduce((obj, key) => {
+        obj[key] = ingredients_by_type[key];
+        return obj;
+  }, {});
+    const topping_ids = Object.values(toppings).map((ingredients) => {
+      return ingredients.map((ingredient) => {
+        return ingredient.ingredient_id;
+      })
+    }).flat(); 
+
+    
+    //get number of toppings
+    const toppingsOnPizza = currentPizza.ingredients.filter((ing) =>  {
+
+      
+      return topping_ids.indexOf(Number(ing.ingredient_id)) !== -1})
+    if(type === "cheese") {
+      if(toppingsOnPizza.length> 0) {
+        setAlertText("Cheese pizza can't have toppings.")
+        setShowAlert(true)
+        return true;
+      }
+    }
+    else if (type === "one-topping") {
+      if(toppingsOnPizza.length > 1) {
+        setAlertText("One topping pizza can only have one topping.")
+      setShowAlert(true);
+      return true;
+      }
+    }
+    else if (type === "build-your-own") {
+      if(toppingsOnPizza.length > 4) {
+        setAlertText("Build your own pizza can only have up to 4 toppings.")
+        setShowAlert(true);
+        return true;
+      }
+    }
+    else {
+      setAlertText("Invalid pizza type. Please select another pizza type.")
+        setShowAlert(true);
+        return true;
+    }
+    setShowAlert(false);
+    return false;
+  }
 
   const containsIngredient = (ingredient_id_int) => {
     if (typeof pizza !== "undefined" && pizza != null) {
@@ -61,63 +134,27 @@ const Pizza = () => {
     }
     return false;
   };
-  
+
   useEffect(() => {
     if (!orderLoading) {
       if (indexURL != null && typeof indexURL !== "undefined") {
         setPizzaIndex(indexURL);
         setPizza(order.pizzas[indexURL]);
-      } 
-      
-      // else {
-      //   // if (order.pizzas.length === 0) {
-      //   //   addNewPizza();
-      //   //   setPizzaIndex(0);
-      //   // } else {
-      //   //   addNewPizza();
-      //   //   setPizzaIndex(order.pizzas.length);
-      //   // }
-      //}
+      }
     }
   }, [orderLoading]);
 
   useEffect(() => {
-    // console.log(pizzaIndex)
-    // if (!orderLoading && pizzaIndex >= 0) {
-    //   console.log('update pizza')
-    //   console.log(pizza)
-    //   updatePizza(pizza, pizzaIndex);
-    // }
-  }, [pizza]);
-
-  useEffect(() => {
-    // if (!orderLoading) {
-    //   if (
-    //     pizzaIndex == -1 &&
-    //     order.pizzas.length > 0 &&
-    //     indexURL != null &&
-    //     typeof indexURL !== "undefined"
-    //   ) {
-    //     //setPizzaIndex(order.pizzas.length - 1);
-    //   }
-    //   if (pizzaIndex < order.pizzas.length && pizzaIndex >= 0) {
-    //     setPizza(order.pizzas[pizzaIndex]);
-    //   }
-    // }
-  }, [pizzaIndex, order]);
-
-  useEffect(() => {
     if (menuLoading === false) {
-      console.log("resetting buttons")
       setDropdownStates(
-        Array(Object.keys(ingredients_by_type).length).fill(false)
+        [true,...Array(Object.keys(ingredients_by_type).length-1).fill(false)]
       );
     }
   }, [menuLoading]);
 
   const handleSavePizza = () => {
     //If index == -1
-    if(pizzaIndex === -1) {
+    if (pizzaIndex === -1) {
       //  add pizza
       addNewPizzaAsync(pizza).then(() => {
         //Cheeky little workaround
@@ -125,29 +162,19 @@ const Pizza = () => {
         //Needed because navigate rerenders useOrder before it can update the order state
         // and put in local storage
         setTimeout(() => {
-          navigate('/order');
-        },100)
+          navigate("/order");
+        }, 100);
       });
-      
-    }
-    else {
-      
+    } else {
       //  Save pizza
       //  Same workaround needed
-      updatePizzaAsync(pizza,pizzaIndex).then(() => {
+      updatePizzaAsync(pizza, pizzaIndex).then(() => {
         setTimeout(() => {
-          navigate('/order');
-        },100)
-        
+          navigate("/order");
+        }, 100);
       });
     }
-    
-
-     
-
-    //Redirect to order
-    //navigate('/order');
-  }
+  };
 
   if (menuError || orderError) {
     return (
@@ -177,7 +204,7 @@ const Pizza = () => {
   } else {
     return (
       <div className="container">
-        <div className="row justify-content-between my-2">
+        <div className="row justify-content-between ">
           <div className="col-3">
             <Button
               variant="secondary"
@@ -188,11 +215,22 @@ const Pizza = () => {
               Back
             </Button>
           </div>
+          {showAlert ? (
+          <Alert
+            variant="primary"
+            onClose={() => setShowAlert(false)}
+            >
+            {alertText}
+          </Alert>
+        ) : (
+          // add spacing for alert
+          <div style={{ height: "58px" }}></div>
+        )}
 
           <div className="col-3 text-end">
             <Button
               onClick={() => {
-               handleSavePizza();
+                handleSavePizza();
               }}
             >
               Finish
@@ -200,9 +238,8 @@ const Pizza = () => {
           </div>
         </div>
         <div className="row">
-
           {/* Pizza Types Dropdown */}
-          <div className="ingredientDropdownContainer my-2">
+          <div className="ingredientDropdownContainer mb-2">
             <Button
               onClick={() =>
                 setDropdownStates(
@@ -231,11 +268,15 @@ const Pizza = () => {
                       cardText={`${convertWord(type.pizza_type)} $${
                         type.pizza_price
                       }`}
-                      
                       selected={pizza.pizza_type === type.pizza_type}
                       onClick={() => {
-                        setPizza({ ...type, ingredients: pizza.ingredients });
-                        // console.log({...pizza, pizza_type:type})
+                        if(checkToppings(pizza,type.pizza_type)) {
+                          setPizza({ ...type, ingredients: pizza.ingredients });
+                        }
+                        else {
+                          setPizza({ ...type, ingredients: [] });
+                        }
+                        
                       }}
                     ></IngredientItemButton>
                   ))}
@@ -283,30 +324,37 @@ const Pizza = () => {
                             key={`${ingredient.ingredient_name}_${i}`}
                             cardText={convertWord(ingredient.ingredient_name)}
                             onClick={() => {
-                              //console.log(containsIngredient(ingredient.ingredient_id))
                               if (
                                 !containsIngredient(ingredient.ingredient_id)
+                            
                               ) {
-                                //console.log("adding ingredient")
-                                setPizza({
+                                const newPizza = {
                                   ...pizza,
-                                  ingredients: [
-                                    ...pizza.ingredients,
-                                    {
-                                      ingredient_id: `${ingredient.ingredient_id}`,
-                                    },
-                                  ],
-                                });
+                                    ingredients: [
+                                      ...pizza.ingredients,
+                                      {
+                                        ingredient_id: `${ingredient.ingredient_id}`,
+                                      },
+                                    ],
+                                }
+                                
+                                if(!checkToppings(newPizza,newPizza.pizza_type)) {
+                                  setPizza(newPizza);
+                                }
+                                
                               } else {
-                                console.log("removing ingredient")
-                                setPizza({
+                                const newPizza = {
                                   ...pizza,
                                   ingredients: pizza.ingredients.filter(
                                     (ing) =>
                                       ing.ingredient_id !==
                                       "" + ingredient.ingredient_id
                                   ),
-                                });
+                                }
+                                setPizza(newPizza);
+                                if(!checkToppings(pizza,pizza.pizza_type)) {
+                                  //setShowAlert(false);
+                                }
                               }
                             }}
                           ></IngredientItemButton>
@@ -320,7 +368,6 @@ const Pizza = () => {
           ) : (
             <p>no menu yet</p>
           )}
-
         </div>
       </div>
     );
