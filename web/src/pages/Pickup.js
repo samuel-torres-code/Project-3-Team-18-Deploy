@@ -34,19 +34,19 @@ const Pickup = () => {
 
   return (
     <div className="container">
-      <h1 className="text-center">Pickup Order Page</h1>
+      <h1 className="text-center"><span className='translate'>Pickup Order Page</span></h1>
       <div className="row g-4 py-5 row-cols-1 row-cols-sm-1">
         <div className="feature col">
           {/* <h4><br></br></h4> */}
-          <h4>Order Number: {orderid}</h4>
+          <h4><span className='translate'>Order Number: {orderid}</span></h4>
           </div>
           <div className="feature col">
-          <h4>Estimated Pickup Time: {!loaded ? "--:--": ordertimehours + ":" + ordertimemins} {orderam}</h4>
+          <h4><span className='translate'>Estimated Pickup Time: {!loaded ? "--:--": ordertimehours + ":" + ordertimemins} {orderam}</span></h4>
           </div>
           <div className="feature col">
 
           <p>
-            Give your order number(or name) at the specified time to pickup your order!
+          <span className='translate'>Give your order number(or name) at the specified time to pickup your order!</span>
           </p>
         </div>
         <div>
@@ -54,10 +54,10 @@ const Pickup = () => {
         </div>  
         <div className="feature col">
         <a href="/home">
-          <Button variant="primary">Return Home</Button>{' '}
+          <Button variant="primary"><span className='translate'>Return Home</span></Button>{' '}
         </a>
           <a href="/order">
-            <Button variant="primary">Create New Order</Button>{' '}
+            <Button variant="primary"><span className='translate'>Create New Order</span></Button>{' '}
           </a>
         </div>
         

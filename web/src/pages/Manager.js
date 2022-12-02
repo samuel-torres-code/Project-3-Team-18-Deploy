@@ -18,6 +18,7 @@ function Manager() {
   const [addEmployeePassword, setNewEmployeePassword] = useState("");
   const [addAsManager, setAsManager] = useState([false, false]);
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
+  const [condrender, setcondrender] = useState(localStorage.getItem('manager'));
 
   const [load, setLoad] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -109,7 +110,7 @@ function Manager() {
           console.log(error);
         }
       });
-  }
+    }
 
   function handleSelectIngredientChange(event) {
     if (event.target.checked) {
@@ -356,243 +357,248 @@ function Manager() {
       x[i].checked = false;
     }
   }
-  if (loading) {
-    return (
-      <div
-        style={{
-          width: "100vw",
-          height: "90vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}>
-        <img
-          src={require("../loader_pizza.gif")}
-          alt="Loading"
-          style={{ width: "15vw", height: "auto" }}
-        />
-      </div>
-    );
-  } else {
-    return (
-      <div className="row w-100">
-        <div className="col my-5">
-          {/* Ingredient Table */}
-          <div
-            className="border border-dark mx-5"
-            style={{ maxHeight: "80vh", overflowY: "auto" }}>
-            <table className="w-100">
-              <thead className="table-header position-sticky">
-                <tr>
-                  <th className="px-1">Ingredient</th>
-                  <th className="px-1">Type</th>
-                  <th className="px-1">Inventory</th>
-                  <th className="px-1">Select</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ingredientData.map((val, key) => {
-                  return (
-                    <tr
-                      key={key}
-                      className="table-row border-top border-secondary">
-                      <td>{val.name}</td>
-                      <td>{val.type}</td>
-                      <td>{val.inventory}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          className="ing-checkbox"
-                          value={val.name}
-                          onChange={handleSelectIngredientChange}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+  
+  if(condrender === 'true'){
+    if (loading) {
+      return (
+        <div
+          style={{
+            width: "100vw",
+            height: "90vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <img
+            src={require("../loader_pizza.gif")}
+            alt="Loading"
+            style={{ width: "15vw", height: "auto" }}
+          />
         </div>
-
-        <div className="col my-auto">
-          {/* Restock Ingredients */}
-          <div
-            className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
-            style={{ width: "80%" }}>
-            <h4 className="text-center">Restock Selected Ingredient</h4>
-            <div className="d-flex justify-content-center flex-wrap">
-              <input
-                type="text"
-                placeholder="Restock Amount"
-                className="m-2"
-                value={restockAmount}
-                onChange={handleRestockChange}></input>
-              <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Restock"
-                onClick={handleRestockClick}></input>
-            </div>
-          </div>
-
-          {/* Remove Ingredients */}
-          <div
-            className="border border-secondary rounded p-3 my-3 mx-auto"
-            style={{ width: "80%" }}>
-            <h4 className="text-center">Remove Selected Ingredient</h4>
-            <div className="d-flex justify-content-center flex-wrap">
-              <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Remove Ingredient"
-                onClick={handleRemoveClick}></input>
-            </div>
-          </div>
-
-          {/* Add Ingredients */}
-          <div
-            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-            style={{ width: "80%" }}>
-            <h4 className="text-center">Add Ingredient</h4>
-            <div className="d-flex justify-content-center flex-wrap">
-              <div className="d-flex flex-wrap justify-content-center">
-                <input
-                  type="text"
-                  placeholder="Ingredient Name"
-                  className="m-2"
-                  value={newIngredientName}
-                  onChange={handleAddNameChange}></input>
-                <select
-                  className="form-select w-auto my-2"
-                  onChange={handleAddTypeChange}
-                  defaultValue={""}>
-                  <option value="">Select Type</option>
-                  <option value="Sauce">Sauce</option>
-                  <option value="Cheese">Cheese</option>
-                  <option value="Dough">Dough</option>
-                  <option value="Drizzle">Drizzle</option>
-                  <option value="Meats">Meats</option>
-                  <option value="Raw Veggies">Raw Veggies</option>
-                  <option value="Roasted Veggies">Roasted Veggies</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Add Ingredient"
-                onClick={handleAddIngredientClick}></input>
-            </div>
-          </div>
-        </div>
-        <div className="col my-auto">
-          {/* Menu Items Table */}
-          <div className="mx-5 mt-5">
-            <table className="w-75 border border-dark mx-auto">
-              <thead className="table-header position-sticky">
-                <tr>
-                  <th className="px-1">Menu Item</th>
-                  <th className="px-1">Price</th>
-                  <th className="px-1">Select</th>
-                </tr>
-              </thead>
-              <tbody>
-                {menuItemData.map((val, key) => {
-                  return (
-                    <tr key={key} className="border-top border-secondary">
-                      <td>{val.name}</td>
-                      <td>{val.price}</td>
-                      <td>
-                        <input
-                          type="checkbox"
-                          className="item-checkbox"
-                          value={val.name}
-                          onChange={handleSelectMenuItemChange}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Change Menu Item Price */}
-          <div
-            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-            style={{ width: "80%" }}>
-            <h4 className="text-center">Change Selected Menu Item Price</h4>
-            <div className="d-flex justify-content-center flex-wrap">
-              <input
-                type="text"
-                placeholder="New Price"
-                className="m-2"
-                value={newItemPrice}
-                onChange={handleItemPriceChange}></input>
-              <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Change Price"
-                onClick={handleItemPriceClick}></input>
-            </div>
-          </div>
-
-          {/* Add New Employee to System */}
-          <div
-            className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-            style={{ width: "80%" }}>
-            <h4 className="text-center">Add Employee to System</h4>
-            <div className="d-flex justify-content-center flex-wrap">
-              <input
-                type="text"
-                placeholder="Employee Name"
-                className="m-2"
-                value={addEmployeeName}
-                onChange={handleAddEmployeeName}></input>
-              <input
-                type="text"
-                placeholder="Employee Passcode"
-                className="m-2"
-                value={addEmployeePassword}
-                onChange={handleAddEmployeePassword}></input>
-              <ToggleButtonGroup
-                type="checkbox"
-                value={addAsManager}
-                onChange={handleAddAsManager}>
-                <ToggleButton
-                  id="tbg-btn-1 m-2"
-                  value={true}
-                  onChange={handleAddAsManager}>
-                  Add as Manager?
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </div>
-            <div className="d-flex justify-content-center flex-wrap">
-              <input
-                type="button"
-                className="btn btn-primary my-2"
-                value="Add Employee"
-                onClick={handleAddNewEmployee}></input>
-            </div>
-            {addedEmployeeDatabase === true && (
+      );
+    } else {
+      return (
+        <span className='translate'>
+          <div className="row w-100">
+            <div className="col my-5">
+              {/* Ingredient Table */}
               <div
-                className="d-flex justify-content-center flex-wrap"
-                style={{ color: "blue" }}>
-                Added New Employee.
+                className="border border-dark mx-5"
+                style={{ maxHeight: "80vh", overflowY: "auto" }}>
+                <table className="w-100">
+                  <thead className="table-header position-sticky">
+                    <tr>
+                      <th className="px-1">Ingredient</th>
+                      <th className="px-1">Type</th>
+                      <th className="px-1">Inventory</th>
+                      <th className="px-1">Select</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ingredientData.map((val, key) => {
+                      return (
+                        <tr
+                          key={key}
+                          className="table-row border-top border-secondary">
+                          <td>{val.name}</td>
+                          <td>{val.type}</td>
+                          <td>{val.inventory}</td>
+                          <td>
+                            <input
+                              type="checkbox"
+                              className="ing-checkbox"
+                              value={val.name}
+                              onChange={handleSelectIngredientChange}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-            )}
-            {addedEmployeeDatabase === false && (
+            </div>
+
+            <div className="col my-auto">
+              {/* Restock Ingredients */}
               <div
-                className="d-flex justify-content-center flex-wrap"
-                style={{ color: "red" }}>
-                Failed to Add New Employee. Try Different Passcode.
+                className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
+                style={{ width: "80%" }}>
+                <h4 className="text-center"><span className='translate'>Restock Selected Ingredient</span></h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                <span className='translate'><input
+                    type="text"
+                    placeholder="Restock Amount"
+                    className="m-2"
+                    value={restockAmount}
+                    onChange={handleRestockChange}></input></span>
+                  <input
+                    type="button"
+                    className="btn btn-primary my-2"
+                    value="Restock"
+                    onClick={handleRestockClick}></input>
+                </div>
               </div>
-            )}
+
+              {/* Remove Ingredients */}
+              <div
+                className="border border-secondary rounded p-3 my-3 mx-auto"
+                style={{ width: "80%" }}>
+                <h4 className="text-center"><span className='translate'>Remove Selected Ingredient</span></h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                  <input
+                    type="button"
+                    className="btn btn-primary my-2"
+                    value="Remove Ingredient"
+                    onClick={handleRemoveClick}></input>
+                </div>
+              </div>
+
+              {/* Add Ingredients */}
+              <div
+                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+                style={{ width: "80%" }}>
+                <h4 className="text-center"><span className='translate'>Add Ingredient</span></h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                  <div className="d-flex flex-wrap justify-content-center">
+                  <span className='translate'><input
+                      type="text"
+                      placeholder="Ingredient Name"
+                      className="m-2"
+                      value={newIngredientName}
+                      onChange={handleAddNameChange}></input></span>
+                    <select
+                      className="form-select w-auto my-2"
+                      onChange={handleAddTypeChange}
+                      defaultValue={""}>
+                      <option value=""><span className='translate'>Select Type</span></option>
+                      <option value="Sauce"><span className='translate'>Sauce</span></option>
+                      <option value="Cheese"><span className='translate'>Cheese</span></option>
+                      <option value="Dough"><span className='translate'>Dough</span></option>
+                      <option value="Drizzle"><span className='translate'>Drizzle</span></option>
+                      <option value="Meats"><span className='translate'>Meats</span></option>
+                      <option value="Raw Veggies"><span className='translate'>Raw Veggies</span></option>
+                      <option value="Roasted Veggies"><span className='translate'>Roasted Veggies</span></option>
+                      <option value="Other"><span className='translate'>Other</span></option>
+                    </select>
+                  </div>
+                  <span className='translate'><input
+                    type="button"
+                    className="btn btn-primary my-2"
+                    value="Add Ingredient"
+                    onClick={handleAddIngredientClick}></input></span>
+                </div>
+              </div>
+            </div>
+            <div className="col my-auto">
+              {/* Menu Items Table */}
+              <div className="mx-5 mt-5">
+                <table className="w-75 border border-dark mx-auto">
+                  <thead className="table-header position-sticky">
+                    <tr>
+                      <th className="px-1"><span className='translate'>Menu Item</span></th>
+                      <th className="px-1"><span className='translate'>Price</span></th>
+                      <th className="px-1"><span className='translate'>Select</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {menuItemData.map((val, key) => {
+                      return (
+                        <tr key={key} className="border-top border-secondary">
+                          <td><span className='translate'>{val.name}</span></td>
+                          <td><span className='translate'>{val.price}</span></td>
+                          <td>
+                          <span className='translate'><input
+                              type="checkbox"
+                              className="item-checkbox"
+                              value={val.name}
+                              onChange={handleSelectMenuItemChange}
+                            /></span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Change Menu Item Price */}
+              <div
+                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+                style={{ width: "80%" }}>
+                <h4 className="text-center"><span className='translate'>Change Selected Menu Item Price</span></h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                <span className='translate'><input
+                    type="text"
+                    placeholder="New Price"
+                    className="m-2"
+                    value={newItemPrice}
+                    onChange={handleItemPriceChange}></input></span>
+                  <span className='translate'><input
+                    type="button"
+                    className="btn btn-primary my-2"
+                    value="Change Price"
+                    onClick={handleItemPriceClick}></input></span>
+                </div>
+              </div>
+
+              {/* Add New Employee to System */}
+              <div
+                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
+                style={{ width: "80%" }}>
+                <h4 className="text-center"><span className='translate'>Add Employee to System</span></h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                <span className='translate'><input
+                    type="text"
+                    placeholder="Employee Name"
+                    className="m-2"
+                    value={addEmployeeName}
+                    onChange={handleAddEmployeeName}></input></span>
+                  <span className='translate'><input
+                    type="text"
+                    placeholder="Employee Passcode"
+                    className="m-2"
+                    value={addEmployeePassword}
+                    onChange={handleAddEmployeePassword}></input></span>
+                  <ToggleButtonGroup
+                    type="checkbox"
+                    value={addAsManager}
+                    onChange={handleAddAsManager}>
+                    <ToggleButton
+                      id="tbg-btn-1 m-2"
+                      value={true}
+                      onChange={handleAddAsManager}>
+                      <span className='translate'>Add as Manager?</span>
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                </div>
+              <div className="d-flex justify-content-center flex-wrap">
+              <span className='translate'><input
+                    type="button"
+                    className="btn btn-primary my-2"
+                    value= "Add Employee"
+                    onClick={handleAddNewEmployee}></input></span>
+                </div>
+                {addedEmployeeDatabase === true && (
+                  <div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "blue" }}>
+                    <span className='translate'>Added New Employee.</span>
+                  </div>
+                )}
+                {addedEmployeeDatabase === false && (
+                  <div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "red" }}>
+                    <span className='translate'>Failed to Add New Employee. Try Different Passcode.</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    );
+        </span>
+      );
+    }
   }
 }
 

@@ -132,7 +132,7 @@ const Order = () => {
       <div className="container">
         <ul className="nav nav-tabs justify-content-center my-3">
           <li className="nav-item">
-            <button
+          <button
               className={
                 loadMenu
                   ? "nav-link fw-bolder fs-5 active link-primary"
@@ -145,7 +145,7 @@ const Order = () => {
             </button>
           </li>
           <li className="nav-item">
-            <button
+          <button
               className={
                 loadMenu
                   ? "nav-link fw-bolder fs-5 link-secondary"

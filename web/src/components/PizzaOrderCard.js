@@ -45,6 +45,7 @@ const PizzaOrderCard = ({
   disabled
 }) => {
   return (
+    <span className='translate'>
     <div className="card dynamic-height" style={{ maxHeight: "90vh", overflowY: "scroll" }}>
       <div className="container py-2">
         <div className="row">
@@ -69,6 +70,7 @@ const PizzaOrderCard = ({
         </div>
       </div>
     </div>
+    </span>
   );
 };
 
