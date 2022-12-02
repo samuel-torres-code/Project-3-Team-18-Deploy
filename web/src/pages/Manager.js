@@ -18,12 +18,53 @@ function Manager() {
   const [addEmployeePassword, setNewEmployeePassword] = useState("");
   const [addAsManager, setAsManager] = useState([false, false]);
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
-  const [condrender, setcondrender] = useState(localStorage.getItem('manager'));
+  const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
   const [load, setLoad] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [loadingItems, setLoadingItems] = useState(false);
 
-  const protectedIngredients = [];
+  const protectedIngredients = [
+    "House Blend",
+    "Mozzarella",
+    "Parmesan",
+    "Ricotta",
+    "Vegan",
+    "Dough",
+    "Balsamic Glaze",
+    "Basil Pesto",
+    "BBQ Sauce",
+    "Olive Oil",
+    "Oregano",
+    "Sriracha",
+    "Applewood Bacon",
+    "Black Forest Ham",
+    "Italian Sausage",
+    "Meatball",
+    "Pepperoni",
+    "Salami",
+    "Smoked Chicken",
+    "Boxes",
+    "Cups",
+    "Napkins",
+    "Black Olives",
+    "Cherry Tomato",
+    "Green Peppers",
+    "Jalapenos",
+    "Kalmata Olives",
+    "Red Onions",
+    "Red Peppers",
+    "Spinach",
+    "Broccolini",
+    "Caramelized Onions",
+    "Garlic",
+    "Mixed Mushrooms",
+    "Red Potatoes",
+    "Pesto",
+    "Red",
+    "White",
+    "Zesty Red",
+  ];
 
   const client = axios.create({
     baseURL: API_URL,
@@ -31,86 +72,67 @@ function Manager() {
 
   useEffect(() => {
     setLoad(false);
-    loadIngredients();
-    loadMenuItems();
-    setLoading(false);
+    if (!loadingItems) {
+      loadIngredients();
+      loadMenuItems();
+      setLoadingItems(false);
+    }
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
   }, [load]);
 
-  function loadIngredients() {
-    client
-      .get("/api/manager/load_ingredients")
-      .then((res) => {
-        var ingredients = [];
-        for (var i = 0; i < res.data.length; i++) {
-          ingredients.push({
-            name: res.data[i][0],
-            type: res.data[i][1],
-            inventory: res.data[i][2],
-          });
-        }
-        ingredients.sort((a, b) => {
-          const typeA = a.type.toUpperCase();
-          const typeB = b.type.toUpperCase();
-          const nameA = a.name.toUpperCase();
-          const nameB = b.name.toUpperCase();
-          if (typeA < typeB) return -1;
-          if (typeA > typeB) return 1;
-          if (nameA < nameB) return -1;
-          if (nameA > nameB) return 1;
-          return 0;
+  async function loadIngredients() {
+    await client.get("/api/manager/load_ingredients").then((res) => {
+      var ingredients = [];
+      for (var i = 0; i < res.data.length; i++) {
+        ingredients.push({
+          name: res.data[i][0],
+          type: res.data[i][1],
+          inventory: res.data[i][2],
         });
-        setIngredientData(ingredients);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log("Server responded.");
-        } else if (error.request) {
-          console.log("Network error.");
-        } else {
-          console.log("Unknown error type.");
-          console.log(error);
-        }
+      }
+      ingredients.sort((a, b) => {
+        const typeA = a.type.toUpperCase();
+        const typeB = b.type.toUpperCase();
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (typeA < typeB) return -1;
+        if (typeA > typeB) return 1;
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
       });
+      setIngredientData(ingredients);
+    });
   }
 
-  function loadMenuItems() {
-    client
-      .get("/api/manager/load_prices")
-      .then((res) => {
-        const items = [];
-        for (var i = 0; i < res.data["pizza_types"].length; i++) {
-          items.push({
-            name: res.data["pizza_types"][i]["pizza_type"],
-            price: res.data["pizza_types"][i]["pizza_price"],
-          });
-        }
-        for (i = 0; i < res.data["drink_types"].length; i++) {
-          items.push({
-            name: res.data["drink_types"][i]["drink_type"],
-            price: res.data["drink_types"][i]["drink_price"],
-          });
-        }
-        for (i = 0; i < res.data["seasonal_items"].length; i++) {
-          items.push({
-            name: res.data["seasonal_items"][i]["item_name"],
-            price: res.data["seasonal_items"][i]["item_price"],
-          });
-        }
-        setMenuItemData(items);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log("Server responded.");
-        } else if (error.request) {
-          console.log("Network error.");
-        } else {
-          console.log("Unknown error type.");
-          console.log(error);
-        }
-      });
-    }
+  async function loadMenuItems() {
+    await client.get("/api/manager/load_prices").then((res) => {
+      const items = [];
+      for (var i = 0; i < res.data["pizza_types"].length; i++) {
+        items.push({
+          name: res.data["pizza_types"][i]["pizza_type"],
+          price: res.data["pizza_types"][i]["pizza_price"],
+        });
+      }
+      for (i = 0; i < res.data["drink_types"].length; i++) {
+        items.push({
+          name: res.data["drink_types"][i]["drink_type"],
+          price: res.data["drink_types"][i]["drink_price"],
+        });
+      }
+      for (i = 0; i < res.data["seasonal_items"].length; i++) {
+        items.push({
+          name: res.data["seasonal_items"][i]["item_name"],
+          price: res.data["seasonal_items"][i]["item_price"],
+        });
+      }
+      setMenuItemData(items);
+    });
+  }
 
   function handleSelectIngredientChange(event) {
     if (event.target.checked) {
@@ -179,22 +201,10 @@ function Manager() {
         "Invalid Input for Restock Ingredient: Restock amount is NaN."
       );
     } else {
-      client
-        .post("/api/manager/restock", {
-          ingredients: selectedIngredients,
-          amount: restockAmount,
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            console.log("Server responded.");
-          } else if (error.request) {
-            console.log("Network error.");
-          } else {
-            console.log("Unknown error type.");
-            console.log(error);
-          }
-        });
+      client.post("/api/manager/restock", {
+        ingredients: selectedIngredients,
+        amount: restockAmount,
+      });
       setRestockAmount("");
       setLoad(true);
       unCheckIngredients();
@@ -203,8 +213,10 @@ function Manager() {
 
   function handleRemoveClick() {
     for (var i = 0; i < selectedIngredients.length; ++i) {
-      if (selectedIngredients[i] in protectedIngredients) {
-        console.error("Unable to remove ingredient: " + selectedIngredients[i] + ".");
+      if (protectedIngredients.includes(selectedIngredients[i])) {
+        console.error(
+          "Unable to remove ingredient: " + selectedIngredients[i] + "."
+        );
         selectedIngredients.splice(i, 1);
         i--;
       }
@@ -214,21 +226,9 @@ function Manager() {
         "Invalid Input for Remove Ingredients: No valid ingredients are selected."
       );
     } else {
-      client
-        .post("/api/manager/remove_ingredient", {
-          ingredients: selectedIngredients,
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            console.log("Server responded.");
-          } else if (error.request) {
-            console.log("Network error.");
-          } else {
-            console.log("Unknown error type.");
-            console.log(error);
-          }
-        });
+      client.post("/api/manager/remove_ingredient", {
+        ingredients: selectedIngredients,
+      });
       setLoad(true);
       unCheckIngredients();
     }
@@ -244,22 +244,10 @@ function Manager() {
         "Invalid Input for Add Ingredient: Ingredient type is null."
       );
     } else {
-      client
-        .post("/api/manager/add_ingredient", {
-          ingredient_name: newIngredientName,
-          ingredient_type: newIngredientType,
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            console.log("Server responded.");
-          } else if (error.request) {
-            console.log("Network error.");
-          } else {
-            console.log("Unknown error type.");
-            console.log(error);
-          }
-        });
+      client.post("/api/manager/add_ingredient", {
+        ingredient_name: newIngredientName,
+        ingredient_type: newIngredientType,
+      });
       setLoad(true);
       loadIngredients();
       setNewIngredientName("");
@@ -281,22 +269,10 @@ function Manager() {
         "Invalid Input for Update Menu Item Price: New item price is NaN."
       );
     } else {
-      client
-        .post("/api/manager/update_menu_items", {
-          menu_items: selectedMenuItems,
-          new_price: newItemPrice,
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            console.log("Server responded.");
-          } else if (error.request) {
-            console.log("Network error.");
-          } else {
-            console.log("Unknown error type.");
-            console.log(error);
-          }
-        });
+      client.post("/api/manager/update_menu_items", {
+        menu_items: selectedMenuItems,
+        new_price: newItemPrice,
+      });
       setLoad(true);
       setNewItemPrice("");
       unCheckMenuItems();
@@ -321,17 +297,6 @@ function Manager() {
           } else {
             setAddedEmployeeDatabase(false);
           }
-        })
-        .catch((error) => {
-          if (error.response) {
-            console.log(error.response);
-            console.log("Server responded.");
-          } else if (error.request) {
-            console.log("Network error.");
-          } else {
-            console.log("Unknown error type.");
-            console.log(error);
-          }
         });
       setLoad(true);
       setAsManager([false, false]);
@@ -347,6 +312,7 @@ function Manager() {
     for (var i = 0; i < x.length; i++) {
       x[i].checked = false;
     }
+    setLoad(true);
   }
 
   function unCheckMenuItems() {
@@ -357,8 +323,8 @@ function Manager() {
       x[i].checked = false;
     }
   }
-  
-  if(condrender === 'true'){
+
+  if (condrender === "true") {
     if (loading) {
       return (
         <div
@@ -378,7 +344,7 @@ function Manager() {
       );
     } else {
       return (
-        <span className='translate'>
+        <span className="translate">
           <div className="row w-100">
             <div className="col my-5">
               {/* Ingredient Table */}
@@ -424,14 +390,19 @@ function Manager() {
               <div
                 className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
                 style={{ width: "80%" }}>
-                <h4 className="text-center"><span className='translate'>Restock Selected Ingredient</span></h4>
+                <h4 className="text-center">
+                  <span className="translate">Restock Selected Ingredient</span>
+                </h4>
                 <div className="d-flex justify-content-center flex-wrap">
-                <span className='translate'><input
-                    type="text"
-                    placeholder="Restock Amount"
-                    className="m-2"
-                    value={restockAmount}
-                    onChange={handleRestockChange}></input></span>
+                  <span className="translate">
+                    <input
+                      type="text"
+                      placeholder="Restock Amount"
+                      className="m-2"
+                      style={{ height: "36px" }}
+                      value={restockAmount}
+                      onChange={handleRestockChange}></input>
+                  </span>
                   <input
                     type="button"
                     className="btn btn-primary my-2"
@@ -444,7 +415,9 @@ function Manager() {
               <div
                 className="border border-secondary rounded p-3 my-3 mx-auto"
                 style={{ width: "80%" }}>
-                <h4 className="text-center"><span className='translate'>Remove Selected Ingredient</span></h4>
+                <h4 className="text-center">
+                  <span className="translate">Remove Selected Ingredient</span>
+                </h4>
                 <div className="d-flex justify-content-center flex-wrap">
                   <input
                     type="button"
@@ -458,35 +431,60 @@ function Manager() {
               <div
                 className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
                 style={{ width: "80%" }}>
-                <h4 className="text-center"><span className='translate'>Add Ingredient</span></h4>
+                <h4 className="text-center">
+                  <span className="translate">Add Ingredient</span>
+                </h4>
                 <div className="d-flex justify-content-center flex-wrap">
                   <div className="d-flex flex-wrap justify-content-center">
-                  <span className='translate'><input
-                      type="text"
-                      placeholder="Ingredient Name"
-                      className="m-2"
-                      value={newIngredientName}
-                      onChange={handleAddNameChange}></input></span>
+                    <span className="translate">
+                      <input
+                        type="text"
+                        placeholder="Ingredient Name"
+                        className="m-2"
+                        value={newIngredientName}
+                        style={{ height: "36px" }}
+                        onChange={handleAddNameChange}></input>
+                    </span>
                     <select
                       className="form-select w-auto my-2"
                       onChange={handleAddTypeChange}
                       defaultValue={""}>
-                      <option value=""><span className='translate'>Select Type</span></option>
-                      <option value="Sauce"><span className='translate'>Sauce</span></option>
-                      <option value="Cheese"><span className='translate'>Cheese</span></option>
-                      <option value="Dough"><span className='translate'>Dough</span></option>
-                      <option value="Drizzle"><span className='translate'>Drizzle</span></option>
-                      <option value="Meats"><span className='translate'>Meats</span></option>
-                      <option value="Raw Veggies"><span className='translate'>Raw Veggies</span></option>
-                      <option value="Roasted Veggies"><span className='translate'>Roasted Veggies</span></option>
-                      <option value="Other"><span className='translate'>Other</span></option>
+                      <option value="">
+                        <span className="translate">Select Type</span>
+                      </option>
+                      <option value="Sauce">
+                        <span className="translate">Sauce</span>
+                      </option>
+                      <option value="Cheese">
+                        <span className="translate">Cheese</span>
+                      </option>
+                      <option value="Dough">
+                        <span className="translate">Dough</span>
+                      </option>
+                      <option value="Drizzle">
+                        <span className="translate">Drizzle</span>
+                      </option>
+                      <option value="Meats">
+                        <span className="translate">Meats</span>
+                      </option>
+                      <option value="Raw Veggies">
+                        <span className="translate">Raw Veggies</span>
+                      </option>
+                      <option value="Roasted Veggies">
+                        <span className="translate">Roasted Veggies</span>
+                      </option>
+                      <option value="Other">
+                        <span className="translate">Other</span>
+                      </option>
                     </select>
                   </div>
-                  <span className='translate'><input
-                    type="button"
-                    className="btn btn-primary my-2"
-                    value="Add Ingredient"
-                    onClick={handleAddIngredientClick}></input></span>
+                  <span className="translate">
+                    <input
+                      type="button"
+                      className="btn btn-primary my-2"
+                      value="Add Ingredient"
+                      onClick={handleAddIngredientClick}></input>
+                  </span>
                 </div>
               </div>
             </div>
@@ -496,24 +494,36 @@ function Manager() {
                 <table className="w-75 border border-dark mx-auto">
                   <thead className="table-header position-sticky">
                     <tr>
-                      <th className="px-1"><span className='translate'>Menu Item</span></th>
-                      <th className="px-1"><span className='translate'>Price</span></th>
-                      <th className="px-1"><span className='translate'>Select</span></th>
+                      <th className="px-1">
+                        <span className="translate">Menu Item</span>
+                      </th>
+                      <th className="px-1">
+                        <span className="translate">Price</span>
+                      </th>
+                      <th className="px-1">
+                        <span className="translate">Select</span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {menuItemData.map((val, key) => {
                       return (
                         <tr key={key} className="border-top border-secondary">
-                          <td><span className='translate'>{val.name}</span></td>
-                          <td><span className='translate'>{val.price}</span></td>
                           <td>
-                          <span className='translate'><input
-                              type="checkbox"
-                              className="item-checkbox"
-                              value={val.name}
-                              onChange={handleSelectMenuItemChange}
-                            /></span>
+                            <span className="translate">{val.name}</span>
+                          </td>
+                          <td>
+                            <span className="translate">{val.price}</span>
+                          </td>
+                          <td>
+                            <span className="translate">
+                              <input
+                                type="checkbox"
+                                className="item-checkbox"
+                                value={val.name}
+                                onChange={handleSelectMenuItemChange}
+                              />
+                            </span>
                           </td>
                         </tr>
                       );
@@ -532,6 +542,7 @@ function Manager() {
                     type="text"
                     placeholder="New Price"
                     className="m-2"
+                    style={{ height: "36px" }}
                     value={newItemPrice}
                     onChange={handleItemPriceChange}></input></span>
                   <span className='translate'><input
@@ -553,24 +564,39 @@ function Manager() {
                     placeholder="Employee Name"
                     className="m-2"
                     value={addEmployeeName}
+                    style={{ height: "36px" }}
                     onChange={handleAddEmployeeName}></input></span>
-                  <span className='translate'><input
+                    <span className='translate'><input
                     type="text"
                     placeholder="Employee Passcode"
                     className="m-2"
                     value={addEmployeePassword}
+                    style={{ height: "36px" }}
                     onChange={handleAddEmployeePassword}></input></span>
-                  <ToggleButtonGroup
-                    type="checkbox"
-                    value={addAsManager}
-                    onChange={handleAddAsManager}>
-                    <ToggleButton
-                      id="tbg-btn-1 m-2"
-                      value={true}
-                      onChange={handleAddAsManager}>
+                  <div className="">
+                    <div className="form-check form-check-lg m-2 align-center">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Add Manager"
+                        onChange={handleAddAsManager}
+                        id="managerCheck"></input>
+                      <label className="form-check-label">
                       <span className='translate'>Add as Manager?</span>
-                    </ToggleButton>
-                  </ToggleButtonGroup>
+                      </label>
+                    </div>
+                  </div>
+                  {/* <ToggleButtonGroup
+                type="checkbox"
+                value={addAsManager}
+                onChange={handleAddAsManager}>
+                <ToggleButton
+                  id="tbg-btn-1 m-2"
+                  value={true}
+                  onChange={handleAddAsManager}>
+                  Add as Manager?
+                </ToggleButton>
+              </ToggleButtonGroup> */}
                 </div>
               <div className="d-flex justify-content-center flex-wrap">
               <span className='translate'><input
