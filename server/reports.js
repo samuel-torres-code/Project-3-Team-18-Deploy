@@ -172,6 +172,8 @@ router.get('/excess', async function(req, res){
     res.send(resp_obj);
 });
 
+//TODO: need fill level understanding for restock functions
+
 router.get('/restock', function(req, res){
     res.send('route /api/reports/restock');
 });
@@ -180,12 +182,47 @@ router.get('/restock_all', function(req, res){
     res.send('route /api/reports/resock_all');
 });
 
-router.post('/add_seasonal_item', function(req, res){
-    res.send('route /api/reports/add_seasonal_item');
+
+router.post('/add_seasonal_item', async function(req, res){
+    //process req
+    var item_name = req.body['item_name'];
+    var ingredients = req.body['ingredients'];
+    var price = req.body['price'];
+    //query for ingredients to map to ids
+    var ingredients_query = "select ingredient_name, ingredient_id from ingredients_web";
+    mapped_ingredients = {};
+    await pool.query(ingredients_query).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++)
+        {
+            var ing_name = query_res.rows[i]["ingredient_name"];
+            var ing_id = query_res.rows[i]["ingredient_id"];
+            mapped_ingredients[ing_name] = ing_id;
+        }
+    });
+    var ingredients_to_send = [];
+    for(let i = 0; i < ingredients.length; i++)
+    {
+        ingredients_to_send.push(mapped_ingredients[ingredients[i]]);
+    }
+
+    //query new seasonal_item
+    var seasonal_query = "insert into seasonal_item(item_name, item_price, item_ingredients)" +
+                            "VALUES ($1, $2, $3)";
+    pool.query(seasonal_query, [item_name, price, ingredients_to_send]);
+    console.log(ingredients_to_send);
+    res.send({});
 });
 
 router.post('/remove_seasonal_item', function(req, res){
-    res.send('route /api/reports/remove_seasonal_item');
+    //p trivial, just remove by name
+    var items_to_remove = req.body["items"];
+    var remove_query = "DELETE FROM seasonal_item WHERE item_name = $1";
+    for(let i = 0; i < items_to_remove.length; i++)
+    {
+        pool.query(remove_query, [items_to_remove[i]]);
+    }
+    res.send(req.body);
+
 });
 
 
