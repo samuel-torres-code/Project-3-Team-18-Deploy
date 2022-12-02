@@ -99,7 +99,6 @@ router.get('/sales', async function(req, res){
             {
                 seasonal_response.push(query_res.rows[i]["item_name"]);
             }
-            console.log(seasonal_response);
             for(let i = 0; i < seasonal_response.length; i++)
             {
                 var item_name = seasonal_response[i];
@@ -121,8 +120,56 @@ router.get('/sales', async function(req, res){
 
 });
 
-router.get('/excess', function(req, res){
-    res.send('route /api/reports/excess');
+router.get('/excess', async function(req, res){
+    //get start from request
+    var start_time = req.body["start_time"];
+    //create response obj
+    var resp_obj = {"ingredients" : []};
+    var excess_query = "SELECT i.ingredient_name, count(ij.ingredient_id) FROM ingredients_web AS i "
+                                +"JOIN ingredients_join_web AS ij ON ij.ingredient_id = i.ingredient_id "
+                                +"JOIN pizzas_web AS p ON ij.pizza_id = p.pizza_id "
+                                +"JOIN orders_web AS o ON o.order_id = p.order_id "
+                                +" WHERE o.time_stamp > $1 "
+                                +" GROUP BY i.ingredient_name;";
+    ingredients_used = {};
+    await pool.query(excess_query, [start_time]).then(query_res => {
+            for(let i = 0; i < query_res.rowCount; i++)
+            {
+                var ingr = query_res.rows[i];
+                ingredients_used[ingr["ingredient_name"]] = ingr["count"];
+            }
+    });
+    
+    var all_ingredients_query = "select ingredient_name, ingredient_inventory from ingredients_web";
+    current_ingredients = [];
+    current_ingredient_stock = {};
+    await pool.query(all_ingredients_query).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++)
+        {
+            var ingr = query_res.rows[i];
+            current_ingredient_stock[ingr["ingredient_name"]] = ingr["ingredient_inventory"];
+            current_ingredients.push(ingr["ingredient_name"]);
+        }
+    });
+
+    //at this point, have name of all ingredients, current stock, and amount used
+    for(let i = 0; i < current_ingredients.length; i++)
+    {
+        var ing_name = current_ingredients[i];
+        var used = ingredients_used[ing_name];
+        if(used == null)
+        {
+            used = 0;
+        }
+        var curr_stock = current_ingredient_stock[ing_name];
+        var percent = (used * 100) / curr_stock;
+        if(percent <= 10)
+        {
+            var ing_obj = {"ingredient_name" : ing_name, "sales": used, "inventory": curr_stock, "percentage": percent};
+            resp_obj["ingredients"].push(ing_obj);
+        }
+    }
+    res.send(resp_obj);
 });
 
 router.get('/restock', function(req, res){
