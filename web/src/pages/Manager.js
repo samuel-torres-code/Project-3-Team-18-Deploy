@@ -131,7 +131,9 @@ function Manager() {
         if (nameA > nameB) return 1;
         return 0;
       });
-      ingredients.forEach((element, index) => options.push({name:element.name, id:index}))
+      ingredients.forEach((element, index) =>
+        options.push({ name: element.name, id: index })
+      );
       setIngredientData(ingredients);
       setMultiselectOptions(options);
     });
@@ -642,7 +644,7 @@ function Manager() {
                 </div>
               </div>
             </div>
-            <div className="col my-5">
+            <div className="col my-5 p-0">
               <IngredientTable
                 ingredientData={ingredientData}
                 handleEditIngredientClick={handleEditIngredientClick}
@@ -650,12 +652,78 @@ function Manager() {
                 handleAddIngredientClick={handleAddIngredientClick}
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
-            <div className="col my-auto">
+            <div className="col my-5 p-0">
+              <div className="pb-4" style={{ maxHeight: "40vh" }}>
+                <div className="border border-secondary rounded p-3 mx-5">
+                  <h4 className="text-center">
+                    <span className="translate">Add Employee to System</span>
+                  </h4>
+                  <div className="d-flex justify-content-center flex-wrap">
+                    <span className="translate">
+                      <input
+                        type="text"
+                        placeholder="Employee Name"
+                        className="m-2"
+                        value={addEmployeeName}
+                        style={{ height: "36px" }}
+                        onChange={handleAddEmployeeName}></input>
+                    </span>
+                    <span className="translate">
+                      <input
+                        type="text"
+                        placeholder="Employee Passcode"
+                        className="m-2"
+                        value={addEmployeePassword}
+                        style={{ height: "36px" }}
+                        onChange={handleAddEmployeePassword}></input>
+                    </span>
+                    <div className="d-flex align-items-center">
+                      <div className="m-2">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Add Manager"
+                          onChange={handleAddAsManager}
+                          id="managerCheck"></input>
+                        <label className="form-check-label">
+                          <span className="translate">Add as Manager?</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center flex-wrap">
+                    <span className="translate">
+                      <input
+                        type="button"
+                        className="btn btn-primary my-2"
+                        value="Add Employee"
+                        onClick={handleAddNewEmployee}></input>
+                    </span>
+                  </div>
+                  {addedEmployeeDatabase === true && (
+                    <div
+                      className="d-flex justify-content-center flex-wrap"
+                      style={{ color: "blue" }}>
+                      <span className="translate">Added New Employee.</span>
+                    </div>
+                  )}
+                  {addedEmployeeDatabase === false && (
+                    <div
+                      className="d-flex justify-content-center flex-wrap"
+                      style={{ color: "red" }}>
+                      <span className="translate">
+                        Failed to Add New Employee. Try Different Passcode.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* <MenuItemsTable menuItemData={menuItemData}></MenuItemsTable> */}
               <div className="container">
                 <div
                   className="border border-dark mx-5"
-                  style={{ maxHeight: "70vh", overflowY: "auto" }}>
+                  style={{ maxHeight: "40vh", overflowY: "auto" }}>
                   <table className="w-100">
                     <thead className="table-header position-sticky">
                       <tr>
@@ -714,94 +782,6 @@ function Manager() {
                   </button>
                 </div>
               </div>
-              {/* <div className="mx-5 mt-5">
-                <table className="w-75 border border-dark mx-auto">
-                  <thead className="table-header position-sticky">
-                    <tr>
-                      <th className="px-1">Menu Item</th>
-                      <th className="px-1">Price</th>
-                      <th className="px-1">Select</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {menuItemData.map((item, key) => {
-                      return (
-                        <tr key={key} className="border-top border-secondary">
-                          <td>{item.name}</td>
-                          <td>{item.price}</td>
-                          <td></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div> */}
-
-              {/* <div
-                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-                style={{ width: "80%" }}>
-                <h4 className="text-center">
-                  <span className="translate">Add Employee to System</span>
-                </h4>
-                <div className="d-flex justify-content-center flex-wrap">
-                  <span className="translate">
-                    <input
-                      type="text"
-                      placeholder="Employee Name"
-                      className="m-2"
-                      value={addEmployeeName}
-                      style={{ height: "36px" }}
-                      onChange={handleAddEmployeeName}></input>
-                  </span>
-                  <span className="translate">
-                    <input
-                      type="text"
-                      placeholder="Employee Passcode"
-                      className="m-2"
-                      value={addEmployeePassword}
-                      style={{ height: "36px" }}
-                      onChange={handleAddEmployeePassword}></input>
-                  </span>
-                  <div className="">
-                    <div className="form-check form-check-lg m-2 align-center">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value="Add Manager"
-                        onChange={handleAddAsManager}
-                        id="managerCheck"></input>
-                      <label className="form-check-label">
-                        <span className="translate">Add as Manager?</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-center flex-wrap">
-                  <span className="translate">
-                    <input
-                      type="button"
-                      className="btn btn-primary my-2"
-                      value="Add Employee"
-                      onClick={handleAddNewEmployee}></input>
-                  </span>
-                </div>
-                {addedEmployeeDatabase === true && (
-                  <div
-                    className="d-flex justify-content-center flex-wrap"
-                    style={{ color: "blue" }}>
-                    <span className="translate">Added New Employee.</span>
-                  </div>
-                )}
-                {addedEmployeeDatabase === false && (
-                  <div
-                    className="d-flex justify-content-center flex-wrap"
-                    style={{ color: "red" }}>
-                    <span className="translate">
-                      Failed to Add New Employee. Try Different Passcode.
-                    </span>
-                  </div>
-                )}
-              </div> */}
             </div>
           </div>
         </span>
