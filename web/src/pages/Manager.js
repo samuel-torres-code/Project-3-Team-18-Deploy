@@ -2,20 +2,28 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../API";
 import IngredientTable from "../components/IngredientTable";
+import MenuItemsTable from "../components/MenuItemsTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 
 function Manager() {
+  const [ingredientData, setIngredientData] = useState([]);
+  const [menuItemData, setMenuItemData] = useState([]);
+
   const [selectedIngredient, setSelectedIngredient] = useState("");
-  const [showEditIngredientModal, setShowEditIngredientModal] = useState(false);
+  const [selectedMenuItem, setSelectedMenuItem] = useState("");
   const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
-  const [selectedMenuItems, setSelectedMenuItems] = useState([]);
+  const [showEditIngredientModal, setShowEditIngredientModal] = useState(false);
+  const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
+  const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
 
   const [restockAmount, setRestockAmount] = useState("");
   const [fillLevel, setFillLevel] = useState("");
   const [newIngredientName, setNewIngredientName] = useState("");
   const [newIngredientType, setNewIngredientType] = useState("");
+  const [newItemName, setNewItemName] = useState("");
   const [newItemPrice, setNewItemPrice] = useState("");
-  const [ingredientData, setIngredientData] = useState([]);
-  const [menuItemData, setMenuItemData] = useState([]);
+  const [newItemIngredients, setNewItemIngredients] = useState([]);
 
   const [addEmployeeName, setNewEmployeeName] = useState("");
   const [addEmployeePassword, setNewEmployeePassword] = useState("");
@@ -95,7 +103,7 @@ function Manager() {
           name: res.data[i][0],
           type: res.data[i][1],
           inventory: res.data[i][2],
-          fill_level: Math.round(Math.random() * 30 + 10),
+          fill_level: 10,
         });
       }
       ingredients.sort((a, b) => {
@@ -120,46 +128,36 @@ function Manager() {
         items.push({
           name: res.data["pizza_types"][i]["pizza_type"],
           price: res.data["pizza_types"][i]["pizza_price"],
+          type: "Pizza Type",
         });
       }
       for (i = 0; i < res.data["drink_types"].length; i++) {
         items.push({
           name: res.data["drink_types"][i]["drink_type"],
           price: res.data["drink_types"][i]["drink_price"],
+          type: "Drink Type",
         });
       }
       for (i = 0; i < res.data["seasonal_items"].length; i++) {
         items.push({
           name: res.data["seasonal_items"][i]["item_name"],
           price: res.data["seasonal_items"][i]["item_price"],
+          type: "Seasonal Item",
         });
       }
+      items.sort((a, b) => {
+        const typeA = a.type.toUpperCase();
+        const typeB = b.type.toUpperCase();
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (typeA < typeB) return -1;
+        if (typeA > typeB) return 1;
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
       setMenuItemData(items);
     });
-  }
-
-  // function handleSelectIngredientChange(event) {
-  //   if (event.target.checked) {
-  //     setSelectedIngredients([...selectedIngredients, event.target.value]);
-  //   } else {
-  //     setSelectedIngredients(
-  //       selectedIngredients.filter(function (item) {
-  //         return item !== event.target.value;
-  //       })
-  //     );
-  //   }
-  // }
-
-  function handleSelectMenuItemChange(event) {
-    if (event.target.checked) {
-      setSelectedMenuItems([...selectedMenuItems, event.target.value]);
-    } else {
-      setSelectedMenuItems(
-        selectedMenuItems.filter(function (item) {
-          return item !== event.target.value;
-        })
-      );
-    }
   }
 
   function handleRestockChange(event) {
@@ -178,7 +176,11 @@ function Manager() {
     setNewIngredientType(event.target.value);
   }
 
-  function handleItemPriceChange(event) {
+  function handleNewItemNameChange(event) {
+    setNewItemName(event.target.value);
+  }
+
+  function handleNewItemPriceChange(event) {
     setNewItemPrice(event.target.value);
   }
 
@@ -194,54 +196,6 @@ function Manager() {
     setAsManager(event);
     console.log(event);
   }
-
-  // function handleRestockClick() {
-  //   if (selectedIngredients.length === 0) {
-  //     console.error(
-  //       "Invalid Input for Restock Ingredient: No ingredients are selected."
-  //     );
-  //   } else if (restockAmount === "") {
-  //     console.error(
-  //       "Invalid Input for Restock Ingredient: Restock amount is null."
-  //     );
-  //   } else if (isNaN(restockAmount)) {
-  //     console.error(
-  //       "Invalid Input for Restock Ingredient: Restock amount is NaN."
-  //     );
-  //   } else {
-  //     client.post("/api/manager/restock", {
-  //       ingredients: selectedIngredients,
-  //       amount: restockAmount,
-  //     });
-  //     setRestockAmount("");
-  //     setLoad(true);
-  //     unCheckIngredients();
-  //   }
-  // }
-
-  // function handleItemPriceClick() {
-  //   if (selectedMenuItems.length === 0) {
-  //     console.error(
-  //       "Invalid Input for Update Menu Item Price: No menu items are selected."
-  //     );
-  //   } else if (newItemPrice === "") {
-  //     console.error(
-  //       "Invalid Input for Update Menu Item Price: New item price is null."
-  //     );
-  //   } else if (isNaN(newItemPrice)) {
-  //     console.error(
-  //       "Invalid Input for Update Menu Item Price: New item price is NaN."
-  //     );
-  //   } else {
-  //     client.post("/api/manager/update_menu_items", {
-  //       menu_items: selectedMenuItems,
-  //       new_price: newItemPrice,
-  //     });
-  //     setLoad(true);
-  //     setNewItemPrice("");
-  //     unCheckMenuItems();
-  //   }
-  // }
 
   async function handleAddNewEmployee() {
     if (addEmployeeName.length === 0) {
@@ -269,25 +223,6 @@ function Manager() {
     }
   }
 
-  // function unCheckIngredients() {
-  //   // uncheck all ingredient checkboxes
-  //   setSelectedIngredients([]);
-  //   var x = document.getElementsByClassName("ing-checkbox");
-  //   for (var i = 0; i < x.length; i++) {
-  //     x[i].checked = false;
-  //   }
-  //   setLoad(true);
-  // }
-
-  // function unCheckMenuItems() {
-  //   // uncheck all menu item checkboxes
-  //   setSelectedMenuItems([]);
-  //   var x = document.getElementsByClassName("item-checkbox");
-  //   for (var i = 0; i < x.length; i++) {
-  //     x[i].checked = false;
-  //   }
-  // }
-
   function handleEditIngredientClick(ingredient_name) {
     setSelectedIngredient(ingredient_name);
     setShowEditIngredientModal(true);
@@ -305,15 +240,17 @@ function Manager() {
     setShowAddIngredientModal(true);
   }
 
-  function hideModal() {
-    setShowEditIngredientModal(false);
-    setShowAddIngredientModal(false);
+  function handleEditMenuItemClick(item_name) {
+    setSelectedMenuItem(item_name);
+    setShowEditMenuItemModal(true);
+  }
 
-    setRestockAmount("");
-    setFillLevel("");
-    setNewIngredientName("");
-    setNewIngredientType("");
-    setSelectedIngredient("");
+  function handleDeleteMenuItemClick(item_name) {
+    console.log("Del " + item_name);
+  }
+
+  function handleAddMenuItemClick() {
+    setShowAddMenuItemModal(true);
   }
 
   function addIngredient() {
@@ -354,11 +291,53 @@ function Manager() {
     }
   }
 
+  function editMenuItem() {
+    if (newItemPrice === "") {
+      console.error(
+        "Invalid Input for Update Menu Item Price: New item price is null."
+      );
+    } else if (isNaN(newItemPrice)) {
+      console.error(
+        "Invalid Input for Update Menu Item Price: New item price is NaN."
+      );
+    } else {
+      client.post("/api/manager/update_menu_items", {
+        menu_items: [selectedMenuItem],
+        new_price: newItemPrice,
+      });
+      setLoad(true);
+      setNewItemPrice("");
+    }
+  }
+
+  function addMenuItem() {}
+
+  function hideModal() {
+    setShowAddIngredientModal(false);
+    setShowEditIngredientModal(false);
+    setShowAddMenuItemModal(false);
+    setShowEditMenuItemModal(false);
+
+    setRestockAmount("");
+    setFillLevel("");
+    setNewIngredientName("");
+    setNewIngredientType("");
+    setSelectedIngredient("");
+
+    setNewItemName("");
+    setNewItemPrice("");
+    setSelectedMenuItem("");
+  }
+
   function submitModal() {
     if (showAddIngredientModal) {
       addIngredient();
     } else if (showEditIngredientModal) {
       editIngredient();
+    } else if (showAddMenuItemModal) {
+      addMenuItem();
+    } else if (showEditMenuItemModal) {
+      editMenuItem();
     }
     hideModal();
   }
@@ -395,10 +374,14 @@ function Manager() {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h1 className="modal-title fs-5" id="exampleModalLabel">
+                      {showAddIngredientModal && <p>Add New Ingredient</p>}
                       {showEditIngredientModal && (
                         <p>Edit Ingredient {selectedIngredient}</p>
                       )}
-                      {showAddIngredientModal && <p>Add New Ingredient</p>}
+                      {showAddMenuItemModal && <p>Add New Seasonal Item</p>}
+                      {showEditMenuItemModal && (
+                        <p>Edit Menu Item {selectedMenuItem}</p>
+                      )}
                     </h1>
                     <button
                       type="button"
@@ -516,6 +499,56 @@ function Manager() {
                         </div>
                       </div>
                     )}
+                    {showAddMenuItemModal && (
+                      <div>
+                        <div className="row d-flex align-items-center my-2">
+                          <div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            <h6 className="my-auto mx-2">Item Name</h6>
+                          </div>
+                          <div className="col-7">
+                            <input
+                              type="text"
+                              placeholder="Name"
+                              className="mx-2"
+                              style={{ height: "36px" }}
+                              value={newItemName}
+                              onChange={handleNewItemNameChange}></input>
+                          </div>
+                        </div>
+                        <div className="row d-flex align-items-center my-2">
+                          <div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            <h6 className="my-auto mx-2">Item Price</h6>
+                          </div>
+                          <div className="col-7">
+                            <input
+                              type="text"
+                              placeholder="Price"
+                              className="mx-2"
+                              style={{ height: "36px" }}
+                              value={newItemPrice}
+                              onChange={handleNewItemPriceChange}></input>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {showEditMenuItemModal && (
+                      <div>
+                        <div className="row d-flex align-items-center my-2">
+                          <div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            <h6 className="my-auto mx-2">Change Item Price</h6>
+                          </div>
+                          <div className="col-7">
+                            <input
+                              type="text"
+                              placeholder="New Item Price"
+                              className="mx-2"
+                              style={{ height: "36px" }}
+                              value={newItemPrice}
+                              onChange={handleNewItemPriceChange}></input>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="modal-footer">
                     <button
@@ -545,49 +578,93 @@ function Manager() {
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
             <div className="col my-auto">
-              <div className="mx-5 mt-5">
+              {/* <MenuItemsTable menuItemData={menuItemData}></MenuItemsTable> */}
+              <div className="container">
+                <div
+                  className="border border-dark mx-5"
+                  style={{ maxHeight: "70vh", overflowY: "auto" }}>
+                  <table className="w-100">
+                    <thead className="table-header position-sticky">
+                      <tr>
+                        <th className="px-1">Menu Item</th>
+                        <th className="px-1">Type</th>
+                        <th className="px-1">Price</th>
+                        <th className="px-1">Edit</th>
+                        <th className="px-1">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {menuItemData.map((item, key) => {
+                        return (
+                          <tr
+                            key={key}
+                            className="table-row border-top border-secondary">
+                            <td>{item.name}</td>
+                            <td>{item.type}</td>
+                            <td>{item.price}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-primary btn-sm mx-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#inputModal"
+                                onClick={() =>
+                                  handleEditMenuItemClick(item.name)
+                                }>
+                                <FontAwesomeIcon icon={faPencil} />
+                              </button>
+                            </td>
+                            <td>
+                              {item.type === "Seasonal Item" && (
+                                <button
+                                  className="btn btn-primary btn-sm mx-auto"
+                                  onClick={() =>
+                                    handleDeleteMenuItemClick(item.name)
+                                  }>
+                                  <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="d-flex justify-content-end mx-5">
+                  <button
+                    className="btn btn-primary btn-sm mt-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#inputModal"
+                    onClick={handleAddMenuItemClick}>
+                    Add Ingredient
+                  </button>
+                </div>
+              </div>
+              {/* <div className="mx-5 mt-5">
                 <table className="w-75 border border-dark mx-auto">
                   <thead className="table-header position-sticky">
                     <tr>
-                      <th className="px-1">
-                        <span className="translate">Menu Item</span>
-                      </th>
-                      <th className="px-1">
-                        <span className="translate">Price</span>
-                      </th>
-                      <th className="px-1">
-                        <span className="translate">Select</span>
-                      </th>
+                      <th className="px-1">Menu Item</th>
+                      <th className="px-1">Price</th>
+                      <th className="px-1">Select</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {menuItemData.map((val, key) => {
+                    {menuItemData.map((item, key) => {
                       return (
                         <tr key={key} className="border-top border-secondary">
-                          <td>
-                            <span className="translate">{val.name}</span>
-                          </td>
-                          <td>
-                            <span className="translate">{val.price}</span>
-                          </td>
-                          <td>
-                            <span className="translate">
-                              <input
-                                type="checkbox"
-                                className="item-checkbox"
-                                value={val.name}
-                                onChange={handleSelectMenuItemChange}
-                              />
-                            </span>
-                          </td>
+                          <td>{item.name}</td>
+                          <td>{item.price}</td>
+                          <td></td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
 
-              <div
+              {/* <div
                 className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
                 style={{ width: "80%" }}>
                 <h4 className="text-center">
@@ -651,7 +728,7 @@ function Manager() {
                     </span>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </span>
