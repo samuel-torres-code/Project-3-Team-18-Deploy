@@ -3,6 +3,7 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import axios from "axios";
 import { API_URL } from "../API";
+import IngredientTable from "../components/IngredientTable";
 
 function Manager() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -347,147 +348,11 @@ function Manager() {
         <span className="translate">
           <div className="row w-100">
             <div className="col my-5">
-              {/* Ingredient Table */}
-              <div
-                className="border border-dark mx-5"
-                style={{ maxHeight: "80vh", overflowY: "auto" }}>
-                <table className="w-100">
-                  <thead className="table-header position-sticky">
-                    <tr>
-                      <th className="px-1">Ingredient</th>
-                      <th className="px-1">Type</th>
-                      <th className="px-1">Inventory</th>
-                      <th className="px-1">Select</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ingredientData.map((val, key) => {
-                      return (
-                        <tr
-                          key={key}
-                          className="table-row border-top border-secondary">
-                          <td>{val.name}</td>
-                          <td>{val.type}</td>
-                          <td>{val.inventory}</td>
-                          <td>
-                            <input
-                              type="checkbox"
-                              className="ing-checkbox"
-                              value={val.name}
-                              onChange={handleSelectIngredientChange}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <IngredientTable
+                ingredientData={ingredientData}
+                selectFunction={handleSelectIngredientChange}></IngredientTable>
             </div>
 
-            <div className="col my-auto">
-              {/* Restock Ingredients */}
-              <div
-                className="border border-secondary rounded p-3 mb-3 mt-5 mx-auto"
-                style={{ width: "80%" }}>
-                <h4 className="text-center">
-                  <span className="translate">Restock Selected Ingredient</span>
-                </h4>
-                <div className="d-flex justify-content-center flex-wrap">
-                  <span className="translate">
-                    <input
-                      type="text"
-                      placeholder="Restock Amount"
-                      className="m-2"
-                      style={{ height: "36px" }}
-                      value={restockAmount}
-                      onChange={handleRestockChange}></input>
-                  </span>
-                  <input
-                    type="button"
-                    className="btn btn-primary my-2"
-                    value="Restock"
-                    onClick={handleRestockClick}></input>
-                </div>
-              </div>
-
-              {/* Remove Ingredients */}
-              <div
-                className="border border-secondary rounded p-3 my-3 mx-auto"
-                style={{ width: "80%" }}>
-                <h4 className="text-center">
-                  <span className="translate">Remove Selected Ingredient</span>
-                </h4>
-                <div className="d-flex justify-content-center flex-wrap">
-                  <input
-                    type="button"
-                    className="btn btn-primary my-2"
-                    value="Remove Ingredient"
-                    onClick={handleRemoveClick}></input>
-                </div>
-              </div>
-
-              {/* Add Ingredients */}
-              <div
-                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-                style={{ width: "80%" }}>
-                <h4 className="text-center">
-                  <span className="translate">Add Ingredient</span>
-                </h4>
-                <div className="d-flex justify-content-center flex-wrap">
-                  <div className="d-flex flex-wrap justify-content-center">
-                    <span className="translate">
-                      <input
-                        type="text"
-                        placeholder="Ingredient Name"
-                        className="m-2"
-                        value={newIngredientName}
-                        style={{ height: "36px" }}
-                        onChange={handleAddNameChange}></input>
-                    </span>
-                    <select
-                      className="form-select w-auto my-2"
-                      onChange={handleAddTypeChange}
-                      defaultValue={""}>
-                      <option value="">
-                        <span className="translate">Select Type</span>
-                      </option>
-                      <option value="Sauce">
-                        <span className="translate">Sauce</span>
-                      </option>
-                      <option value="Cheese">
-                        <span className="translate">Cheese</span>
-                      </option>
-                      <option value="Dough">
-                        <span className="translate">Dough</span>
-                      </option>
-                      <option value="Drizzle">
-                        <span className="translate">Drizzle</span>
-                      </option>
-                      <option value="Meats">
-                        <span className="translate">Meats</span>
-                      </option>
-                      <option value="Raw Veggies">
-                        <span className="translate">Raw Veggies</span>
-                      </option>
-                      <option value="Roasted Veggies">
-                        <span className="translate">Roasted Veggies</span>
-                      </option>
-                      <option value="Other">
-                        <span className="translate">Other</span>
-                      </option>
-                    </select>
-                  </div>
-                  <span className="translate">
-                    <input
-                      type="button"
-                      className="btn btn-primary my-2"
-                      value="Add Ingredient"
-                      onClick={handleAddIngredientClick}></input>
-                  </span>
-                </div>
-              </div>
-            </div>
             <div className="col my-auto">
               {/* Menu Items Table */}
               <div className="mx-5 mt-5">
@@ -532,47 +397,32 @@ function Manager() {
                 </table>
               </div>
 
-              {/* Change Menu Item Price */}
-              <div
-                className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
-                style={{ width: "80%" }}>
-                <h4 className="text-center"><span className='translate'>Change Selected Menu Item Price</span></h4>
-                <div className="d-flex justify-content-center flex-wrap">
-                <span className='translate'><input
-                    type="text"
-                    placeholder="New Price"
-                    className="m-2"
-                    style={{ height: "36px" }}
-                    value={newItemPrice}
-                    onChange={handleItemPriceChange}></input></span>
-                  <span className='translate'><input
-                    type="button"
-                    className="btn btn-primary my-2"
-                    value="Change Price"
-                    onClick={handleItemPriceClick}></input></span>
-                </div>
-              </div>
-
               {/* Add New Employee to System */}
               <div
                 className="border border-secondary rounded p-3 mt-3 mb-5 mx-auto"
                 style={{ width: "80%" }}>
-                <h4 className="text-center"><span className='translate'>Add Employee to System</span></h4>
+                <h4 className="text-center">
+                  <span className="translate">Add Employee to System</span>
+                </h4>
                 <div className="d-flex justify-content-center flex-wrap">
-                <span className='translate'><input
-                    type="text"
-                    placeholder="Employee Name"
-                    className="m-2"
-                    value={addEmployeeName}
-                    style={{ height: "36px" }}
-                    onChange={handleAddEmployeeName}></input></span>
-                    <span className='translate'><input
-                    type="text"
-                    placeholder="Employee Passcode"
-                    className="m-2"
-                    value={addEmployeePassword}
-                    style={{ height: "36px" }}
-                    onChange={handleAddEmployeePassword}></input></span>
+                  <span className="translate">
+                    <input
+                      type="text"
+                      placeholder="Employee Name"
+                      className="m-2"
+                      value={addEmployeeName}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeeName}></input>
+                  </span>
+                  <span className="translate">
+                    <input
+                      type="text"
+                      placeholder="Employee Passcode"
+                      className="m-2"
+                      value={addEmployeePassword}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeePassword}></input>
+                  </span>
                   <div className="">
                     <div className="form-check form-check-lg m-2 align-center">
                       <input
@@ -582,7 +432,7 @@ function Manager() {
                         onChange={handleAddAsManager}
                         id="managerCheck"></input>
                       <label className="form-check-label">
-                      <span className='translate'>Add as Manager?</span>
+                        <span className="translate">Add as Manager?</span>
                       </label>
                     </div>
                   </div>
@@ -598,25 +448,29 @@ function Manager() {
                 </ToggleButton>
               </ToggleButtonGroup> */}
                 </div>
-              <div className="d-flex justify-content-center flex-wrap">
-              <span className='translate'><input
-                    type="button"
-                    className="btn btn-primary my-2"
-                    value= "Add Employee"
-                    onClick={handleAddNewEmployee}></input></span>
+                <div className="d-flex justify-content-center flex-wrap">
+                  <span className="translate">
+                    <input
+                      type="button"
+                      className="btn btn-primary my-2"
+                      value="Add Employee"
+                      onClick={handleAddNewEmployee}></input>
+                  </span>
                 </div>
                 {addedEmployeeDatabase === true && (
                   <div
                     className="d-flex justify-content-center flex-wrap"
                     style={{ color: "blue" }}>
-                    <span className='translate'>Added New Employee.</span>
+                    <span className="translate">Added New Employee.</span>
                   </div>
                 )}
                 {addedEmployeeDatabase === false && (
                   <div
                     className="d-flex justify-content-center flex-wrap"
                     style={{ color: "red" }}>
-                    <span className='translate'>Failed to Add New Employee. Try Different Passcode.</span>
+                    <span className="translate">
+                      Failed to Add New Employee. Try Different Passcode.
+                    </span>
                   </div>
                 )}
               </div>
