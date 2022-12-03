@@ -3,7 +3,3 @@
   background: #e8b74d;
   color: #fff;
 }
-
-.searchBox#css_custom_input::placeholder {
-  color: red;
-}
