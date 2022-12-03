@@ -5,10 +5,13 @@ import IngredientTable from "../components/IngredientTable";
 import MenuItemsTable from "../components/MenuItemsTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import Multiselect from "multiselect-react-dropdown";
+import "./Manager.css";
 
 function Manager() {
   const [ingredientData, setIngredientData] = useState([]);
   const [menuItemData, setMenuItemData] = useState([]);
+  const [multiselectOptions, setMultiselectOptions] = useState([]);
 
   const [selectedIngredient, setSelectedIngredient] = useState("");
   const [selectedMenuItem, setSelectedMenuItem] = useState("");
@@ -31,7 +34,6 @@ function Manager() {
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
-  const [load, setLoad] = useState(true);
   const [loading, setLoading] = useState(true);
   const [loadingItems, setLoadingItems] = useState(false);
 
@@ -82,22 +84,34 @@ function Manager() {
   });
 
   useEffect(() => {
-    setLoad(false);
-    if (!loadingItems) {
-      loadIngredients();
-      loadMenuItems();
-      setLoadingItems(false);
-    }
+    loadIngredients();
+    loadMenuItems();
     if (loading) {
       setTimeout(() => {
         setLoading(false);
       }, 500);
     }
-  }, [load]);
+  }, []);
+
+  useEffect(() => {
+    loadIngredients();
+    loadMenuItems();
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    loadIngredients();
+    loadMenuItems();
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    loadIngredients();
+    loadMenuItems();
+  }, [selectedIngredient, selectedMenuItem, newItemName, newIngredientName]);
 
   async function loadIngredients() {
     await client.get("/api/manager/load_ingredients").then((res) => {
       var ingredients = [];
+      var options = [];
       for (var i = 0; i < res.data.length; i++) {
         ingredients.push({
           name: res.data[i][0],
@@ -117,7 +131,9 @@ function Manager() {
         if (nameA > nameB) return 1;
         return 0;
       });
+      ingredients.forEach((element, index) => options.push({name:element.name, id:index}))
       setIngredientData(ingredients);
+      setMultiselectOptions(options);
     });
   }
 
@@ -216,7 +232,6 @@ function Manager() {
             setAddedEmployeeDatabase(false);
           }
         });
-      setLoad(true);
       setAsManager([false, false]);
       setNewEmployeeName("");
       setNewEmployeePassword("");
@@ -232,7 +247,10 @@ function Manager() {
     client.post("/api/manager/remove_ingredient", {
       ingredients: [ingredient_name],
     });
-    setLoad(true);
+    loadIngredients();
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
     loadIngredients();
   }
 
@@ -253,6 +271,14 @@ function Manager() {
     setShowAddMenuItemModal(true);
   }
 
+  function handleAddNewItemIngredient(selectedList, selectedItem) {
+    setNewItemIngredients(newItemIngredients.concat(selectedItem));
+  }
+
+  function handleRemoveNewItemIngredient(selectedList, removedItem) {
+    setNewItemIngredients(selectedList);
+  }
+
   function addIngredient() {
     if (newIngredientName === "") {
       console.error(
@@ -267,7 +293,6 @@ function Manager() {
         ingredient_name: newIngredientName,
         ingredient_type: newIngredientType,
       });
-      setLoad(true);
       loadIngredients();
       setNewIngredientName("");
       setNewIngredientType("");
@@ -286,7 +311,7 @@ function Manager() {
           amount: restockAmount,
         });
         setRestockAmount("");
-        setLoad(true);
+        loadIngredients();
       }
     }
   }
@@ -305,12 +330,41 @@ function Manager() {
         menu_items: [selectedMenuItem],
         new_price: newItemPrice,
       });
-      setLoad(true);
+      loadMenuItems();
       setNewItemPrice("");
     }
   }
 
-  function addMenuItem() {}
+  async function addMenuItem() {
+    if (newItemName === "") {
+      console.error(
+        "Invalid Input for Add Seasonal Item: Seasonal item name is null."
+      );
+    } else if (newItemPrice === "") {
+      console.error(
+        "Invalid Input for Add Seasonal Item: Seasonal item price is null."
+      );
+    } else if (isNaN(newItemPrice)) {
+      console.error(
+        "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
+      );
+    } else {
+      console.log(newItemName);
+      console.log(newItemPrice);
+      var new_ingredients = [];
+      newItemIngredients.forEach((element) =>
+        new_ingredients.push(element.name)
+      );
+      await client.post("/api/manager/add_seasonal_item", {
+        item_name: newItemName,
+        ingredients: new_ingredients,
+        price: newItemPrice,
+      });
+      loadMenuItems();
+      setNewItemName("");
+      setNewItemPrice("");
+    }
+  }
 
   function hideModal() {
     setShowAddIngredientModal(false);
@@ -326,6 +380,7 @@ function Manager() {
 
     setNewItemName("");
     setNewItemPrice("");
+    setNewItemIngredients([]);
     setSelectedMenuItem("");
   }
 
@@ -404,7 +459,7 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Restock Amount"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={restockAmount}
                               onChange={handleRestockChange}></input>
@@ -418,7 +473,7 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Fill Level"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={fillLevel}
                               onChange={handleFillLevelChange}></input>
@@ -436,7 +491,7 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Name"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={newIngredientName}
                               onChange={handleAddNameChange}></input>
@@ -448,7 +503,7 @@ function Manager() {
                           </div>
                           <div className="col-7">
                             <select
-                              className="form-select w-auto mx-2"
+                              className="form-select w-75 mx-2"
                               onChange={handleAddTypeChange}
                               defaultValue="">
                               <option value="">
@@ -491,7 +546,7 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Fill Level Percentage"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={fillLevel}
                               onChange={handleFillLevelChange}></input>
@@ -509,7 +564,7 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Name"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={newItemName}
                               onChange={handleNewItemNameChange}></input>
@@ -523,10 +578,28 @@ function Manager() {
                             <input
                               type="text"
                               placeholder="Price"
-                              className="mx-2"
+                              className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={newItemPrice}
                               onChange={handleNewItemPriceChange}></input>
+                          </div>
+                        </div>
+                        <div className="row d-flex align-items-center my-2">
+                          <div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            <h6 className="my-auto mx-2">Item Ingredients</h6>
+                          </div>
+                          <div className="multiselect col-7">
+                            <div className="mx-2 w-75">
+                              <Multiselect
+                                options={multiselectOptions}
+                                selectedValues={newItemIngredients}
+                                onSelect={handleAddNewItemIngredient}
+                                onRemove={handleRemoveNewItemIngredient}
+                                displayValue="name"
+                                avoidHighlightFirstOption={true}
+                                style={{ chips: { background: "#e8b74d" } }}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -637,7 +710,7 @@ function Manager() {
                     data-bs-toggle="modal"
                     data-bs-target="#inputModal"
                     onClick={handleAddMenuItemClick}>
-                    Add Ingredient
+                    Add Menu Item
                   </button>
                 </div>
               </div>
