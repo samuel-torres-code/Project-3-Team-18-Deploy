@@ -22,7 +22,7 @@ $theme-colors: (
   secondary: #626262
 );
 
-.btn-check:checked + .btn, :not(.btn-check:checked) + .btn:active,:not(.btn-check:checked) + .btn:focus,.btn-check:checked + , .btn:first-child:active, .btn.active, .btn.show, .btn:focus{
+.btn-check:checked + .btn, :not(.btn-check:checked) + .btn:active,:not(.btn-check:checked) + .btn:focus,.btn-check:checked {
   background-color:#947534 !important;
   outline-color: #947534 !important;
 }
