@@ -35,7 +35,6 @@ function Manager() {
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
   const [loading, setLoading] = useState(true);
-  const [loadingItems, setLoadingItems] = useState(false);
 
   const protectedIngredients = [
     "House Blend",
@@ -168,8 +167,8 @@ function Manager() {
         const typeB = b.type.toUpperCase();
         const nameA = a.name.toUpperCase();
         const nameB = b.name.toUpperCase();
-        if (typeA < typeB) return -1;
-        if (typeA > typeB) return 1;
+        if (typeA < typeB) return 1;
+        if (typeA > typeB) return -1;
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
         return 0;
@@ -266,7 +265,14 @@ function Manager() {
   }
 
   function handleDeleteMenuItemClick(item_name) {
-    console.log("Del " + item_name);
+    client.post("/api/reports/remove_seasonal_item", {
+      items: [item_name],
+    });
+    loadMenuItems();
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    loadMenuItems();
   }
 
   function handleAddMenuItemClick() {
@@ -290,14 +296,18 @@ function Manager() {
       console.error(
         "Invalid Input for Add Ingredient: Ingredient type is null."
       );
+    } else if (fillLevel === "") {
+      console.error("Invalid Input for Add Ingredient: Fill level is null.");
     } else {
       client.post("/api/manager/add_ingredient", {
         ingredient_name: newIngredientName,
         ingredient_type: newIngredientType,
+        fill_level: fillLevel,
       });
       loadIngredients();
       setNewIngredientName("");
       setNewIngredientType("");
+      setFillLevel("");
     }
   }
 
@@ -337,7 +347,7 @@ function Manager() {
     }
   }
 
-  async function addMenuItem() {
+  function addMenuItem() {
     if (newItemName === "") {
       console.error(
         "Invalid Input for Add Seasonal Item: Seasonal item name is null."
@@ -351,13 +361,14 @@ function Manager() {
         "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
       );
     } else {
-      console.log(newItemName);
-      console.log(newItemPrice);
       var new_ingredients = [];
       newItemIngredients.forEach((element) =>
         new_ingredients.push(element.name)
       );
-      await client.post("/api/manager/add_seasonal_item", {
+      console.log(newItemName);
+      console.log(newItemPrice);
+      console.log(new_ingredients);
+      client.post("/api/reports/add_seasonal_item", {
         item_name: newItemName,
         ingredients: new_ingredients,
         price: newItemPrice,
@@ -400,7 +411,7 @@ function Manager() {
   }
 
   if (condrender === "true") {
-    if (loadingItems || loading) {
+    if (loading) {
       return (
         <div
           style={{
@@ -420,10 +431,12 @@ function Manager() {
     } else {
       return (
         <span className="translate">
-          <div className="row w-100">
+          <div className="row w-100 m-0">
             <div
               className="modal fade"
               id="inputModal"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
               tabIndex="-1"
               aria-labelledby="exampleModalLabel"
               aria-hidden="true">
@@ -653,72 +666,6 @@ function Manager() {
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
             <div className="col my-5 p-0">
-              <div className="pb-4" style={{ maxHeight: "40vh" }}>
-                <div className="border border-secondary rounded p-3 mx-5">
-                  <h4 className="text-center">
-                    <span className="translate">Add Employee to System</span>
-                  </h4>
-                  <div className="d-flex justify-content-center flex-wrap">
-                    <span className="translate">
-                      <input
-                        type="text"
-                        placeholder="Employee Name"
-                        className="m-2"
-                        value={addEmployeeName}
-                        style={{ height: "36px" }}
-                        onChange={handleAddEmployeeName}></input>
-                    </span>
-                    <span className="translate">
-                      <input
-                        type="text"
-                        placeholder="Employee Passcode"
-                        className="m-2"
-                        value={addEmployeePassword}
-                        style={{ height: "36px" }}
-                        onChange={handleAddEmployeePassword}></input>
-                    </span>
-                    <div className="d-flex align-items-center">
-                      <div className="m-2">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value="Add Manager"
-                          onChange={handleAddAsManager}
-                          id="managerCheck"></input>
-                        <label className="form-check-label">
-                          <span className="translate">Add as Manager?</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-center flex-wrap">
-                    <span className="translate">
-                      <input
-                        type="button"
-                        className="btn btn-primary my-2"
-                        value="Add Employee"
-                        onClick={handleAddNewEmployee}></input>
-                    </span>
-                  </div>
-                  {addedEmployeeDatabase === true && (
-                    <div
-                      className="d-flex justify-content-center flex-wrap"
-                      style={{ color: "blue" }}>
-                      <span className="translate">Added New Employee.</span>
-                    </div>
-                  )}
-                  {addedEmployeeDatabase === false && (
-                    <div
-                      className="d-flex justify-content-center flex-wrap"
-                      style={{ color: "red" }}>
-                      <span className="translate">
-                        Failed to Add New Employee. Try Different Passcode.
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* <MenuItemsTable menuItemData={menuItemData}></MenuItemsTable> */}
               <div className="container">
                 <div
@@ -781,6 +728,70 @@ function Manager() {
                     Add Menu Item
                   </button>
                 </div>
+              </div>
+
+              <div className="border border-secondary rounded p-3 mx-5 mt-4">
+                <h4 className="text-center">
+                  <span className="translate">Add Employee to System</span>
+                </h4>
+                <div className="d-flex justify-content-center flex-wrap">
+                  <span className="translate">
+                    <input
+                      type="text"
+                      placeholder="Employee Name"
+                      className="m-2"
+                      value={addEmployeeName}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeeName}></input>
+                  </span>
+                  <span className="translate">
+                    <input
+                      type="text"
+                      placeholder="Employee Passcode"
+                      className="m-2"
+                      value={addEmployeePassword}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeePassword}></input>
+                  </span>
+                  <div className="d-flex align-items-center">
+                    <div className="m-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Add Manager"
+                        onChange={handleAddAsManager}
+                        id="managerCheck"></input>
+                      <label className="form-check-label">
+                        <span className="translate">Add as Manager?</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-center flex-wrap">
+                  <span className="translate">
+                    <input
+                      type="button"
+                      className="btn btn-primary my-2"
+                      value="Add Employee"
+                      onClick={handleAddNewEmployee}></input>
+                  </span>
+                </div>
+                {addedEmployeeDatabase === true && (
+                  <div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "blue" }}>
+                    <span className="translate">Added New Employee.</span>
+                  </div>
+                )}
+                {addedEmployeeDatabase === false && (
+                  <div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "red" }}>
+                    <span className="translate">
+                      Failed to Add New Employee. Try Different Passcode.
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
