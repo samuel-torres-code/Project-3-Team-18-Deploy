@@ -5,19 +5,60 @@
 /* Your customizations here */
 
 h1,h2,h3,h4,h5,nav >* {
+  font-family: 'Gooper';
         font-weight: 600 !important;    
 }  
 
 .App {
-    font-family: 'Gooper';
+    font-family: 'Nobel';
     font-weight: 300;
     font-style: normal;
 }
+
+
 
 $theme-colors: (
   primary:  #e8b74d,
   secondary: #626262
 );
+
+.btn-check:checked + .btn, :not(.btn-check:checked) + .btn:active,:not(.btn-check:checked) + .btn:focus,.btn-check:checked {
+  background-color:#947534 !important;
+  outline-color: #947534 !important;
+}
+
+.btn-check:focus {
+  background-color:#947534 !important;
+  outline-color: #947534 !important;
+}
+
+.btn-check:focus {
+  border-color: #626262 !important;
+        box-shadow: 0 0 0 0.2rem #d1a648 !important;
+}
+
+
+
+.btn-primary:hover, .btn-primary:active {
+  background-color:#947534 !important;
+  outline-color: #947534 !important;
+  color:white !important;
+  outline:none;
+}
+
+
+.btn-primary:focus,:not(.btn-check:checked) + .btn-primary  {
+  background-color: #e8b74d !important;
+  outline-color: #947534 !important;
+  color: black !important;
+}
+
+.btn-primary:focus, .btn-check:focus, .btn-check:checked + .btn-primary:focus {
+  border-color: #626262 !important;
+        box-shadow: 0 0 0 0.2rem #d1a648 !important;
+}
+
+
 
 
 

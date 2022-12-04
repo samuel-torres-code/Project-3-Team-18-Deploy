@@ -154,3 +154,8 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Nobel';
+    src: url('Nobel\ Regular.ttf');
+}
+
