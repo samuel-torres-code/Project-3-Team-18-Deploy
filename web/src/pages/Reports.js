@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
+import ExcessReport from "../components/ExcessReport";
 
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");
@@ -140,7 +141,7 @@ const Reports = () => {
           <div style={{ height: "58px" }}></div>
         )}
         {loadTab === "Sales Report" && <h1>Sales Report</h1>}
-        {loadTab === "Excess Report" && <h1>Excess Report</h1>}
+        {loadTab === "Excess Report" && <ExcessReport setShowAlert={setShowAlert} setAlertText={setAlertText}></ExcessReport>}
         {loadTab === "Restock Report" && <h1>Restock Report</h1>}
         {loadTab === "Seasonal Items" && <h1>Seasonal Items</h1>}
         {loadTab === "Honors Addendum" && <h1>Honors Addendum</h1>}
