@@ -132,7 +132,7 @@ const Order = () => {
       <div className="container">
         <ul className="nav nav-tabs justify-content-center my-3">
           <li className="nav-item">
-            <button
+          <button
               className={
                 loadMenu
                   ? "nav-link fw-bolder fs-5 active link-primary"
@@ -141,11 +141,11 @@ const Order = () => {
               value="Menu"
               aria-current="page"
               onClick={handleSwitchTab}>
-              Menu
+              <span className='translate'>Menu</span>
             </button>
           </li>
           <li className="nav-item">
-            <button
+          <button
               className={
                 loadMenu
                   ? "nav-link fw-bolder fs-5 link-secondary"
@@ -153,7 +153,7 @@ const Order = () => {
               }
               value="Cart"
               onClick={handleSwitchTab}>
-              Current Order
+              <span className='translate'>Current Order</span>
             </button>
           </li>
         </ul>
