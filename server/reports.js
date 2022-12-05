@@ -224,7 +224,7 @@ router.post('/add_seasonal_item', async function(req, res){
     //query for ingredients to map to ids
     var ingredients_query = "select ingredient_name, ingredient_id from ingredients_web";
     mapped_ingredients = {};
-    await pool.query(ingredients_query).then(que}ry_res => {
+    await pool.query(ingredients_query).then(query_res => {
         for(let i = 0; i < query_res.rowCount; i++)
         {
             var ing_name = query_res.rows[i]["ingredient_name"];
