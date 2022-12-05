@@ -141,7 +141,7 @@ const Order = () => {
               value="Menu"
               aria-current="page"
               onClick={handleSwitchTab}>
-              Menu
+              <span className='translate'>Menu</span>
             </button>
           </li>
           <li className="nav-item">
@@ -153,7 +153,7 @@ const Order = () => {
               }
               value="Cart"
               onClick={handleSwitchTab}>
-              Current Order
+              <span className='translate'>Current Order</span>
             </button>
           </li>
         </ul>
