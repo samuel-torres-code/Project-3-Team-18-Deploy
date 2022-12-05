@@ -162,45 +162,42 @@ router.get("/excess", async function (req, res) {
 
 //TODO: need fill level understanding for restock functions
 
-router.get('/restock', async function(req, res){
-    // res.send('route /api/reports/restock');
-    //get all ingredients, fill_levels from db
-    var restock_query = "SELECT * FROM ingredients_web";
-    final_dict = {"ingredients": []}
-    await pool.query(restock_query).then(query_res => {
-        for(let i = 0; i < query_res.rowCount; i++)
-        {
-            var ing_name = query_res.rows[i]["ingredient_name"];
-            var fill_level = query_res.rows[i]["fill_level"];
-            var curr_stock = query_res.rows[i]["ingredient_inventory"];
-            var percentage = curr_stock * 100 / fill_level;
-            if(percentage < 100)
-            {
-                var add_obj = {};
-                add_obj["ingredient_name"] = ing_name;
-                add_obj["fill_level"] = fill_level;
-                add_obj["percentage"] = percentage;
-                add_obj["inventory"] = curr_stock;
-                final_dict["ingredients"].push(add_obj);
-            }
-        }
-    })
+router.get("/restock", async function (req, res) {
+  // res.send('route /api/reports/restock');
+  //get all ingredients, fill_levels from db
+  var restock_query = "SELECT * FROM ingredients_web";
+  final_dict = { ingredients: [] };
+  await pool.query(restock_query).then((query_res) => {
+    for (let i = 0; i < query_res.rowCount; i++) {
+      var ing_name = query_res.rows[i]["ingredient_name"];
+      var fill_level = query_res.rows[i]["fill_level"];
+      var curr_stock = query_res.rows[i]["ingredient_inventory"];
+      var percentage = (curr_stock * 100) / fill_level;
+      if (percentage < 100) {
+        var add_obj = {};
+        add_obj["ingredient_name"] = ing_name;
+        add_obj["fill_level"] = fill_level;
+        add_obj["percentage"] = percentage;
+        add_obj["inventory"] = curr_stock;
+        final_dict["ingredients"].push(add_obj);
+      }
+    }
+  });
 
-    res.send(final_dict);
+  res.send(final_dict);
 });
 
-router.get('/restock_all', function(req, res){
-    var restock_all_query = "update ingredients_web set ingredient_inventory = fill_level" + 
-                            " where ingredient_inventory < fill_level returning *";
-    var q_resp = []
-    pool.query(restock_all_query, (error, vals) => {
-        for(let i = 0; i < vals.rowCount; i++)
-        {
-            q_resp.push(vals.rows[i]);
-        }
-        res.send({"ingredients" : q_resp});
-    });
-    
+router.get("/restock_all", function (req, res) {
+  var restock_all_query =
+    "update ingredients_web set ingredient_inventory = fill_level" +
+    " where ingredient_inventory < fill_level returning *";
+  var q_resp = [];
+  pool.query(restock_all_query, (error, vals) => {
+    for (let i = 0; i < vals.rowCount; i++) {
+      q_resp.push(vals.rows[i]);
+    }
+    res.send({ ingredients: q_resp });
+  });
 });
 
 router.post("/add_seasonal_item", async function (req, res) {

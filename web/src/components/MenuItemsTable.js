@@ -5,29 +5,29 @@ const MenuItemsTable = (
   menuItemData,
   handleEditMenuItemClick,
   handleDeleteMenuItemClick,
-  seasonalItems,
   handleAddMenuItemClick
 ) => {
   return (
     <div className="container">
       <div
         className="border border-dark mx-5"
-        style={{ maxHeight: "70vh", overflowY: "auto" }}>
+        style={{ maxHeight: "40vh", overflowY: "auto" }}>
         <table className="w-100">
           <thead className="table-header position-sticky">
             <tr>
               <th className="px-1">Menu Item</th>
+              <th className="px-1">Type</th>
               <th className="px-1">Price</th>
               <th className="px-1">Edit</th>
               <th className="px-1">Delete</th>
             </tr>
           </thead>
           <tbody>
-            {console.log(menuItemData)}
             {menuItemData.map((item, key) => {
               return (
                 <tr key={key} className="table-row border-top border-secondary">
                   <td>{item.name}</td>
+                  <td>{item.type}</td>
                   <td>{item.price}</td>
                   <td>
                     <button
@@ -40,7 +40,7 @@ const MenuItemsTable = (
                     </button>
                   </td>
                   <td>
-                    {seasonalItems.includes(item.name) && (
+                    {item.type === "Seasonal Item" && (
                       <button
                         className="btn btn-primary btn-sm mx-auto"
                         onClick={() => handleDeleteMenuItemClick(item.name)}>
@@ -60,7 +60,7 @@ const MenuItemsTable = (
           data-bs-toggle="modal"
           data-bs-target="#inputModal"
           onClick={handleAddMenuItemClick}>
-          Add Ingredient
+          Add Menu Item
         </button>
       </div>
     </div>

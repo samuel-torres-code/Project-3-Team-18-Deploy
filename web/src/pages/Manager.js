@@ -30,7 +30,7 @@ function Manager() {
 
   const [addEmployeeName, setNewEmployeeName] = useState("");
   const [addEmployeePassword, setNewEmployeePassword] = useState("");
-  const [addAsManager, setAsManager] = useState([false, false]);
+  const [addAsManager, setAddAsManager] = useState(false);
   const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
@@ -105,7 +105,16 @@ function Manager() {
     }, 500);
     loadIngredients();
     loadMenuItems();
-  }, [selectedIngredient, selectedMenuItem, newItemName, newIngredientName]);
+  }, [
+    selectedIngredient,
+    selectedMenuItem,
+    newIngredientName,
+    newIngredientType,
+    fillLevel,
+    newItemName,
+    newItemPrice,
+    newItemIngredients,
+  ]);
 
   async function loadIngredients() {
     await client.get("/api/manager/load_ingredients").then((res) => {
@@ -116,7 +125,7 @@ function Manager() {
           name: res.data[i][0],
           type: res.data[i][1],
           inventory: res.data[i][2],
-          fill_level: 10,
+          fill_level: res.data[i][3],
         });
       }
       ingredients.sort((a, b) => {
@@ -209,22 +218,21 @@ function Manager() {
     setNewEmployeePassword(event.target.value);
   }
 
-  function handleAddAsManager(event) {
-    setAsManager(event);
-    console.log(event);
+  function handleAddAsManagerChange() {
+    setAddAsManager(!addAsManager);
   }
 
-  async function handleAddNewEmployee() {
+  function handleAddNewEmployee() {
     if (addEmployeeName.length === 0) {
       console.error("Invalid Input for Employee Name: No name is given.");
     } else if (isNaN(addEmployeePassword)) {
       console.error("Invalid Input for Employee Password: Password is NaN.");
     } else {
-      await client
+      client
         .post("/api/manager/addEmployee", {
           emp: addEmployeeName,
           pass: addEmployeePassword,
-          status: addAsManager.length > 2 ? "true" : "false",
+          status: addAsManager,
         })
         .then((res) => {
           if (res.data === true) {
@@ -233,7 +241,7 @@ function Manager() {
             setAddedEmployeeDatabase(false);
           }
         });
-      setAsManager([false, false]);
+      setAddAsManager(false);
       setNewEmployeeName("");
       setNewEmployeePassword("");
     }
@@ -268,10 +276,11 @@ function Manager() {
     client.post("/api/reports/remove_seasonal_item", {
       items: [item_name],
     });
+    setSelectedMenuItem("");
     loadMenuItems();
     setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 1000);
     loadMenuItems();
   }
 
@@ -318,11 +327,27 @@ function Manager() {
           "Invalid Input for Restock Ingredient: Restock amount is NaN."
         );
       } else {
+        console.log(selectedIngredient);
         client.post("/api/manager/restock", {
           ingredients: [selectedIngredient],
           amount: restockAmount,
         });
         setRestockAmount("");
+        loadIngredients();
+      }
+    }
+    if (fillLevel !== "") {
+      if (isNaN(fillLevel)) {
+        console.error(
+          "Invalid Input for Restock Ingredient: Restock amount is NaN."
+        );
+      } else {
+        client.post("/api/manager/change_fill_level", {
+          ingredient_name: selectedIngredient,
+          fill_level: fillLevel,
+        });
+        setFillLevel("");
+        setSelectedIngredient("");
         loadIngredients();
       }
     }
@@ -365,9 +390,6 @@ function Manager() {
       newItemIngredients.forEach((element) =>
         new_ingredients.push(element.name)
       );
-      console.log(newItemName);
-      console.log(newItemPrice);
-      console.log(new_ingredients);
       client.post("/api/reports/add_seasonal_item", {
         item_name: newItemName,
         ingredients: new_ingredients,
@@ -666,7 +688,13 @@ function Manager() {
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
             <div className="col my-5 p-0">
-              {/* <MenuItemsTable menuItemData={menuItemData}></MenuItemsTable> */}
+              {/* <MenuItemsTable
+                menuItemData={menuItemData}
+                handleEditMenuItemClick={handleEditMenuItemClick}
+                handleDeleteMenuItemClick={handleDeleteMenuItemClick}
+                handleAddMenuItemClick={
+                  handleAddMenuItemClick
+                }></MenuItemsTable> */}
               <div className="container">
                 <div
                   className="border border-dark mx-5"
@@ -759,7 +787,8 @@ function Manager() {
                         className="form-check-input"
                         type="checkbox"
                         value="Add Manager"
-                        onChange={handleAddAsManager}
+                        onChange={handleAddAsManagerChange}
+                        checked={addAsManager}
                         id="managerCheck"></input>
                       <label className="form-check-label">
                         <span className="translate">Add as Manager?</span>
