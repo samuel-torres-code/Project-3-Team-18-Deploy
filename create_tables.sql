@@ -42,7 +42,8 @@ CREATE TABLE ingredients (
     ingredient_id INT,
     ingredient_name TEXT,
     ingredient_inventory FLOAT,
-    ingredient_type TEXT
+    ingredient_type TEXT,
+    fill_level INT
 );
 
 DROP TABLE IF EXISTS ingredients_archive;
