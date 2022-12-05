@@ -20,7 +20,7 @@ router.get('/', function(req, res){
 
  router.get('/load_ingredients', function(req, res){
     var query_string = "SELECT ingredient_name, ingredient_type," +
-                        " ingredient_inventory from ingredients_web";
+                        " ingredient_inventory, fill_level from ingredients_web";
     //query ingredients
     f_response = []
     pool
@@ -36,7 +36,8 @@ router.get('/', function(req, res){
                 var i_name = f_response[i]['ingredient_name'];
                 var i_type = f_response[i]['ingredient_type'];
                 var i_invent = f_response[i]['ingredient_inventory'];
-                final_obj.push([i_name, i_type, i_invent]);
+                var fill_level = f_response[i]['fill_level'];
+                final_obj.push([i_name, i_type, i_invent, fill_level]);
             }
             //once populated, send
             res.send(final_obj);
@@ -130,13 +131,15 @@ router.get('/', function(req, res){
  
  router.post('/add_ingredient', function(req, res){
     //add new ingredient to database
-    // res.json({requestBody: req.body});
+    res.json({requestBody: req.body});
     var ingredient_name = req.body["ingredient_name"];
     var ingredient_type = req.body["ingredient_type"];
+    var fill_level = req.body["fill_level"];
 
     var add_ing_query = "INSERT INTO ingredients_web (ingredient_name, ingredient_type,"
-                            + " ingredient_inventory) VALUES ($1, $2, $3)";
-    pool.query(add_ing_query, [ingredient_name, ingredient_type, 0]);
+                            + " ingredient_inventory, fill_level) VALUES ($1, $2, $3, $4)";
+    pool.query(add_ing_query, [ingredient_name, ingredient_type, 0, fill_level]);
+
  });
 
  
@@ -149,6 +152,15 @@ router.get('/', function(req, res){
     {
         pool.query(remove_ing_query, [ingredient_names[i]]);
     }
+ });
+
+ router.post('/change_fill_level', function(req, res) {
+    var ingredient = req.body["ingredient_name"];
+    var new_level = req.body["fill_level"];
+
+    var update_query = "update ingredients_web set fill_level = $1 where ingredient_name = $2";
+    pool.query(update_query, [new_level, ingredient]);
+    res.json({requestBody: req.body});
  });
 
  
