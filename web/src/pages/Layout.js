@@ -54,9 +54,6 @@ const Layout = () => {
               <LinkContainer to="/order">
                 <Nav.Link active={false}><span className='translate'>Order</span></Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/pizza">
-                <Nav.Link active={false}><span className='translate'>Pizza</span></Nav.Link>
-              </LinkContainer>
               <LinkContainer to="/pickup">
                 <Nav.Link active={false}><span className='translate'>Pickup</span></Nav.Link>
               </LinkContainer>
