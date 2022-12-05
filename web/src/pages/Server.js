@@ -6,7 +6,7 @@ import OrderCard from "../components/OrderCard";
 import PizzaOrderCard from "../components/PizzaOrderCard";
 import "./Server.css";
 
-import { ingredients } from "../api/ExampleData";
+//import { ingredients } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
 
 import {
@@ -14,6 +14,7 @@ import {
   getItemTypes,
   postOrder,
 } from "../api/ServerAPI";
+import SeasonalItemCard from "../components/SeasonalItemCard";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
@@ -37,6 +38,8 @@ const Server = () => {
   const baseIngredients = ["Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
 
+  
+
   useEffect(() => {
     if (isLoading && initialLoad) {
       initialLoad = false;
@@ -44,6 +47,7 @@ const Server = () => {
       Promise.all([getIngredientsByType(), getItemTypes()]).then((values) => {
         setIngredientsByType(values[0]);
         setItemTypes(values[1]);
+        //console.log(values[1])
         setIsLoading(false);
       });
     }
@@ -81,7 +85,7 @@ const Server = () => {
     if (!currentPizzaID !== -1) {
       //If pizza is selected
       //Update the selected pizza with selected ingredients
-      const currIng = ingredients.filter(
+      const currIng = Object.values(ingredients_by_type).flat().filter(
         (ing) => val.indexOf(ing.ingredient_id) !== -1
       );
       setPizzasOnOrder(
@@ -135,6 +139,9 @@ const Server = () => {
     }
   };
 
+  const handleAddSeasonalItem = (item) => {
+    setSeasonalItems([...seasonalItems, item])
+  }
   const handleDeleteSeasonalItem = (index) => {
     setSeasonalItems(seasonalItems.filter((s, i) => i !== index));
   };
@@ -253,6 +260,11 @@ const Server = () => {
               disabled={orderInfo.name === ""}
               updateDrinkCount={updateDrinkCount}
               drink_types={itemTypes.drink_types}
+            />
+            <SeasonalItemCard
+              disabled={orderInfo.name === ""}
+              handleAddSeasonalItem={handleAddSeasonalItem}
+              seasonal_item_types={itemTypes.seasonal_item_types}
             />
 
             <AddPizzaCard
