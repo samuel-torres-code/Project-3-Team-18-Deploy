@@ -36,7 +36,7 @@ const Server = () => {
   const [isLoading, setIsLoading] = useState(true);
   let initialLoad = true;
   const baseIngredients = ["Dough","Sauce", "Drizzle", "Cheese"];
-  const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
+  const toppingIngredients = ["Raw Veggies", "Roasted Veggies", "Meats"];
   const [showAlerts, setShowAlerts] = useState([])
 
   const [showOrderAlert, setShowOrderAlert] = useState(false)
