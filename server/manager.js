@@ -13,10 +13,19 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+/**Default route for manager API 
+ * 
+ */
 router.get("/", function (req, res) {
   res.send("default route /api/manager");
 });
 
+/**Loads ingredients for the manager
+ * @param req -- empty
+ * @param res -- array, each element is an array corresponding to one
+ *                ingredient, with elements [name, type, inventory, fill]
+ * 
+ */
 router.get("/load_ingredients", function (req, res) {
   var query_string =
     "SELECT ingredient_name, ingredient_type," +
@@ -40,7 +49,12 @@ router.get("/load_ingredients", function (req, res) {
     res.send(final_obj);
   });
 });
-
+/**Loads prices for all menu items
+ * @param req -- empty
+ * @param res -- JSON -- maps pizza_types, drink_types, and seasonal_items
+ *                to items of that type. Each item includes price and name.
+ * 
+ */
 router.get("/load_prices", function (req, res) {
   //duplicate functionality as server side
   var final_dict = { pizza_types: [], drink_types: [], seasonal_items: [] };
@@ -89,6 +103,9 @@ router.get("/load_prices", function (req, res) {
   });
 });
 
+/** Adds an ingredient to the database
+ * @param res -- 
+ */
 router.post("/add_ingredient", function (req, res) {
   //add new ingredient to database
   res.json({ requestBody: req.body });
@@ -123,13 +140,6 @@ router.post("/change_fill_level", function (req, res) {
   res.json({ requestBody: req.body });
 });
 
-router.get("/load_menu_items", function (req, res) {
-  //very similar to get_prices, but all items are under "menu_items" key with only name, price.
-  var final_dict = { menu_items: [] };
-  var drink_query = "SELECT * FROM drink_types_web";
-  var pizza_query = "SELECT * FROM pizza_types_web";
-  var seasonal_query = "SELECT * FROM seasonal_item";
-});
 
 router.post("/restock", function (req, res) {
   //add inventory amount to existing value
@@ -143,6 +153,9 @@ router.post("/restock", function (req, res) {
     pool.query(ingredients_dec_query, [amount, ingredient_ids[i]]);
   }
 });
+
+
+
 
 router.get("/load_menu_items", function (req, res) {
   //very similar to get_prices, but all items are under "menu_items" key with only name, price.
