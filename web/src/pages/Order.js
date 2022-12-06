@@ -142,7 +142,11 @@ const Order = () => {
               aria-current="page"
               onClick={handleSwitchTab}>
               {/* <FontAwesomeIcon icon={faUtensils} /> */}
-              <span className='translate mx-3' style={{pointerEvents: "none"}}>Menu</span>
+              <span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}>
+                Menu
+              </span>
             </button>
           </li>
           <li className="nav-item">
@@ -157,7 +161,11 @@ const Order = () => {
               {/* <div className="mx-5 fs-3">
                 <FontAwesomeIcon icon={faCartShopping} />
               </div> */}
-              <span className='translate mx-3' style={{pointerEvents: "none"}}>Current Order</span>
+              <span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}>
+                Current Order
+              </span>
             </button>
           </li>
         </ul>

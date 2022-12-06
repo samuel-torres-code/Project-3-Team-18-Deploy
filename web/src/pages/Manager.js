@@ -717,7 +717,7 @@ function Manager() {
                             className="table-row border-top border-secondary">
                             <td>{item.name}</td>
                             <td>{item.type}</td>
-                            <td>{item.price}</td>
+                            <td>${item.price}</td>
                             <td>
                               <button
                                 type="button"
@@ -749,7 +749,7 @@ function Manager() {
                 </div>
                 <div className="d-flex justify-content-end mx-5">
                   <button
-                    className="btn btn-primary btn-sm mt-3"
+                    className="btn btn-primary btn-sm mt-3 fs-5"
                     data-bs-toggle="modal"
                     data-bs-target="#inputModal"
                     onClick={handleAddMenuItemClick}>
@@ -800,7 +800,7 @@ function Manager() {
                   <span className="translate">
                     <input
                       type="button"
-                      className="btn btn-primary my-2"
+                      className="btn btn-primary my-2 fs-5"
                       value="Add Employee"
                       onClick={handleAddNewEmployee}></input>
                   </span>
