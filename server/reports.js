@@ -15,11 +15,17 @@ const pool = new Pool({
   port: process.env.PSQL_PORT,
   ssl: { rejectUnauthorized: false },
 });
-
+/** Default route for /api/reports
+ * 
+ */
 router.get("/", function (req, res) {
   res.send("default route /api/reports");
 });
 
+/**Gets sales report information
+ * @param req -- start and end time for the sales period
+ * @param res -- JSON that contains list of items with total sales for that item within that time.
+ */
 router.get("/sales", async function (req, res) {
   // res.send('route /api/reports/sales');
   //iterate through all menu item types, add cost up for specific menu item, add to dict
@@ -105,6 +111,11 @@ router.get("/sales", async function (req, res) {
   res.send(res_obj);
 });
 
+/**Gets information for excess report
+ * @param req -- includes start_time for the excess report
+ * @param res -- list of ingredients, containing ingredient_name, stock, percentage used, and fill level
+ *                for ingredients in excess.
+ */
 router.get("/excess", async function (req, res) {
   //get start from request
   var start_time = req.body["start_time"];
@@ -160,8 +171,11 @@ router.get("/excess", async function (req, res) {
   res.send(resp_obj);
 });
 
-//TODO: need fill level understanding for restock functions
-
+/** Get restock report information
+ * @param res -- empty
+ * @param req -- list of ingredients under their fill level, including
+ *                ingredient_name, fill_level, inventory, and percentage for ingredients.
+ */
 router.get("/restock", async function (req, res) {
   // res.send('route /api/reports/restock');
   //get all ingredients, fill_levels from db
@@ -187,6 +201,10 @@ router.get("/restock", async function (req, res) {
   res.send(final_dict);
 });
 
+/**Restocks all ingredients to fill level if under it.
+ * @param req -- empty
+ * @param res -- empty
+ */
 router.get("/restock_all", function (req, res) {
   var restock_all_query =
     "update ingredients_web set ingredient_inventory = fill_level" +
@@ -199,7 +217,10 @@ router.get("/restock_all", function (req, res) {
     res.send({ ingredients: q_resp });
   });
 });
-
+/**Adds seasonal item to db
+ * @param req -- includes name, ingredients, and price of new item
+ * @param res -- empty
+ */
 router.post("/add_seasonal_item", async function (req, res) {
   //process req
   var item_name = req.body["item_name"];
@@ -229,7 +250,10 @@ router.post("/add_seasonal_item", async function (req, res) {
   console.log(ingredients_to_send);
   res.send({});
 });
-
+/**Remove seasonal item from the menu
+ * @param req -- list of items to remove under "items"
+ * @param res -- empty
+ */
 router.post("/remove_seasonal_item", function (req, res) {
   //p trivial, just remove by name
   var items_to_remove = req.body["items"];
@@ -240,6 +264,10 @@ router.post("/remove_seasonal_item", function (req, res) {
   res.send(req.body);
 });
 
+/**Gets honors information -- sales by employee over a date range
+ * @param req -- start_time, end_time for date range
+ * @param response -- list of employees, including id, name, and sales.
+ */
 router.get("/honors", async function(req, res){
     //extract start/end time
     var start_time = req.body['start_time'];

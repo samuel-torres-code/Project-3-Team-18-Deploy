@@ -104,7 +104,8 @@ router.get("/load_prices", function (req, res) {
 });
 
 /** Adds an ingredient to the database
- * @param res -- 
+ * @param req -- JSON with ingredient_name, ingredient_type, and fill_level
+ * @param res -- empty
  */
 router.post("/add_ingredient", function (req, res) {
   //add new ingredient to database
@@ -119,6 +120,10 @@ router.post("/add_ingredient", function (req, res) {
   pool.query(add_ing_query, [ingredient_name, ingredient_type, 0, fill_level]);
 });
 
+/**Removes ingredients from the database
+ * @param req -- list of ingredients to remove
+ * @param res -- empty 
+ */
 router.post("/remove_ingredient", function (req, res) {
   //remove ingredients from db
   // res.json({requestBody: req.body});
@@ -130,6 +135,11 @@ router.post("/remove_ingredient", function (req, res) {
   }
 });
 
+/**Change the fill level of a selected ingredient
+ * @param req -- JSON of ingredient_name, fill_level to change
+ * @param res -- empty 
+ * 
+ */
 router.post("/change_fill_level", function (req, res) {
   var ingredient = req.body["ingredient_name"];
   var new_level = req.body["fill_level"];
@@ -140,7 +150,10 @@ router.post("/change_fill_level", function (req, res) {
   res.json({ requestBody: req.body });
 });
 
-
+/** restock selected ingredient
+ * @param req -- JSON that contains ingredients to restock, and amount to restock by
+ * @param res -- empty
+ */
 router.post("/restock", function (req, res) {
   //add inventory amount to existing value
   var ingredients_dec_query =
@@ -156,7 +169,11 @@ router.post("/restock", function (req, res) {
 
 
 
-
+/**Load menu items in a single list
+ * @param req -- empty
+ * @param res -- contains list under "menu_items", each element being a list
+ *                that contains [name, price] of each ingredient
+ */
 router.get("/load_menu_items", function (req, res) {
   //very similar to get_prices, but all items are under "menu_items" key with only name, price.
   var final_dict = { menu_items: [] };
@@ -199,7 +216,10 @@ router.get("/load_menu_items", function (req, res) {
     });
   });
 });
-
+/** Updates menu item prices
+ * @param req -- contains menu items that should be updated to new price
+ * @param res -- empty
+ */
 router.post("/update_menu_items", function (req, res) {
   //TODO
   // res.json({requestBody: req.body});
@@ -221,7 +241,10 @@ router.post("/update_menu_items", function (req, res) {
     pool.query(update_seasonal, [new_price, menu_items[i]]);
   }
 });
-
+/** Adds employee to the employee table
+ * @param req -- contains employee name, manager status, and password
+ * @param res -- whether attempt was successful or not.
+ */
 router.post("/addEmployee", function (req, res) {
   var query =
     "insert into employees_web (emp_name, is_manager, passcode) VALUES ('" +
