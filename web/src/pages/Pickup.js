@@ -25,6 +25,12 @@ const Pickup = () => {
       order_am = order_hours < 12 ? "am" : "pm";
       order_hours = order_hours == 0? 12: order_hours % 12;
       order_mins = (order_mins + 20) % 60;
+      order_mins = 1;
+      order_mins = order_mins.toString();
+      if(order_mins.length < 2)
+      {
+        order_mins = "0" + order_mins;
+      }
       setOrderTimeHours(order_hours);
       setOrderTimeMins(order_mins);
       setOrderam(order_am);
