@@ -11,8 +11,6 @@ const ExcessReport = ({ setAlertText, setShowAlert }) => {
   const [ingredientData, setIngredientData] = useState([]);
 
   const handleGenerateReport = () => {
-    console.log(startDate);
-    console.log(dateFormat(startDate, "yyyy-mm-dd"));
     if (startDate === null || typeof startDate === undefined) {
       setAlertText("Please enter a start date.");
       setShowAlert(true);
