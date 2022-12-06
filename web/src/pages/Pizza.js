@@ -10,6 +10,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Alert from "react-bootstrap/Alert";
 import "./Pizza.css";
 
+/**
+ * Fixes Camel Case and dash delinated strings
+ * @param {string} str 
+ * @returns formatted string
+ */
 const convertWord = (str) => {
   return str
     .replace(/([a-z])([A-Z])/g, `$1 $2`)

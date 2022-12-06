@@ -267,7 +267,7 @@ router.post("/remove_seasonal_item", function (req, res) {
  * @param req -- start_time, end_time for date range
  * @param response -- list of employees, including id, name, and sales.
  */
-router.get("/honors", async function(req, res){
+router.post("/honors", async function(req, res){
     //extract start/end time
     var start_time = req.body['start_time'];
     var end_time = req.body['end_time'];
