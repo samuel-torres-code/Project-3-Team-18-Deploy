@@ -65,10 +65,13 @@ app.get('/user_test', (req, res) => {
             res.send(teammembers)
         });
 });
-
+/** Default API route 
+ * 
+ */
 app.get('/api', (req, res) => {
     res.send('default route /api');
 });
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
