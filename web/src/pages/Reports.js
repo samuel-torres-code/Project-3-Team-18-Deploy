@@ -3,7 +3,7 @@ import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 import ExcessReport from "../components/ExcessReport";
-import HonorsReport from "../components/HonorsReport";
+import HonorsReport from "../components/EmployeeSalesReport";
 
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");

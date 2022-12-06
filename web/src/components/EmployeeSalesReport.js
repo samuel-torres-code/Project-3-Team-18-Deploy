@@ -9,6 +9,8 @@ import { getHonorsReport } from "../api/ReportAPI";
 const HonorsReport = ({ setAlertText, setShowAlert }) => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
+    const [employeeData, setEmployeeData] = useState([]);
+
 
     const handleGenerateReport = () => {
         
@@ -65,7 +67,34 @@ const HonorsReport = ({ setAlertText, setShowAlert }) => {
                   </div>
                 </div>
                 <div className="col-xs-12 col-md-8">
-                    
+                <div
+              className="border border-dark mx-5"
+              style={{ maxHeight: "60vh", overflowY: "auto" }}
+            >
+              <table className="w-100">
+                <thead className="table-header position-sticky">
+                  <tr>
+                    <th className="px-1">Employee ID</th>
+                    <th className="px-1">Name</th>
+                    <th className="px-1">Sales</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {employeeData.map((val, key) => {
+                    return (
+                      <tr
+                        key={key}
+                        className="table-row border-top border-secondary"
+                      >
+                        <td>{val.employee_id}</td>
+                        <td>{val.employee_name}</td>
+                        <td>${val.sales}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
                 </div>
             </div>
         </div>
