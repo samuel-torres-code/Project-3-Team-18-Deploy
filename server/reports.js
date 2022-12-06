@@ -247,7 +247,6 @@ router.post("/add_seasonal_item", async function (req, res) {
     "insert into seasonal_item(item_name, item_price, item_ingredients)" +
     "VALUES ($1, $2, $3)";
   pool.query(seasonal_query, [item_name, price, ingredients_to_send]);
-  console.log(ingredients_to_send);
   res.send({});
 });
 /**Remove seasonal item from the menu
