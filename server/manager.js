@@ -13,10 +13,19 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+/**Default route for manager API 
+ * 
+ */
 router.get("/", function (req, res) {
   res.send("default route /api/manager");
 });
 
+/**Loads ingredients for the manager
+ * @param req -- empty
+ * @param res -- array, each element is an array corresponding to one
+ *                ingredient, with elements [name, type, inventory, fill]
+ * 
+ */
 router.get("/load_ingredients", function (req, res) {
   var query_string =
     "SELECT ingredient_name, ingredient_type," +
@@ -40,7 +49,12 @@ router.get("/load_ingredients", function (req, res) {
     res.send(final_obj);
   });
 });
-
+/**Loads prices for all menu items
+ * @param req -- empty
+ * @param res -- JSON -- maps pizza_types, drink_types, and seasonal_items
+ *                to items of that type. Each item includes price and name.
+ * 
+ */
 router.get("/load_prices", function (req, res) {
   //duplicate functionality as server side
   var final_dict = { pizza_types: [], drink_types: [], seasonal_items: [] };
@@ -89,29 +103,9 @@ router.get("/load_prices", function (req, res) {
   });
 });
 
-router.get("/load_ingredients", function (req, res) {
-  var query_string =
-    "SELECT ingredient_name, ingredient_type," +
-    " ingredient_inventory from ingredients_web";
-  //query ingredients
-  f_response = [];
-  pool.query(query_string).then((query_res) => {
-    for (let i = 0; i < query_res.rowCount; i++) {
-      f_response.push(query_res.rows[i]);
-    }
-    final_obj = [];
-    for (let i = 0; i < f_response.length; i++) {
-      //add relevant info to final array
-      var i_name = f_response[i]["ingredient_name"];
-      var i_type = f_response[i]["ingredient_type"];
-      var i_invent = f_response[i]["ingredient_inventory"];
-      final_obj.push([i_name, i_type, i_invent]);
-    }
-    //once populated, send
-    res.send(final_obj);
-  });
-});
-
+/** Adds an ingredient to the database
+ * @param res -- 
+ */
 router.post("/add_ingredient", function (req, res) {
   //add new ingredient to database
   res.json({ requestBody: req.body });
@@ -146,13 +140,6 @@ router.post("/change_fill_level", function (req, res) {
   res.json({ requestBody: req.body });
 });
 
-router.get("/load_menu_items", function (req, res) {
-  //very similar to get_prices, but all items are under "menu_items" key with only name, price.
-  var final_dict = { menu_items: [] };
-  var drink_query = "SELECT * FROM drink_types_web";
-  var pizza_query = "SELECT * FROM pizza_types_web";
-  var seasonal_query = "SELECT * FROM seasonal_item";
-});
 
 router.post("/restock", function (req, res) {
   //add inventory amount to existing value
@@ -167,28 +154,8 @@ router.post("/restock", function (req, res) {
   }
 });
 
-router.post("/add_ingredient", function (req, res) {
-  //add new ingredient to database
-  // res.json({requestBody: req.body});
-  var ingredient_name = req.body["ingredient_name"];
-  var ingredient_type = req.body["ingredient_type"];
 
-  var add_ing_query =
-    "INSERT INTO ingredients_web (ingredient_name, ingredient_type," +
-    " ingredient_inventory) VALUES ($1, $2, $3)";
-  pool.query(add_ing_query, [ingredient_name, ingredient_type, 0]);
-});
 
-router.post("/remove_ingredient", function (req, res) {
-  //remove ingredients from db
-  // res.json({requestBody: req.body});
-  var ingredient_names = req.body["ingredients"];
-  var remove_ing_query =
-    "DELETE FROM ingredients_web WHERE ingredient_name = $1";
-  for (let i = 0; i < ingredient_names.length; i++) {
-    pool.query(remove_ing_query, [ingredient_names[i]]);
-  }
-});
 
 router.get("/load_menu_items", function (req, res) {
   //very similar to get_prices, but all items are under "menu_items" key with only name, price.

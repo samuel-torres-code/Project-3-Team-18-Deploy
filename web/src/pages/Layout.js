@@ -16,7 +16,7 @@ const Layout = () => {
 
   return (
     <>
-    <div id="google_translate_element"></div>
+    
       <Navbar className="shadow-sm" bg="light" expand="lg">
         <Container>
           <LinkContainer to="/">
@@ -68,6 +68,10 @@ const Layout = () => {
                   <Nav.Link active={false}><span className='translate'>Logout</span></Nav.Link>
                 </LinkContainer>
               )}
+              
+            </Nav>
+            <Nav className="ms-auto text-end">
+            <div id="google_translate_element"></div>
             </Nav>
           </Navbar.Collapse>
         </Container>

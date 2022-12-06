@@ -3,15 +3,34 @@ import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert"
+import "./OrderCard.css";
+import { useEffect, useState } from "react";
 const convertWord = (str) => {
-  return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
+  return str
+  .replace(/([a-z])([A-Z])/g, `$1 $2`)
+  .replace(/-([a-z])/g, (g) => {
+    return " " + g.substr(1).toUpperCase();
+  })
+  .replace(/(^[a-z])/g, (g) => {
+    return g.toUpperCase();
+  });
 };
 const DrinkCountRows = ({ drink_counts }) => {
   return drink_counts.map((drink, index) => {
     return (
-      <p key={drink.drink_name + index} className="my-0">
-        {drink.drink_name}<span className='translate'>Drink: </span>{drink.drink_count}
-      </p>
+      <div key={drink.drink_name + index} className="container">
+        <div className="row">
+          <div className="col-6">
+          <span className='translate'>{drink.drink_name}:   </span>
+          </div>
+          <div className="col-2">
+          {drink.drink_count}
+          </div>  
+        
+        </div>
+        
+      </div>
     );
   });
 };
@@ -19,12 +38,12 @@ const DrinkCountRows = ({ drink_counts }) => {
 const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => (
     <div key={item.item_name + index} className="row my-2">
-      <div className="col-8">
+      <div className="col-6">
         <p className="my-0">{item.item_name}</p>
-        <p className="my-0"> {item.item_price} </p>
+        <p className="my-0"> ${item.item_price} </p>
       </div>
-      <div className="col-2"></div>
-      <div className="col-2">
+      <div className="col-2 "></div>
+      <div className="col-2 mx-2">
         <button
           onClick={() => handleDeleteSeasonalItem(index)}
           className="btn btn-primary">
@@ -40,28 +59,19 @@ const PizzaRows = ({
   handleDeletePizza,
   handleEditPizza,
   currentPizzaID,
+  showAlerts
 }) => {
   return pizzas.map((pizza, index) => (
-    <div key={pizza.pizza_type + index} className="row my-2">
+    <div key={pizza.pizza_type + index} className={pizza.pizza_id === currentPizzaID? `row my-2 selected-pizza py-2`: `row my-2 py-2`}>
+      
       <div className="col-6">
         <p className="text-left my-0">
-          {pizza.pizza_id === currentPizzaID ? (
-            <strong>{pizza.pizza_type}</strong>
-          ) : (
-            <>{pizza.pizza_type}</>
-          )}
+          {`Pizza ${index+1} `}
         </p>
-        <p className="text-left mb-1">${pizza.pizza_price}</p>
-
-        {pizza.ingredients.map((ingredient, index) => (
-          <p
-            key={ingredient.ingredient_name + pizza.pizza_type + index}
-            className="text-left my-0">
-            {convertWord(ingredient.ingredient_name)}
-          </p>
-        ))}
+        
+        
       </div>
-      <div className="col-2 mx-1">
+      <div className="col-2 mx-1 ">
         <button
           onClick={() => handleEditPizza(pizza.pizza_id)}
           className="btn btn-primary">
@@ -75,6 +85,20 @@ const PizzaRows = ({
           <FontAwesomeIcon icon={faTrash} />
         </button>
       </div>
+      <div className="col-12" >
+      {showAlerts[index] && pizza.pizza_error.split("\n").map((str) => { if (str !== "") { return <Alert key={str} className="py-1 px-1 my-1 text-left" variant="primary">{str}</Alert>}})}
+      <p className="text-left mb-1">{`Type: ${convertWord(pizza.pizza_type)}`}</p>
+
+<p className="text-left mb-1">${pizza.pizza_price}</p>
+
+{pizza.ingredients.map((ingredient, index) => (
+  <p
+    key={ingredient.ingredient_name + pizza.pizza_type + index}
+    className="text-left my-0">
+    {convertWord(ingredient.ingredient_name)}
+  </p>
+))}
+      </div>
     </div>
   ));
 };
@@ -86,6 +110,8 @@ const OrderInfo = ({
   disabled,
   handleCheckout,
   resetPage,
+  showOrderAlert,
+  orderAlertText
 }) => {
   if (order_info.name === "") {
     return (
@@ -112,10 +138,13 @@ const OrderInfo = ({
       <span className='translate'>
       <div className="container">
         <div className="row">
+          {showOrderAlert && <Alert className="py-1 px-1 my-1 text-left" variant="primary">
+            {orderAlertText}
+            </Alert>}
           <div className="col-12">
-            <strong><span className='translate'>Order Name: {order_info.name}</span></strong>
+            <span className='translate'>Order Name: {order_info.name}</span>
           </div>
-          <div className="col-xs-12 col-md-6">
+          <div className="col-xs-12 col-md-6 my-1">
             <button
               disabled={disabled}
               className="btn btn-primary"
@@ -123,7 +152,7 @@ const OrderInfo = ({
               <span className='translate'>Checkout</span>
             </button>
           </div>
-          <div className="col-xs-12 col-md-6">
+          <div className="col-xs-12 col-md-6 my-1">
             <button
               disabled={disabled}
               className="btn btn-secondary"
@@ -152,6 +181,9 @@ const OrderCard = ({
   disabled,
   handleCheckout,
   resetPage,
+  showAlerts,
+  showOrderAlert,
+  orderAlertText
 }) => {
   const calculatePrice = () => {
     var total_price = 0.0;
@@ -163,6 +195,8 @@ const OrderCard = ({
     });
     return `$${total_price.toFixed(2)}`;
   };
+
+  
   return (
     <>
       <div className="card">
@@ -175,27 +209,30 @@ const OrderCard = ({
               handleSubmitName={handleSubmitName}
               onFormChange={onFormChange}
               order_info={order_info}
+              showOrderAlert={showOrderAlert}
+              orderAlertText={orderAlertText}
             />
           </li>
           <div style={{ maxHeight: "80vh", overflowY: "scroll" }}>
             <li className="list-group-item">
-              <strong><span className='translate'>Drink:</span></strong>
+              <strong><span className='translate'>Drinks</span></strong>
               <DrinkCountRows drink_counts={drink_counts} />
             </li>
             <li className="list-group-item">
-              <strong><span className='translate'>Seasonal Item:</span></strong>
+              <strong><span className='translate'>Seasonal Items</span></strong>
               <SeasonalItemRows
                 handleDeleteSeasonalItem={handleDeleteSeasonalItem}
                 seasonal_items={seasonal_items}
               />
             </li>
             <li className="list-group-item">
-              <strong><span className='translate'>Pizza:</span></strong>
+              <strong><span className='translate'>Pizzas</span></strong>
               <PizzaRows
                 currentPizzaID={currentPizzaID}
                 pizzas={pizzas}
                 handleDeletePizza={handleDeletePizza}
                 handleEditPizza={handleEditPizza}
+                showAlerts={showAlerts}
               />
             </li>
             <li className="list-group-item">

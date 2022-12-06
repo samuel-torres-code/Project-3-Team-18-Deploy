@@ -13,7 +13,13 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-
+/**Performs a checkout
+ * @param req -- JSON -- "order" contains employee ID and customer name.
+ *                       "pizzas", "drinks", and "seasonal_items" contain
+ *                          items ordered, including price for all, and 
+ *                          ingredients included for pizzas
+ * @param res  -- JSON that contains order id and order time.
+ */
 router.post('/', function(req, res){
     //extract main elements
     var order_details = req.body["order"];

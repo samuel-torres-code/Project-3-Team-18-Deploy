@@ -6,7 +6,7 @@ import OrderCard from "../components/OrderCard";
 import PizzaOrderCard from "../components/PizzaOrderCard";
 import "./Server.css";
 
-import { ingredients } from "../api/ExampleData";
+//import { ingredients } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
 
 import {
@@ -14,6 +14,7 @@ import {
   getItemTypes,
   postOrder,
 } from "../api/ServerAPI";
+import SeasonalItemCard from "../components/SeasonalItemCard";
 
 // eslint-disable-next-line
 const groupBy = (x, f) =>
@@ -34,8 +35,15 @@ const Server = () => {
   const [form, setForm] = useState({ order_name: "" });
   const [isLoading, setIsLoading] = useState(true);
   let initialLoad = true;
-  const baseIngredients = ["Sauce", "Drizzle", "Cheese"];
+  const baseIngredients = ["Dough","Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
+  const [showAlerts, setShowAlerts] = useState([])
+
+  const [showOrderAlert, setShowOrderAlert] = useState(false)
+  const [orderAlertText, setOrderAlertText] = useState("")
+
+  
+  
 
   useEffect(() => {
     if (isLoading && initialLoad) {
@@ -44,10 +52,18 @@ const Server = () => {
       Promise.all([getIngredientsByType(), getItemTypes()]).then((values) => {
         setIngredientsByType(values[0]);
         setItemTypes(values[1]);
+        //console.log(values[1])
         setIsLoading(false);
       });
     }
   });
+  useEffect(() => {
+    if(showOrderAlert) {
+      setTimeout(() => {
+        setShowOrderAlert(false)
+      },5000)
+    }
+  },[showOrderAlert])
 
   const handleFormChange = (e) => {
     e.preventDefault();
@@ -81,7 +97,7 @@ const Server = () => {
     if (!currentPizzaID !== -1) {
       //If pizza is selected
       //Update the selected pizza with selected ingredients
-      const currIng = ingredients.filter(
+      const currIng = Object.values(ingredients_by_type).flat().filter(
         (ing) => val.indexOf(ing.ingredient_id) !== -1
       );
       setPizzasOnOrder(
@@ -104,6 +120,7 @@ const Server = () => {
         pizza_price: price,
         ingredients: [],
         pizza_id: nextPizzaID,
+        pizza_error: "",
       },
     ]);
     setCurrentPizzaID(nextPizzaID);
@@ -135,13 +152,96 @@ const Server = () => {
     }
   };
 
+  const handleAddSeasonalItem = (item) => {
+    setSeasonalItems([...seasonalItems, item])
+  }
   const handleDeleteSeasonalItem = (index) => {
     setSeasonalItems(seasonalItems.filter((s, i) => i !== index));
   };
 
+  const checkPizzas = () => {
+    
+    var tempPizzasOnOrder = pizzasOnOrder;
+    tempPizzasOnOrder.forEach((pizza,index) => {
+      var error = ""
+      //Check if Pizza has dough
+      //Check if number toppings match
+      //Find Dough IDs
+      const doughIDs = ingredients_by_type.Dough.map((ing) => ing.ingredient_id);
+      if (
+        pizza.ingredients.filter((ing) =>
+          doughIDs.includes(Number(ing.ingredient_id))
+        ).length != 1
+        ) {
+          error += "Please select one type of dough.\n";
+        }
+
+        const topping_types = Object.keys(ingredients_by_type).filter(
+          (ing) =>
+            ing !== "Other" &&
+            ing !== "Dough" &&
+            ing !== "Sauce" &&
+            ing !== "Cheese" &&
+            ing !== "Drizzle"
+        );
+    
+        const toppings = Object.keys(ingredients_by_type)
+          .filter((key) => topping_types.includes(key))
+          .reduce((obj, key) => {
+            obj[key] = ingredients_by_type[key];
+            return obj;
+          }, {});
+        const topping_ids = Object.values(toppings)
+          .map((ingredients) => {
+            return ingredients.map((ingredient) => {
+              return ingredient.ingredient_id;
+            });
+          })
+          .flat();
+    
+        //get number of toppings
+        const toppingsOnPizza = pizza.ingredients.filter((ing) => {
+          return topping_ids.indexOf(Number(ing.ingredient_id)) !== -1;
+        });
+
+        if (pizza.pizza_type === "cheese") {
+          if (toppingsOnPizza.length > 0) {
+            error += "Cheese pizza can't have toppings.";
+          }
+        } else if (pizza.pizza_type === "one-topping") {
+          if (toppingsOnPizza.length > 1) {
+            error += "One topping pizza can only have one topping.";
+          }
+        } else if (pizza.pizza_type === "build-your-own") {
+          if (toppingsOnPizza.length > 4) {
+            error += "Build your own pizza can only have up to 4 toppings.";
+          }
+        } else {
+          error += "Invalid pizza type. Please select another pizza type.";
+        }
+        pizza.pizza_error = error
+    })
+
+    var errors = false;
+    var tempAlerts = new Array(tempPizzasOnOrder.length).fill(false)
+    tempPizzasOnOrder.forEach((pizza,index) => {if (pizza.pizza_error !== "") {
+      errors = true;
+      tempAlerts[index] = true;
+    }})
+    setShowAlerts(tempAlerts)
+
+    setPizzasOnOrder(tempPizzasOnOrder);
+
+    return errors
+
+    
+    
+  }
+
   const resetPage = () => {
     createEmptyOrder("");
     setDrinkCounts([]);
+    setShowAlerts([]);
     setSelectedIngredients([]);
     setCurrentPizzaID(-1);
   };
@@ -162,12 +262,17 @@ const Server = () => {
       seasonalItems.length === 0 &&
       numDrinks === 0
     ) {
-      error += "Nothing on Order";
+      error += "There is nothing on the order.";
     }
 
+    const errors = checkPizzas();
+
+
+
     //Alert Errors
-    if (error !== "") {
-      alert(error);
+    if (error !== "" || errors) {
+      setOrderAlertText(error);
+      setShowOrderAlert(true);
       return;
     }
 
@@ -199,14 +304,13 @@ const Server = () => {
           ],
         })),
       ],
+      seasonal_items: seasonalItems,
       drinks: formattedDrinks,
     };
 
     //Send Request
     postOrder(reqJson);
 
-    //Alert Success
-    alert("Order Success");
 
     //Create empty order of name
     resetPage();
@@ -228,7 +332,7 @@ const Server = () => {
   if((localStorage.getItem("employee") === 'true'))
   if (!isLoading) {
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row my-2">
           <div className="col-md-12 col-lg-3">
             <OrderCard
@@ -246,6 +350,9 @@ const Server = () => {
               disabled={orderInfo.name === ""}
               handleCheckout={handleCheckout}
               resetPage={resetPage}
+              showAlerts={showAlerts}
+              showOrderAlert={showOrderAlert}
+              orderAlertText={orderAlertText}
             />
           </div>
           <div className="col-md-12 col-lg-3">
@@ -254,18 +361,23 @@ const Server = () => {
               updateDrinkCount={updateDrinkCount}
               drink_types={itemTypes.drink_types}
             />
+            <SeasonalItemCard
+              disabled={orderInfo.name === ""}
+              handleAddSeasonalItem={handleAddSeasonalItem}
+              seasonal_item_types={itemTypes.seasonal_item_types}
+            />
 
             <AddPizzaCard
               handleAddPizza={handleAddPizza}
               pizza_types={itemTypes.pizza_types}
               disabled={orderInfo.name === ""}
             />
-            <DoughCard
+            {/* <DoughCard
               ingredients_by_type={ingredients_by_type}
               value={selectedIngredients}
               handleChange={handleChange}
               disabled={currentPizzaID === -1}
-            />
+            /> */}
           </div>
           <div className="col-md-12 col-lg-6">
             <PizzaOrderCard
