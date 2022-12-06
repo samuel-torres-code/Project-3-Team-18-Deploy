@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-
-import DoughCard from "../components/DoughCard";
 import DrinkCard from "../components/DrinkCard";
 import OrderCard from "../components/OrderCard";
 import PizzaOrderCard from "../components/PizzaOrderCard";
 import "./Server.css";
-
-//import { ingredients } from "../api/ExampleData";
 import AddPizzaCard from "../components/AddPizzaCard";
 
 import {
@@ -14,6 +10,7 @@ import {
   getItemTypes,
   postOrder,
 } from "../api/ServerAPI";
+
 import SeasonalItemCard from "../components/SeasonalItemCard";
 
 // eslint-disable-next-line
@@ -22,6 +19,8 @@ const groupBy = (x, f) =>
   x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
 
 const Server = () => {
+
+  //useEffects and useStates
   const [ingredients_by_type, setIngredientsByType] = useState({});
   const [nextPizzaID, setNextPizzaID] = useState(1);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
@@ -29,7 +28,6 @@ const Server = () => {
   const [pizzasOnOrder, setPizzasOnOrder] = useState([]);
   const [seasonalItems, setSeasonalItems] = useState([]);
   const [drinkCounts, setDrinkCounts] = useState([]);
-  // const [currentPizzaIndex, setCurrentPizzaIndex] = useState(-1);
   const [currentPizzaID, setCurrentPizzaID] = useState(-1);
   const [orderInfo, setOrderInfo] = useState({ name: "" });
   const [form, setForm] = useState({ order_name: "" });
@@ -38,13 +36,10 @@ const Server = () => {
   const baseIngredients = ["Dough","Sauce", "Drizzle", "Cheese"];
   const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
   const [showAlerts, setShowAlerts] = useState([])
-
   const [showOrderAlert, setShowOrderAlert] = useState(false)
   const [orderAlertText, setOrderAlertText] = useState("")
 
   
-  
-
   useEffect(() => {
     if (isLoading && initialLoad) {
       initialLoad = false;
@@ -52,11 +47,11 @@ const Server = () => {
       Promise.all([getIngredientsByType(), getItemTypes()]).then((values) => {
         setIngredientsByType(values[0]);
         setItemTypes(values[1]);
-        //console.log(values[1])
         setIsLoading(false);
       });
     }
   });
+
   useEffect(() => {
     if(showOrderAlert) {
       setTimeout(() => {
@@ -65,21 +60,28 @@ const Server = () => {
     }
   },[showOrderAlert])
 
+  /**
+   * Sets the text for the name input
+   * @param {Keyboard Event} e 
+   */
   const handleFormChange = (e) => {
     e.preventDefault();
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  /**
+   * Creates a new empty order if the name is submitted
+   */
   const handleSubmitName = () => {
-    // e.preventDefault();
-
     if (form.order_name !== "") {
-      //createEmptyOrder(form.order_name)
       createEmptyOrder(form.order_name);
-      //setOrderInfo({... orderInfo, name: form.order_name})
     }
   };
 
+  /**
+   * Resets all state variables associated with order and sets order name
+   * @param {string} name 
+   */
   const createEmptyOrder = (name) => {
     setPizzasOnOrder([]);
     setSeasonalItems([]);
@@ -93,6 +95,10 @@ const Server = () => {
     setOrderInfo({ name: name });
   };
 
+  /**
+   * Updates ingredients for selected pizza when ingredient buttons are clicked
+   * @param {int} val 
+   */
   const handleChange = async (val) => {
     if (!currentPizzaID !== -1) {
       //If pizza is selected
@@ -112,6 +118,11 @@ const Server = () => {
     setSelectedIngredients(val, pizzasOnOrder);
   };
 
+  /**
+   * Adds new pizza to the order using the given type and price
+   * @param {string} type 
+   * @param {string} price 
+   */
   const handleAddPizza = (type, price) => {
     setPizzasOnOrder([
       ...pizzasOnOrder,
@@ -127,6 +138,11 @@ const Server = () => {
     setSelectedIngredients([]);
     setNextPizzaID(nextPizzaID + 1);
   };
+
+  /**
+   * Deletes selected pizza and deselects it if it was selected
+   * @param {Number} id 
+   */
   const handleDeletePizza = (id) => {
     setPizzasOnOrder(pizzasOnOrder.filter((p, i) => p.pizza_id !== id));
     if (id === currentPizzaID) {
@@ -134,6 +150,11 @@ const Server = () => {
       setCurrentPizzaID(-1);
     }
   };
+
+  /**
+   * Sets current pizza and ingredient state variables
+   * @param {Number} id 
+   */
   const handleEditPizza = (id) => {
     //setCurrentPizzaIndex(index);
     if (id !== currentPizzaID) {
@@ -152,6 +173,10 @@ const Server = () => {
     }
   };
 
+  /**
+   * 
+   * @param {*} item 
+   */
   const handleAddSeasonalItem = (item) => {
     setSeasonalItems([...seasonalItems, item])
   }

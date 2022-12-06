@@ -26,7 +26,7 @@ const HonorsReport = ({ setAlertText, setShowAlert }) => {
           }
         setShowAlert(false);
         getHonorsReport(dateFormat(startDate, "yyyy-mm-dd"),dateFormat(endDate, "yyyy-mm-dd")).then((res)=> {
-            console.log(res)
+            setEmployeeData(res.employees)
         })
           
         

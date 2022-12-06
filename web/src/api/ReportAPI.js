@@ -16,7 +16,7 @@ export const getExcessReport = (start_date) => {
   export const getHonorsReport = (start_date,end_date) => {
     console.log(start_date)
     console.log(end_date)
-    return client.get("/api/reports/honors", {
+    return client.post("/api/reports/honors", {
         start_time: start_date,
         end_time: end_date,
     }).then((res) => {
