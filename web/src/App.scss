@@ -39,7 +39,7 @@ $theme-colors: (
 
 
 
-.btn-primary:hover, .btn-primary:active {
+.btn-primary:hover, .btn-primary:active,:not(.btn-check:checked) + .btn-primary:hover {
   background-color:#947534 !important;
   outline-color: #947534 !important;
   color:white !important;
