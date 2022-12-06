@@ -19,6 +19,7 @@ router.post('/', function(req, res){
     var order_details = req.body["order"];
     var pizza_details = req.body["pizzas"];
     var drink_details = req.body["drinks"];
+    var seasonal_details = req.body["seasonal_items"];
     //update order table
     var order_insert = "INSERT INTO orders_web (emp_id, cust_name, order_num, time_stamp)"  +
                         "VALUES ($1, $2, $3, Now()) RETURNING order_id, cast(time_stamp as time)";
@@ -26,7 +27,7 @@ router.post('/', function(req, res){
     var cust_name = order_details["cust_name"];
     var order_num = -1;
     //create order query
-    pool.query(order_insert, [emp_id, cust_name, order_num], (error, id) => 
+    pool.query(order_insert, [emp_id, cust_name, order_num], async (error, id) => 
     {
         //extract id
 
@@ -38,6 +39,8 @@ router.post('/', function(req, res){
                             'order_time_mins': order_time['mins']
                         };
         res.json(response_obj)
+
+
         //send pizzas with order id
         var pizza_query = "INSERT INTO pizzas_web (order_id, pizza_type, pizza_price)" +  
                             "VALUES ($1, $2, $3) RETURNING pizza_id";
@@ -57,13 +60,14 @@ router.post('/', function(req, res){
                                         " = ingredient_inventory - 1 WHERE ingredient_id = $1";
                 for(let j = 0; j < ingredients.length; j++)
                 {
-                    //ingredients_join table update
+                    // ingredients_join table update
                     pool.query(ingredients_join_query, [pizza_id, ingredients[j]["ingredient_id"]]);
                     //ingredients table update
                     pool.query(ingredients_query, [ingredients[j]["ingredient_id"]]);
                 }
             });
         }
+
         //update drinks with order_id
         var drink_query = "INSERT INTO drinks_web (order_id, drink_type, drink_price)" +
                             " VALUES ($1, $2, $3)";
@@ -73,6 +77,42 @@ router.post('/', function(req, res){
             var drink_price = drink_details[k]["drink_price"];
             var drink_type = drink_details[k]["drink_type"];
             pool.query(drink_query, [order_id, drink_type, drink_price]);
+        }
+
+        //update seasonal items with drink query
+        //first, grab seasonal item ingredients:
+        var seasonal_query = "select * from seasonal_item";
+        var seasonal_mapping = {};
+        await pool.query(seasonal_query).then(seasonal_res => {
+            for(let i = 0; i < seasonal_res.rowCount; i++){
+                var item_name = seasonal_res.rows[i]["item_name"];
+                var ing_included = seasonal_res.rows[i]["item_ingredients"];
+                seasonal_mapping[item_name] = ing_included;
+            }
+        });
+        //mapping done, now generate pizza_ids for each seasonal_item
+        var pizza_query = "INSERT INTO pizzas_web (order_id, pizza_type, pizza_price)" +  
+                            "VALUES ($1, $2, $3) RETURNING pizza_id, pizza_type";
+        for(let i = 0; i < seasonal_details.length; i++)
+        {
+            var curr_item = seasonal_details[i]["item_name"];
+            var item_price = seasonal_details[i]["item_price"];
+            pool.query(pizza_query, [order_id, curr_item, item_price], (p_error, p_id) => {
+                var pizza_id = p_id['rows'][0]['pizza_id'];
+                var pizza_name = p_id['rows'][0]['pizza_type'];
+
+                //now have pizza id, associate ingredients in seasonal_item with pizza in ingredients_join_web
+                var ingredients_join_query = "INSERT INTO ingredients_join_web" +
+                                            "(pizza_id, ingredient_id) VALUES ($1, $2)";
+                var ingredients_query = "UPDATE ingredients_web set ingredient_inventory" + 
+                                        " = ingredient_inventory - 1 WHERE ingredient_id = $1";
+                var ings_in_item = seasonal_mapping[pizza_name];
+                for(let j = 0; j < ings_in_item.length; j++)
+                {
+                    pool.query(ingredients_join_query, [pizza_id,ings_in_item[j] ]);
+                    pool.query(ingredients_query, [ings_in_item[j]]);
+                }
+            });
         }
     });
 
