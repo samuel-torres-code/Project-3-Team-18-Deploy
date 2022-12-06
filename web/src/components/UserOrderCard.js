@@ -9,7 +9,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
   
   return pizzas.map((pizza, index) => {
     return (
-      <span className='translate'>
+      
       <div key={pizza.pizza_type + index} className="row my-2">
         <div className="col-7">
           <strong className="text-left my-0">{pizza.pizza_type}</strong>
@@ -19,7 +19,9 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
             <p
               key={ingredient + pizza.pizza_type + index}
               className="text-left my-0">
+                <span className='translate'>
               {convertWord(ingredient_dict[ingredient.ingredient_id].ingredient_name)}
+              </span>
             </p>
           ))}
         </div>
@@ -36,7 +38,7 @@ const UserPizzaRows = ({ pizzas, handleEditPizza, handleDeletePizza, ingredient_
           </button>
         </div>
       </div>
-      </span>
+
     );
   });
 };

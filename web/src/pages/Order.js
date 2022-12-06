@@ -97,7 +97,10 @@ const Order = () => {
       order.seasonal_items.length > 0
     ) {
       postOrder(order);
-      navigate("/pickup");
+      //Change Local Storage
+      localStorage.removeItem('order');
+      setTimeout(() => {navigate("/pickup");},400)
+      
     } else {
       console.error("No items selected in order");
     }
