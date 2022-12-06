@@ -277,8 +277,8 @@ const Server = () => {
   };
 
   /**
-   * 
-   * @returns 
+   * Checks for errors with the order and submits it if its good
+   * @returns nothing. Used to stop the function
    */
   const handleCheckout = () => {
     var error = "";
@@ -348,6 +348,11 @@ const Server = () => {
     resetPage();
   };
 
+  /**
+   * Adds the updateVal to the drink count of the given type
+   * @param {string} type 
+   * @param {int} updateVal 
+   */
   const updateDrinkCount = (type, updateVal) => {
     setDrinkCounts(
       drinkCounts.map((drink) => {
