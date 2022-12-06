@@ -29,7 +29,7 @@ router.get("/sales", async function (req, res) {
   //iterate through pizza_types
   var pizza_types_query = "SELECT * FROM pizza_types_web";
   var pizza_sales_query =
-    "SELECT SUM(pizza_price) AS total FROM pizzas_web INNER JOIN orders_web" +
+    "SELECT ROUND(CAST(SUM(pizza_price) as NUMERIC), 2) AS total FROM pizzas_web INNER JOIN orders_web" +
     " ON pizzas_web.order_id = orders_web.order_id WHERE pizzas_web.pizza_type =" +
     " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
   pizza_response = [];
@@ -54,7 +54,7 @@ router.get("/sales", async function (req, res) {
   //iterate through drinks
   var drinks_types_query = "select * from drink_types_web";
   var drink_sales_query =
-    "SELECT SUM(drink_price) AS total FROM drinks_web INNER JOIN orders_web" +
+    "SELECT ROUND(CAST(SUM(drink_price) as NUMERIC), 2) AS total FROM drinks_web INNER JOIN orders_web" +
     " ON drinks_web.order_id = orders_web.order_id WHERE drinks_web.drink_type =" +
     " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
   drinks_response = [];
@@ -80,7 +80,7 @@ router.get("/sales", async function (req, res) {
   //iterate through seasonal
   var seasonal_types_query = "select * from seasonal_item";
   var seasonal_sales_query =
-    "SELECT SUM(pizza_price) AS total FROM pizzas_web INNER JOIN orders_web" +
+    "SELECT ROUND(CAST(SUM(pizza_price) AS NUMERIC), 2) AS total FROM pizzas_web INNER JOIN orders_web" +
     " ON pizzas_web.order_id = orders_web.order_id WHERE pizzas_web.pizza_type =" +
     " $1 and DATE(time_stamp) >= $2 and DATE(time_stamp) <= $3";
   seasonal_response = [];
