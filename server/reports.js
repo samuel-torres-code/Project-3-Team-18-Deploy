@@ -25,8 +25,6 @@ router.post("/sales", async function (req, res) {
   //iterate through all menu item types, add cost up for specific menu item, add to dict
   var start_date = req.body["start_time"];
   var end_date = req.body["end_time"];
-  console.log(start_date);
-  console.log(end_date);
   var res_obj = { sales: [] };
   //iterate through pizza_types
   var pizza_types_query = "SELECT * FROM pizza_types_web";
