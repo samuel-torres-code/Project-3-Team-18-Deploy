@@ -171,7 +171,7 @@ const Server = () => {
       if (
         pizza.ingredients.filter((ing) =>
           doughIDs.includes(Number(ing.ingredient_id))
-        ).length != 1
+        ).length !== 1
         ) {
           error += "Please select one type of dough.\n";
         }

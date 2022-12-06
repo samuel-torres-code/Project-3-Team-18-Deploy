@@ -89,29 +89,6 @@ router.get("/load_prices", function (req, res) {
   });
 });
 
-router.get("/load_ingredients", function (req, res) {
-  var query_string =
-    "SELECT ingredient_name, ingredient_type," +
-    " ingredient_inventory from ingredients_web";
-  //query ingredients
-  f_response = [];
-  pool.query(query_string).then((query_res) => {
-    for (let i = 0; i < query_res.rowCount; i++) {
-      f_response.push(query_res.rows[i]);
-    }
-    final_obj = [];
-    for (let i = 0; i < f_response.length; i++) {
-      //add relevant info to final array
-      var i_name = f_response[i]["ingredient_name"];
-      var i_type = f_response[i]["ingredient_type"];
-      var i_invent = f_response[i]["ingredient_inventory"];
-      final_obj.push([i_name, i_type, i_invent]);
-    }
-    //once populated, send
-    res.send(final_obj);
-  });
-});
-
 router.post("/add_ingredient", function (req, res) {
   //add new ingredient to database
   res.json({ requestBody: req.body });
@@ -164,29 +141,6 @@ router.post("/restock", function (req, res) {
   var amount = req.body["amount"];
   for (let i = 0; i < ingredient_ids.length; i++) {
     pool.query(ingredients_dec_query, [amount, ingredient_ids[i]]);
-  }
-});
-
-router.post("/add_ingredient", function (req, res) {
-  //add new ingredient to database
-  // res.json({requestBody: req.body});
-  var ingredient_name = req.body["ingredient_name"];
-  var ingredient_type = req.body["ingredient_type"];
-
-  var add_ing_query =
-    "INSERT INTO ingredients_web (ingredient_name, ingredient_type," +
-    " ingredient_inventory) VALUES ($1, $2, $3)";
-  pool.query(add_ing_query, [ingredient_name, ingredient_type, 0]);
-});
-
-router.post("/remove_ingredient", function (req, res) {
-  //remove ingredients from db
-  // res.json({requestBody: req.body});
-  var ingredient_names = req.body["ingredients"];
-  var remove_ing_query =
-    "DELETE FROM ingredients_web WHERE ingredient_name = $1";
-  for (let i = 0; i < ingredient_names.length; i++) {
-    pool.query(remove_ing_query, [ingredient_names[i]]);
   }
 });
 
