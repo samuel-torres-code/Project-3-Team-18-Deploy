@@ -5,6 +5,7 @@ import Alert from "react-bootstrap/Alert";
 import ExcessReport from "../components/ExcessReport";
 import HonorsReport from "../components/EmployeeSalesReport";
 import SalesReport from "../components/SalesReport";
+import RestockReport from "../components/RestockReport";
 
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");
@@ -98,7 +99,11 @@ const Reports = () => {
             setShowAlert={setShowAlert}
             setAlertText={setAlertText}></ExcessReport>
         )}
-        {loadTab === "Restock Report" && <h1>Restock Report</h1>}
+        {loadTab === "Restock Report" && (
+          <RestockReport
+            setShowAlert={setShowAlert}
+            setAlertText={setAlertText}></RestockReport>
+        )}
         {loadTab === "Honors Addendum" && (
           <HonorsReport
             setShowAlert={setShowAlert}
