@@ -19,8 +19,8 @@ const RestockReport = ({ setAlertText, setShowAlert }) => {
         <div className="row">
           <div className="col-xs-12 col-md-4">
             <p>
-              This report shows the sales by menu item given a certain date
-              range.
+              This report shows the ingredients that need to be restocked and
+              the percentage below the fill level they are at.
             </p>
             <div className="text-center my-2">
               <button
