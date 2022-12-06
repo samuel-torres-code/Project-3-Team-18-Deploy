@@ -259,6 +259,38 @@ router.post('/remove_seasonal_item', function(req, res){
 });
 
 
-router.get('/honors', function(req, res){
-    res.send('route /api/reports/honors');
+router.get('/honors', async function(req, res){
+    //extract start/end time
+    var start_time = req.body['start_time'];
+    var end_time = req.body['end_time'];
+
+    //map employee ids to employee names
+    var emp_query = "select emp_id, emp_name from employees_web";
+    var id_to_emp = {"-1" : "Online"};
+    await pool.query(emp_query).then(q_res => {
+        for(let i = 0; i < q_res.rowCount; i++) {
+            var emp_name = q_res.rows[i]['emp_name'];
+            var emp_id = q_res.rows[i]['emp_id'];
+            id_to_emp[emp_id] = emp_name;
+        }
+    });
+
+
+    var q_string = 'select emp_id, ROUND(CAST(SUM(pizza_price) + SUM(drink_price) as NUMERIC),' +
+                    ' 2) AS total FROM pizzas_web INNER JOIN orders_web ON pizzas_web.order_id' + 
+                    ' = orders_web.order_id INNER JOIN drinks_web ON pizzas_web.order_id = ' +
+                    'drinks_web.order_id where time_stamp > $1 and time_stamp < $2 group by ' +
+                    'emp_id order by emp_id';
+    send_obj = {"employees" : []};
+    pool.query(q_string, [start_time, end_time]).then(query_res => {
+        for(let i = 0; i < query_res.rowCount; i++)
+        {
+            var emp_id = query_res.rows[i]['emp_id'];
+            var total = query_res.rows[i]['total'];
+            var emp_name = id_to_emp[emp_id];
+            var curr_obj = {'employee_id' : emp_id, 'employee_name': emp_name, 'sales' : total};
+            send_obj["employees"].push(curr_obj);
+        }
+        res.send(send_obj);
+    });
 });
