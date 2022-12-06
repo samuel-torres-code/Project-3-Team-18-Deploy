@@ -20,6 +20,12 @@ router.get('/', function(req, res){
     res.send('default route /api/server');
 });
 
+/**Call to get all the ingredients for the manager table
+ * @param req -- blank
+ * @param res -- JSON that maps ingredient type names to a list of ingredient
+ *              objects that have that type. Each ingredient contains it's
+ *              id, type, and name
+ */
 router.get('/ingredients', function(req, res) {
     //get all ingredients
     var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients";
@@ -58,7 +64,12 @@ router.get('/ingredients', function(req, res) {
         });
     
 });
-
+/**Returns all menu items.
+ * @param req -- blank
+ * @param res -- JSON mapping pizza_types, drink_types, and seasonal_item_types, 
+ *              to a list of items with that type. Each item includes it's type
+ *              and price 
+ */
 router.get('/types', function(req, res) {
     var final_dict = {"pizza_types": [],
                         "drink_types": [],
@@ -129,14 +140,3 @@ router.get('/types', function(req, res) {
 
 
 });
-
-function query(query_string) {
-    f_response = []
-    pool
-        .query(query_string)
-        .then(query_res => {
-            for(let i = 0; i < query_res.rowCount; i++) {
-                f_response.push(query_res.rows[i]);
-            }
-        });
-}
