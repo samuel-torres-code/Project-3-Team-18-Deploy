@@ -31,7 +31,7 @@ const IngredientTable = ({
                   <td>{item.name}</td>
                   <td>{item.type}</td>
                   <td>{item.inventory}</td>
-                  <td>{item.fill_level}%</td>
+                  <td>{item.fill_level}</td>
                   <td>
                     <button
                       type="button"
@@ -59,7 +59,7 @@ const IngredientTable = ({
       </div>
       <div className="d-flex justify-content-end mx-5">
         <button
-          className="btn btn-primary btn-sm mt-3"
+          className="btn btn-primary btn-sm mt-3 fs-5"
           data-bs-toggle="modal"
           data-bs-target="#inputModal"
           onClick={handleAddIngredientClick}>
