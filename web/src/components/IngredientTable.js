@@ -31,7 +31,7 @@ const IngredientTable = ({
                   <td>{item.name}</td>
                   <td>{item.type}</td>
                   <td>{item.inventory}</td>
-                  <td>{item.fill_level}%</td>
+                  <td>{item.fill_level}</td>
                   <td>
                     <button
                       type="button"
