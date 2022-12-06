@@ -32,11 +32,15 @@ const Server = () => {
   const [form, setForm] = useState({ order_name: "" });
   const [isLoading, setIsLoading] = useState(true);
   let initialLoad = true;
-  const baseIngredients = ["Dough", "Sauce", "Drizzle", "Cheese"];
-  const toppingIngredients = ["RawVeggies", "RoastedVeggies", "Meats"];
-  const [showAlerts, setShowAlerts] = useState([]);
-  const [showOrderAlert, setShowOrderAlert] = useState(false);
-  const [orderAlertText, setOrderAlertText] = useState("");
+  const baseIngredients = ["Dough","Sauce", "Drizzle", "Cheese"];
+  const toppingIngredients = ["Raw Veggies", "Roasted Veggies", "Meats"];
+  const [showAlerts, setShowAlerts] = useState([])
+
+  const [showOrderAlert, setShowOrderAlert] = useState(false)
+  const [orderAlertText, setOrderAlertText] = useState("")
+
+  
+  
 
   useEffect(() => {
     if (isLoading && initialLoad) {
@@ -199,10 +203,10 @@ const Server = () => {
       if (
         pizza.ingredients.filter((ing) =>
           doughIDs.includes(Number(ing.ingredient_id))
-        ).length != 1
-      ) {
-        error += "Please select one type of dough.\n";
-      }
+        ).length !== 1
+        ) {
+          error += "Please select one type of dough.\n";
+        }
 
       const topping_types = Object.keys(ingredients_by_type).filter(
         (ing) =>

@@ -28,7 +28,7 @@ router.get('/', function(req, res){
  */
 router.get('/ingredients', function(req, res) {
     //get all ingredients
-    var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients";
+    var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients_web";
     f_response = []
     pool
         .query(q_string)
@@ -37,15 +37,7 @@ router.get('/ingredients', function(req, res) {
                 f_response.push(query_res.rows[i]);
             }
             q_resp = f_response;
-            var final_dict = {"Other": [],
-                      "Meats": [],
-                      "Cheese": [],
-                      "RoastedVeggies" : [],
-                      "Sauce": [],
-                      "Drizzle": [],  
-                      "Dough": [],
-                      "RawVeggies": []
-                    };
+            var final_dict = {};
             for(let i = 0; i < q_resp.length; i++)
             {
                 //create ingredient object for ingredient
@@ -57,7 +49,10 @@ router.get('/ingredients', function(req, res) {
                                 "ingredient_name" : ing_name
                                 };
                 //add to final dict
-                final_dict[ing_type] = final_dict[ing_type].concat([ing_obj]);
+                if(final_dict[ing_type] == null) {
+                    final_dict[ing_type] = [];
+                }
+                final_dict[ing_type].push(ing_obj);
             } 
             //send response once populated
             res.send(final_dict);
