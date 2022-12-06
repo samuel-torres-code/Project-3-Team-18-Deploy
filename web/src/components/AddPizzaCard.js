@@ -2,7 +2,7 @@
 const AddPizzaCard = ({handleAddPizza,pizza_types,disabled}) => {
     return (
         <span className='translate'>
-        <div className="card">
+        <div className="card text-center">
             <div className="card-text container my-2">
                 <h5 className="card-title"> <span className='translate'>Add Items</span></h5>
                 <div className="btn-group-vertical" role="group" aria-label="Pizza Type Selector">

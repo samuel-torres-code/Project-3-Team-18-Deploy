@@ -23,7 +23,7 @@ export const postOrder = (reqJson) => {
             reqJson.pizzas = reqJson.pizzas[0]
         }
     }
-    console.log(reqJson)
+    // console.log(reqJson)
     if(reqJson.order ==null || typeof(reqJson.order) === 'undefined') {
         reqJson.order= reqJson.order_info
     }
