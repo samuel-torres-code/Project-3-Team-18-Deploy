@@ -12,7 +12,7 @@ const Home = () => {
           <h2><span className='translate'>Quality you can taste</span>
           </h2>
           <p>
-            <span className='translate'>Vine-ripened tomato red sauce, antioxidant-rich cherry tomatoes, fresh basil leaves & fresh dough, made in-house daily.</span>
+            <span className='translate'>Vine-ripened tomato red sauce, antioxidant-rich cherry tomatoes, fresh meats & fresh dough, made in-house daily.</span>
           </p>
           <button onClick={() => navigate('/order')} className="btn btn-primary"><span className='translate'> Order Now </span> </button>
           </div>
