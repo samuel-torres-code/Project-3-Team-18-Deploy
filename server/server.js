@@ -28,7 +28,7 @@ router.get('/', function(req, res){
  */
 router.get('/ingredients', function(req, res) {
     //get all ingredients
-    var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients";
+    var q_string = "SELECT ingredient_id, ingredient_name, ingredient_type FROM ingredients_web";
     f_response = []
     pool
         .query(q_string)
