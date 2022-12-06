@@ -26,7 +26,7 @@ router.get("/", function (req, res) {
  * @param req -- start and end time for the sales period
  * @param res -- JSON that contains list of items with total sales for that item within that time.
  */
-router.get("/sales", async function (req, res) {
+router.post("/sales", async function (req, res) {
   // res.send('route /api/reports/sales');
   //iterate through all menu item types, add cost up for specific menu item, add to dict
   var start_date = req.body["start_time"];
