@@ -135,25 +135,26 @@ const Order = () => {
           <button
               className={
                 loadMenu
-                  ? "nav-link fw-bolder fs-5 active link-primary"
-                  : "nav-link fw-bolder fs-5 link-secondary"
+                  ? "nav-link fw-bolder fs-5 active link-primary translate"
+                  : "nav-link fw-bolder fs-5 link-secondary translate"
               }
               value="Menu"
               aria-current="page"
               onClick={handleSwitchTab}>
-              <span className='translate'>Menu</span>
+              
+              Menu
             </button>
           </li>
           <li className="nav-item">
           <button
               className={
                 loadMenu
-                  ? "nav-link fw-bolder fs-5 link-secondary"
-                  : "nav-link fw-bolder fs-5 active link-primary"
+                  ? "nav-link fw-bolder fs-5 link-secondary translate"
+                  : "nav-link fw-bolder fs-5 active link-primary translate"
               }
               value="Cart"
               onClick={handleSwitchTab}>
-              <span className='translate'>Current Order</span>
+              Current Order
             </button>
           </li>
         </ul>
