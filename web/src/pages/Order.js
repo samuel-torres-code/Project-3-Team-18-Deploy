@@ -6,6 +6,8 @@ import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 import { useNavigate } from "react-router-dom";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faUtensils, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
@@ -26,22 +28,20 @@ const Order = () => {
     deleteDrink,
     clearOrder,
   } = useOrder([]);
-  const { menuLoading, menuError, itemTypes, ingredients_by_type } = useMenu([]);
+  const { menuLoading, menuError, itemTypes, ingredients_by_type } = useMenu(
+    []
+  );
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if(!orderLoading) {
-
-    
-    if (localStorage.getItem("user") !== null) {
-      
+    if (!orderLoading) {
+      if (localStorage.getItem("user") !== null) {
         setOrderName(localStorage.getItem("user"));
-      
-    } else {
-      setOrderName("Guest");
+      } else {
+        setOrderName("Guest");
+      }
     }
-  }
   }, [orderLoading]);
 
   function handleSwitchTab(event) {
@@ -132,29 +132,40 @@ const Order = () => {
       <div className="container">
         <ul className="nav nav-tabs justify-content-center my-3">
           <li className="nav-item">
-          <button
+            <button
               className={
                 loadMenu
-                  ? "nav-link fw-bolder fs-5 active link-primary translate"
-                  : "nav-link fw-bolder fs-5 link-secondary translate"
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
               }
               value="Menu"
               aria-current="page"
               onClick={handleSwitchTab}>
-              
-              Menu
+              {/* <FontAwesomeIcon icon={faUtensils} /> */}
+              <span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}>
+                Menu
+              </span>
             </button>
           </li>
           <li className="nav-item">
-          <button
+            <button
               className={
                 loadMenu
-                  ? "nav-link fw-bolder fs-5 link-secondary translate"
-                  : "nav-link fw-bolder fs-5 active link-primary translate"
+                  ? "nav-link fw-bolder fs-5 link-secondary"
+                  : "nav-link fw-bolder fs-5 active link-primary"
               }
               value="Cart"
               onClick={handleSwitchTab}>
-              Current Order
+              {/* <div className="mx-5 fs-3">
+                <FontAwesomeIcon icon={faCartShopping} />
+              </div> */}
+              <span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}>
+                Current Order
+              </span>
             </button>
           </li>
         </ul>

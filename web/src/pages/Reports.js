@@ -4,6 +4,7 @@ import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 import ExcessReport from "../components/ExcessReport";
 import HonorsReport from "../components/HonorsReport";
+import SalesReport from "../components/SalesReport";
 
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");
@@ -42,7 +43,7 @@ const Reports = () => {
     setLoadTab(event.target.value);
   }
 
-  if(condrender){
+  if (condrender) {
     if (menuError || orderError) {
       return (
         <div>
@@ -110,18 +111,6 @@ const Reports = () => {
             <li className="nav-item">
               <button
                 className={
-                  loadTab === "Seasonal Items"
-                    ? "nav-link fw-bolder fs-5 active link-primary"
-                    : "nav-link fw-bolder fs-5 link-secondary"
-                }
-                value="Seasonal Items"
-                onClick={handleSwitchTab}>
-                Seasonal Items
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={
                   loadTab === "Honors Addendum"
                     ? "nav-link fw-bolder fs-5 active link-primary"
                     : "nav-link fw-bolder fs-5 link-secondary"
@@ -143,11 +132,22 @@ const Reports = () => {
             // add spacing for alert
             <div style={{ height: "58px" }}></div>
           )}
-          {loadTab === "Sales Report" && <h1>Sales Report</h1>}
-          {loadTab === "Excess Report" && <ExcessReport setShowAlert={setShowAlert} setAlertText={setAlertText}></ExcessReport>}
+          {loadTab === "Sales Report" && (
+            <SalesReport
+              setShowAlert={setShowAlert}
+              setAlertText={setAlertText}></SalesReport>
+          )}
+          {loadTab === "Excess Report" && (
+            <ExcessReport
+              setShowAlert={setShowAlert}
+              setAlertText={setAlertText}></ExcessReport>
+          )}
           {loadTab === "Restock Report" && <h1>Restock Report</h1>}
-          {loadTab === "Seasonal Items" && <h1>Seasonal Items</h1>}
-          {loadTab === "Honors Addendum" && <HonorsReport setShowAlert={setShowAlert} setAlertText={setAlertText}></HonorsReport>}
+          {loadTab === "Honors Addendum" && (
+            <HonorsReport
+              setShowAlert={setShowAlert}
+              setAlertText={setAlertText}></HonorsReport>
+          )}
         </div>
       );
     }
