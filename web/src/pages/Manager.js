@@ -327,7 +327,6 @@ function Manager() {
           "Invalid Input for Restock Ingredient: Restock amount is NaN."
         );
       } else {
-        console.log(selectedIngredient);
         client.post("/api/manager/restock", {
           ingredients: [selectedIngredient],
           amount: restockAmount,
