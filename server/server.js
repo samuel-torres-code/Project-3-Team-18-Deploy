@@ -52,7 +52,7 @@ router.get('/ingredients', function(req, res) {
                 if(final_dict[ing_type] == null) {
                     final_dict[ing_type] = [];
                 }
-                final_dict[ing_type].push([ing_obj]);
+                final_dict[ing_type].push(ing_obj);
             } 
             //send response once populated
             res.send(final_dict);
