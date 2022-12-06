@@ -116,7 +116,7 @@ router.post("/sales", async function (req, res) {
  * @param res -- list of ingredients, containing ingredient_name, stock, percentage used, and fill level
  *                for ingredients in excess.
  */
-router.get("/excess", async function (req, res) {
+router.post("/excess", async function (req, res) {
   //get start from request
   var start_time = req.body["start_time"];
   //create response obj
