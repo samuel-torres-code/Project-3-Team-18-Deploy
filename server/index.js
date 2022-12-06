@@ -60,7 +60,6 @@ app.get('/user_test', (req, res) => {
                 teammembers.push(query_res.rows[i]);
             }
             const data = {teammembers: teammembers};
-            console.log(teammembers);
             // res.render('user', data);
             res.send(teammembers)
         });
