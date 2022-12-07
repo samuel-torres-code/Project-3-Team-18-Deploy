@@ -78,6 +78,9 @@ const useOrder = () => {
     }
   }, [pizzas, drinks, seasonalItems]);
 
+  /**
+   * Updates the local storage for the order with the state variable
+   */
   const updateStorage = () => {
     try {
       
@@ -88,6 +91,9 @@ const useOrder = () => {
     }
   };
 
+  /**
+   * Loads the local storage order info into the state variable
+   */
   const loadStorage = () => {
     if (localStorage.getItem("order") == null) {
       setOrder({
@@ -110,6 +116,10 @@ const useOrder = () => {
     setOrderLoading(false);
   };
 
+  /**
+   * Updates the order state variables
+   * @param {string} name name for the order
+   */
   const setOrderName = (name) => {
     setOrder({
       order_info: {
@@ -122,6 +132,9 @@ const useOrder = () => {
     });
   };
 
+  /**
+   * resets the order state variable
+   */
   const clearOrder = () => {
     setOrder({
       order_info: {
@@ -148,6 +161,11 @@ const useOrder = () => {
     }
   };
 
+  /**
+   * Updates the order state variable to update the pizza at given index with the given one
+   * @param {Pizza} updatedPizza object containing pizza attributes
+   * @param {Number} index index of pizza to update
+   */
   const updatePizzaAsync = async (updatedPizza, index) => {
     if (
       updatedPizza != null &&
@@ -162,6 +180,11 @@ const useOrder = () => {
     }
   };
 
+  /**
+   * Adds the given pizza object to the state variable
+   * @param {Pizza} pizza Object containing pizza attributes
+   * @returns returns the new index of the pizza
+   */
   const addNewPizza = (pizza = {
     pizza_type: "",
     pizza_price: "0.00",
@@ -174,6 +197,11 @@ const useOrder = () => {
     return pizzas.length;
   };
 
+  /**
+   * Adds the given pizza object to the state variable asynchronously
+   * @param {Pizza} pizza Object containing pizza attributes
+   * @returns returns the new index of the pizza 
+   */
   const addNewPizzaAsync = async (pizza = {
     pizza_type: "",
     pizza_price: "0.00",
@@ -186,10 +214,18 @@ const useOrder = () => {
     return pizzas.length;
   };
 
+  /**
+   * Deletes the pizza at the given index
+   * @param {Number} index index of pizza to delete
+   */
   const deletePizza = (index) => {
     setPizzas(order.pizzas.filter((pizza, i) => i !== index));
   };
 
+  /**
+   * Adds a given seasonal item to state
+   * @param {Item} item Object containing seasonal item attributes
+   */
   const addItem = (item) => {
     setSeasonalItems([
       ...order.seasonal_items,
@@ -200,10 +236,18 @@ const useOrder = () => {
     ]);
   };
 
+  /**
+   * deletes the seasonal item at the given index
+   * @param {Number} index index of seasonal item to delete
+   */
   const deleteItem = (index) => {
     setSeasonalItems(order.seasonal_items.filter((item, i) => i !== index));
   };
 
+  /**
+   * Adds the given drink to state
+   * @param {Drink} drink object containing the attributes of a drink
+   */
   const addDrink = (drink) => {
     setDrinks([
       ...order.drinks,
@@ -214,6 +258,10 @@ const useOrder = () => {
     ]);
   };
 
+  /**
+   * Deletes the drink at the given index from state
+   * @param {Number} index index of drink to delete
+   */
   const deleteDrink = (index) => {
     setDrinks(order.drinks.filter((item, i) => i !== index));
   };

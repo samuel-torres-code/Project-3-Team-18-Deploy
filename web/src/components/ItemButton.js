@@ -3,6 +3,11 @@ import useImage from "../hooks/useImage";
 import(`../images/loader_pizza.gif`);
 import(`../images/image_not_found.png`);
 
+/**
+ * Component for a formatted button containing the text and given image if provided
+ * @param {Object} param0 Object containing the necessary dependencies for the given component
+ * @returns a formatted button containing the text and given image if provided
+ */
 const ItemButton = ({ selected = false, cardText, imgName, onClick }) => {
   const { loading, error, image } = useImage(imgName);
   return (

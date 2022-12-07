@@ -307,9 +307,12 @@ const Server = () => {
     const errors = checkPizzas();
 
     //Alert Errors
-    if (error !== "" || errors) {
+    if (error !== "") {
       setOrderAlertText(error);
       setShowOrderAlert(true);
+      return;
+    }
+    if(errors) {
       return;
     }
 
