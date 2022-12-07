@@ -31,6 +31,10 @@ process.on('SIGINT', function() {
 
 /** This function determines if the user entered a valid username, whether an employee or non-employee
  *  Automatically checks either employee credentials or customer credentials depending on the login checkbox
+ *  @function
+ *  @name api/login/
+ *  @param {*} req contains the body with the input information: user, email, password, emp
+ *  @param {*} res contains specific information that determines employee information or customer login status
  */
 router.post('/', (req, res, next) => {
     data = [];
@@ -79,6 +83,10 @@ router.post('/', (req, res, next) => {
 
 /** Check and see if the user provided an email address and allow them to login if valid info is given
  *  This function will be checked AFTER it is confirmed that the user did not enter a username
+ *  @function
+ *  @name api/login/email
+ *  @param {*} req contains the body with the input information: user, email, password,
+ *  @param {*} res contains specific information that determines customer login status
  */
 router.post('/email', (req, res, next) => {
     var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
@@ -97,6 +105,10 @@ router.post('/email', (req, res, next) => {
 
 /** Check if user exists within the database and allow them access if they do
  *  This function is for Google Sign-In only
+ *  @function
+ *  @name api/login/google/login
+ *  @param {*} req contains the body with the input information: user, email
+ *  @param {*} res contains specific information that determines customer login status
  */
 router.post('/google/login', (req, res, next) => {
     var queryStringTwo = "SELECT * FROM users_web_oauth where email='" + req.body.email + "';";
@@ -116,6 +128,10 @@ router.post('/google/login', (req, res, next) => {
 })
 
 /** If user has failed to login automatically with google, create an account and allow access
+ *  @function
+ *  @name api/login/google/login/secondary
+ *  @param {*} req contains the body with the input information: user, email
+ *  @param {*} res contains specific information that determines customer login status
  */
 router.post('/google/login/secondary', (req, res, next) => {
     var queryStringTwo = "insert into users_web_oauth (username, email) values ('" + req.body.user + "', '" + req.body.email + "');";
