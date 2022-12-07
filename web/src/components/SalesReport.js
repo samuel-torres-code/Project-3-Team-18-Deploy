@@ -10,6 +10,9 @@ const SalesReport = ({ setAlertText, setShowAlert }) => {
   const [endDate, setEndDate] = useState(null);
   const [salesData, setSalesData] = useState([]);
 
+  /**
+   * Loads data necessary for the report.
+   */
   const handleGenerateReport = () => {
     if (startDate === null || typeof startDate === undefined) {
       setAlertText("Please enter a start date.");

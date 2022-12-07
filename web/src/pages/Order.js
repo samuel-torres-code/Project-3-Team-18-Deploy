@@ -6,8 +6,6 @@ import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 import { useNavigate } from "react-router-dom";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faUtensils, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
@@ -20,7 +18,6 @@ const Order = () => {
     order,
     setOrderName,
     addNewPizza,
-    // updatePizza,
     deletePizza,
     addDrink,
     addItem,
@@ -98,9 +95,10 @@ const Order = () => {
     ) {
       postOrder(order);
       //Change Local Storage
-      localStorage.removeItem('order');
-      setTimeout(() => {navigate("/pickup");},400)
-      
+      localStorage.removeItem("order");
+      setTimeout(() => {
+        navigate("/pickup");
+      }, 400);
     } else {
       console.error("No items selected in order");
     }
@@ -144,7 +142,6 @@ const Order = () => {
               value="Menu"
               aria-current="page"
               onClick={handleSwitchTab}>
-              {/* <FontAwesomeIcon icon={faUtensils} /> */}
               <span
                 className="translate mx-3"
                 style={{ pointerEvents: "none" }}>
@@ -161,9 +158,6 @@ const Order = () => {
               }
               value="Cart"
               onClick={handleSwitchTab}>
-              {/* <div className="mx-5 fs-3">
-                <FontAwesomeIcon icon={faCartShopping} />
-              </div> */}
               <span
                 className="translate mx-3"
                 style={{ pointerEvents: "none" }}>
