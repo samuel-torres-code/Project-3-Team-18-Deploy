@@ -21,15 +21,9 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-/*router.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-        "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-    );
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
-    next();
-});*/
-
+/** This function looks to see if an email is already attatched to a created account
+ *  If no account exists, this function creates an account for the user with the provided information
+ */
 router.post('/', (req, res, next) => {
     let send = false;
     var queryString = "insert into users_web (username, password, email) VALUES ('" + req.body.user + "', '" + req.body.pass + "', '" + req.body.email + "') returning username as username;";

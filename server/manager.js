@@ -21,6 +21,8 @@ router.get("/", function (req, res) {
 });
 
 /**Loads ingredients for the manager
+ * @function
+ * @name api/manager/load_ingredients
  * @param req -- empty
  * @param res -- array, each element is an array corresponding to one
  *                ingredient, with elements [name, type, inventory, fill]
@@ -50,6 +52,8 @@ router.get("/load_ingredients", function (req, res) {
   });
 });
 /**Loads prices for all menu items
+ * @function
+ * @name api/manager/load_prices
  * @param req -- empty
  * @param res -- JSON -- maps pizza_types, drink_types, and seasonal_items
  *                to items of that type. Each item includes price and name.
@@ -104,6 +108,8 @@ router.get("/load_prices", function (req, res) {
 });
 
 /** Adds an ingredient to the database
+ * @function
+ * @name api/manager/add_ingredient
  * @param req -- JSON with ingredient_name, ingredient_type, and fill_level
  * @param res -- empty
  */
@@ -121,6 +127,8 @@ router.post("/add_ingredient", function (req, res) {
 });
 
 /**Removes ingredients from the database
+ * @function
+ * @name api/manager/remove_ingredient
  * @param req -- list of ingredients to remove
  * @param res -- empty 
  */
@@ -136,6 +144,8 @@ router.post("/remove_ingredient", function (req, res) {
 });
 
 /**Change the fill level of a selected ingredient
+ * @function
+ * @name api/manager/change_fill_level
  * @param req -- JSON of ingredient_name, fill_level to change
  * @param res -- empty 
  * 
@@ -151,6 +161,8 @@ router.post("/change_fill_level", function (req, res) {
 });
 
 /** restock selected ingredient
+ * @function
+ * @name api/manager/restock
  * @param req -- JSON that contains ingredients to restock, and amount to restock by
  * @param res -- empty
  */
@@ -170,6 +182,8 @@ router.post("/restock", function (req, res) {
 
 
 /**Load menu items in a single list
+ * @function
+ * @name api/manager/load_menu_items
  * @param req -- empty
  * @param res -- contains list under "menu_items", each element being a list
  *                that contains [name, price] of each ingredient
@@ -217,6 +231,8 @@ router.get("/load_menu_items", function (req, res) {
   });
 });
 /** Updates menu item prices
+ * @function
+ * @name api/manager/update_menu_items
  * @param req -- contains menu items that should be updated to new price
  * @param res -- empty
  */
@@ -242,6 +258,8 @@ router.post("/update_menu_items", function (req, res) {
   }
 });
 /** Adds employee to the employee table
+ * @function
+ * @name api/manager/addEmployee
  * @param req -- contains employee name, manager status, and password
  * @param res -- whether attempt was successful or not.
  */

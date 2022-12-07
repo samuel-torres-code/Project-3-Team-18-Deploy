@@ -1,13 +1,12 @@
 import "./ItemButton.css";
 
 /**
- * Component to display a clickable button for each menu item.
- * @param {boolean} selected
- * @param {string} cardText
- * @param {function} onClick
- * @returns html to display a button
+ * Component for a formatted button containing the text and given image if provided
+ * @param {Object} param0 Object containing the necessary dependencies for the given component
+ * @returns a formatted button containing the text and given image if provided
  */
-const ItemButton = ({ selected = false, cardText, onClick }) => {
+const ItemButton = ({ selected = false, cardText, imgName, onClick }) => {
+  const { loading, error, image } = useImage(imgName);
   return (
     <div
       style={{ minWidth: "130px" }}

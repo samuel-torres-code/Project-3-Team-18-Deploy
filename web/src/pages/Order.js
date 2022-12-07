@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import AddItemCard from "../components/AddItemCard";
 import UserOrderCard from "../components/UserOrderCard";
-import { postOrder } from "../api/ServerAPI";
+import { postOrderAsync } from "../api/ServerAPI";
 import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
@@ -115,12 +115,12 @@ const Order = () => {
       order.pizzas.length > 0 ||
       order.seasonal_items.length > 0
     ) {
-      postOrder(order);
-      //Change Local Storage
-      localStorage.removeItem("order");
-      setTimeout(() => {
-        navigate("/pickup");
-      }, 400);
+      postOrderAsync(order).then(() => {
+        localStorage.removeItem("order");
+        setTimeout(() => {
+          navigate("/pickup");
+        }, 50);
+      });
     } else {
       console.error("No items selected in order");
     }
@@ -142,7 +142,8 @@ const Order = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         <img
           src={require("../loader_pizza.gif")}
           alt="Loading"
@@ -166,7 +167,8 @@ const Order = () => {
               onClick={handleSwitchTab}>
               <span
                 className="translate mx-3"
-                style={{ pointerEvents: "none" }}>
+                style={{ pointerEvents: "none" }}
+              >
                 Menu
               </span>
             </button>
@@ -182,7 +184,8 @@ const Order = () => {
               onClick={handleSwitchTab}>
               <span
                 className="translate mx-3"
-                style={{ pointerEvents: "none" }}>
+                style={{ pointerEvents: "none" }}
+              >
                 Current Order
               </span>
             </button>
@@ -192,7 +195,8 @@ const Order = () => {
           <Alert
             variant="primary"
             onClose={() => setShowAlert(false)}
-            dismissible>
+            dismissible
+          >
             {alertText}
           </Alert>
         ) : (
@@ -204,7 +208,8 @@ const Order = () => {
             seasonalItems={itemTypes.seasonal_item_types}
             drinkFunction={handleAddDrinkClick}
             itemButtonFunction={handleAddItemClick}
-            addPizzaFunction={handleAddPizzaClick}></AddItemCard>
+            addPizzaFunction={handleAddPizzaClick}
+          ></AddItemCard>
         ) : (
           <UserOrderCard
             drinks={order.drinks}
@@ -216,7 +221,8 @@ const Order = () => {
             editPizza={handleEditPizzaClick}
             handleCheckout={handleCheckout}
             handleResetPage={clearOrder}
-            ingredients_by_type={ingredients_by_type}></UserOrderCard>
+            ingredients_by_type={ingredients_by_type}
+          ></UserOrderCard>
         )}
       </div>
     );

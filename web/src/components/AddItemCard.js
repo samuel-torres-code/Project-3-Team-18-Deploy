@@ -1,12 +1,8 @@
 import ItemButton from "./ItemButton";
-
 /**
- * Component to display the Menu to the user and to allow them to add items to their order.
- * @param {array} seasonalItems
- * @param {function} drinkFunction
- * @param {function} itemButtonFunction
- * @param {function} addPizzaFunction
- * @returns
+ * Component for formatted card containing inputs for adding a seasonal item
+ * @param {Object} param0 Object containing the neccessary dependencies for the component
+ * @returns a formatted card containing inputs for adding a seasonal item
  */
 const AddItemCard = ({
   seasonalItems,

@@ -126,9 +126,11 @@ const Login = () => {
       else{
         var b = res.data[0];
         var c = res.data[1];
+        var d = res.data[2];
         setLoggedIn(b);
         setManager(c);
         localStorage.setItem('isLoggedIn', b);
+        localStorage.setItem('employeeID', d);
         localStorage.setItem('user', user);
         localStorage.setItem('email', email);
         localStorage.setItem('manager', c);
