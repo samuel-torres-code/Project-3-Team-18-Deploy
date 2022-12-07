@@ -26,8 +26,11 @@ const convertWord = (str) => {
     });
 };
 
-const customCase = (str) => {};
-
+/**
+ * Reorders ingredient types for better rendering
+ * @param {string[]} arr 
+ * @returns Custom ordered list for ingredient types
+ */
 const orderTypes = (arr) => {
   return [
     "Dough",
@@ -45,9 +48,11 @@ const orderTypes = (arr) => {
   ];
 };
 
+
 const Pizza = () => {
+
+  //useEffects and useStates
   const [pizzaIndex, setPizzaIndex] = useState(-1);
-  //const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [dropdownStates, setDropdownStates] = useState([false]);
   const [pizza, setPizza] = useState({
     pizza_type: "",
@@ -69,6 +74,11 @@ const Pizza = () => {
   const [queryParameters] = useSearchParams();
   const indexURL = queryParameters.get("index");
 
+  /**
+   * Checks if there is a selected type and selected dough
+   * @param {Pizza} currentPizza 
+   * @returns Bool if there is an error with the given pizza
+   */
   const checkRequirements = (currentPizza) => {
     //Check if required buttons are checked (Dough and Type)
     if (pizza.pizza_type === "") {
@@ -92,6 +102,10 @@ const Pizza = () => {
     return false;
   };
 
+  /**
+   * Resets all the "toppings" to be unselected when you switch types
+   * @param {string} type type of current pizza
+   */
   const resetToppings = (type) => {
     const not_topping_types = ["Other", "Dough", "Sauce", "Cheese", "Drizzle"];
     const filtered_ingredient_ids = Object.keys(ingredients_by_type)
@@ -116,6 +130,12 @@ const Pizza = () => {
     });
   };
 
+  /**
+   * checks if the number of toppings is valid for the pizza and the type
+   * @param {Pizza} currentPizza Object describing current pizza
+   * @param {string} type string representing pizza type
+   * @returns true if there is an error with the pizza and given type
+   */
   const checkToppings = (currentPizza, type) => {
     if (type === "") {
       setAlertText("Please select a pizza type.");
@@ -182,6 +202,11 @@ const Pizza = () => {
     return false;
   };
 
+  /**
+   * Checks if the current pizza has a ingredient associated with the id
+   * @param {Number} ingredient_id_int 
+   * @returns true if the current pizza contains the ingredient associated with the id
+   */
   const containsIngredient = (ingredient_id_int) => {
     if (typeof pizza !== "undefined" && pizza != null) {
       return (
@@ -219,6 +244,10 @@ const Pizza = () => {
     }
   }, [showAlert]);
 
+  /**
+   * Checks if the pizza can be saved, saves, and redirects you to order
+   * @returns just for early termination
+   */
   const handleSavePizza = () => {
     if (checkRequirements(pizza)) {
       return;

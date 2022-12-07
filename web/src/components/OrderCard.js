@@ -6,6 +6,12 @@ import Form from "react-bootstrap/Form";
 import Alert from "react-bootstrap/Alert";
 import "./OrderCard.css";
 import { useEffect, useState } from "react";
+
+/**
+ * Converts CamelCase and dash-seperated words into spaced and Capitalized words
+ * @param {String} string given string
+ * @returns a formatted string
+ */
 const convertWord = (str) => {
   return str
     .replace(/([a-z])([A-Z])/g, `$1 $2`)
@@ -16,6 +22,12 @@ const convertWord = (str) => {
       return g.toUpperCase();
     });
 };
+
+/**
+ * Component for displaying drink counts
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the drink counts
+ */
 const DrinkCountRows = ({ drink_counts }) => {
   return drink_counts.map((drink, index) => {
     return (
@@ -31,6 +43,11 @@ const DrinkCountRows = ({ drink_counts }) => {
   });
 };
 
+/**
+ * Component for displaying seasonal items on the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the seasonal items on the order
+ */
 const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => (
     <div key={item.item_name + index} className="row my-2">
@@ -51,6 +68,11 @@ const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   ));
 };
 
+/**
+ * Component for displaying the pizzas on the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the pizzas on the order
+ */
 const PizzaRows = ({
   pizzas,
   handleDeletePizza,
@@ -122,6 +144,12 @@ const PizzaRows = ({
   ));
 };
 
+
+/**
+ * Component for displaying name and interacting with the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the name, checkout and cancel buttons
+ */
 const OrderInfo = ({
   order_info,
   onFormChange,
@@ -191,6 +219,11 @@ const OrderInfo = ({
   }
 };
 
+/**
+ * Component for displaying order information for the current order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the information for the current order
+ */
 const OrderCard = ({
   order_info,
   pizzas,
