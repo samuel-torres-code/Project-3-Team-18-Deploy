@@ -21,15 +21,6 @@ process.on('SIGINT', function() {
     process.exit(0);
 });
 
-/*router.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-        "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-    );
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
-    next();
-});*/
-
 /** This function looks to see if an email is already attatched to a created account
  *  If no account exists, this function creates an account for the user with the provided information
  */
