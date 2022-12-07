@@ -1,3 +1,9 @@
+
+/**
+ * Component for displaying rows and inputs for each drink type
+ * @param {Object} param0 Object containing the neccessary dependencies for the component
+ * @returns a formatted card containing rows and inputs for each drink type
+ */
 const DrinkRows = ({drink_types, updateDrinkCount, disabled}) => {
 
     return (drink_types.map((type) => (
@@ -15,6 +21,11 @@ const DrinkRows = ({drink_types, updateDrinkCount, disabled}) => {
     )))
 }
 
+/**
+ * Component for formatted card containing inputs for drinks
+ * @param {Object} param0 Object containing the neccessary dependencies for the component
+ * @returns a formatted card containing inputs for adding a a drink
+ */
 const DrinkCard = ({updateDrinkCount, drink_types, disabled}) => {
     return (
       <span className='translate'>

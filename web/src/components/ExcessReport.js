@@ -6,10 +6,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { getExcessReport } from "../api/ReportAPI";
 
+/**
+ * Component for the excess report and its necessary inputs
+ * @param {Object} param0 Object containing the necessary dependents for the object
+ * @returns a formatted page that displays the excess report and its necessary inputs
+ */
 const ExcessReport = ({ setAlertText, setShowAlert }) => {
   const [startDate, setStartDate] = useState(null);
   const [ingredientData, setIngredientData] = useState([]);
 
+  /**
+   * Checks if the dates are valid and fetches data for the report
+   * @returns for early termination
+   */
   const handleGenerateReport = () => {
     if (startDate === null || typeof startDate === undefined) {
       setAlertText("Please enter a start date.");
