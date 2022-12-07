@@ -13,17 +13,18 @@ const dims = {
     height: '50vw'
 };
 
-/* Simple on load function, display marker information
- * Not necessary but good to have for further implementations
+/** Simple on load function, display marker information
+ *  Not necessary but good to have for further implementation
+ *  @returns
  */
 const markLoader = marker => {
     console.log('Marker: ', marker)
 }
 
-/* Actual component that will load the Google Maps container for the website
+/**Actual component that will load the Google Maps container for the website
  * Use the API Key created for this project, along with the location of the MSC.
  * Use preset width and height for the container, liable to change
- * @return a GoogleMapsComp that automatically zooms on location and sets a marker
+ * @returns a GoogleMapsComp that automatically zooms on location and sets a marker
  */
 function GoogleMapsComp() {
     const { isLoaded } = useJsApiLoader({

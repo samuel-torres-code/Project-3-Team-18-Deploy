@@ -44,8 +44,8 @@ const Login = () => {
     }
   }, []);
 
-  /* confirm that information is entered
-   * @return a bool ensuring username and password were actually input
+  /**Confirm that information is entered
+   * @returns a bool ensuring username and password were actually input
    */
   function infoCompleted() {
     return user.length > 0 && pass.length > 0;
@@ -89,13 +89,15 @@ const Login = () => {
     setUser('');
   };
 
-  /* Function to ensure that we change log of the system
+  /** Function to ensure that we change log of the system
+   *  @returns 
    */
   function changeLog(){
     localStorage.setItem("log", "a");
   }
 
-  /* Function to log the user out of the system to allow for logging back in
+  /** Function to log the user out of the system to allow for logging back in
+   *  @returns
    */
   function logOut(){
     setLoggedIn(false);
@@ -106,7 +108,11 @@ const Login = () => {
     window.location.reload();
   }
 
-  //cancel default login button function and handle it ourself
+  /**
+   * Cancel the default login button function and handle it ourself, determining employees vs customers
+   * @param {event} event
+   * @returns
+   */
   const registerLogin = async (event) => {
     event.preventDefault();
     const loginData = await client.post('/api/login',{
@@ -154,7 +160,11 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-  //If primary verification fails then check for email login usage
+  /**
+   * If primary verification fails then check for email login usage
+   * @param {event} event 
+   * @returns
+   */
   const secondaryLoginVerification = (event) =>{
     if(!loggedIn){
       const emailData = client.post('/api/login/email',{
@@ -184,7 +194,10 @@ const Login = () => {
     }
   }
 
-  //check with backend for user and determine who it is
+  /** Take care of the user login if the user signs in with google
+   * @param {event} event 
+   * @returns
+   */
   const registerGoogleLogin = async (event) => {
     const loginData = await client.post('/api/login/google/login',{
         user: event.name,
@@ -217,7 +230,11 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-  //If user who logged in with Google does not exist, create an account for them and log them in
+  /**
+   * If user who logged in with Google does not exist, create an account for them and log them in
+   * @param {event} event 
+   * @returns
+   */
   const registerGoogleLoginSecondary = (event) => {
     console.log(event);
     const loginData = client.post('/api/login/google/login/secondary',{
@@ -249,10 +266,14 @@ const Login = () => {
     localStorage.setItem("log", "b");
   };
 
-  /* Google Login Function. We ping Google API and get user information when they try to log in
+  /**
+   * Google Login Function. We ping Google API and get user information when they try to log in
    * This gives us user's name and email so we may verify they exist in our system or create them an account
    * On a successful login on Google's side, we ping our own database for the user.
    * On a failed login we respond with an error log. This likely means the error happened on Google's end and we can't fix.
+   * @param {*} onSuccess determine if the login was a success and call the api to log in user if so
+   * @param {*} onError determine if the login failed and log the error to the system
+   * @returns
    */
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
