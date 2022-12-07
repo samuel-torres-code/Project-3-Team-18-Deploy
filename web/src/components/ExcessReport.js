@@ -43,7 +43,7 @@ const ExcessReport = ({ setAlertText, setShowAlert }) => {
                     className="btn btn-primary"
                     onClick={() => handleGenerateReport()}
                   >
-                    Generate
+                    <span className="translate" style={{pointerEvents: "none"}}>Generate</span>
                   </button>
                   </div>
                 

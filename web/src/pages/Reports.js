@@ -26,6 +26,7 @@ const Reports = () => {
 
   if (condrender) {
     return (
+      <span className="translate">
       <div className="container">
         <ul className="nav nav-tabs justify-content-center my-3">
           <li className="nav-item">
@@ -37,7 +38,8 @@ const Reports = () => {
               }
               value="Sales Report"
               onClick={handleSwitchTab}>
-              Sales Report
+              <span className="translate" style={{pointerEvents: "none"}}>
+              Sales Report </span>
             </button>
           </li>
           <li className="nav-item">
@@ -49,7 +51,8 @@ const Reports = () => {
               }
               value="Excess Report"
               onClick={handleSwitchTab}>
-              Excess Report
+                <span className="translate" style={{pointerEvents: "none"}}>
+              Excess Report</span>
             </button>
           </li>
           <li className="nav-item">
@@ -61,7 +64,8 @@ const Reports = () => {
               }
               value="Restock Report"
               onClick={handleSwitchTab}>
-              Restock Report
+                <span className="translate" style={{pointerEvents: "none"}}>
+              Restock Report </span>
             </button>
           </li>
           <li className="nav-item">
@@ -73,7 +77,8 @@ const Reports = () => {
               }
               value="Honors Addendum"
               onClick={handleSwitchTab}>
-              Honors Addendum
+                <span className="translate" style={{pointerEvents: "none"}}>
+              Honors Addendum </span>
             </button>
           </li>
         </ul>
@@ -105,6 +110,7 @@ const Reports = () => {
             setAlertText={setAlertText}></HonorsReport>
         )}
       </div>
+      </span>
     );
   }
 };
