@@ -528,7 +528,9 @@ function Manager() {
     setLoad(true);
   }
 
-  // calls the correct function to submit the data from the modal.
+  /**
+   * Calls the correct function to submit the data from the modal.
+   */
   function submitModal() {
     if (showAddIngredientModal) {
       addIngredient();
