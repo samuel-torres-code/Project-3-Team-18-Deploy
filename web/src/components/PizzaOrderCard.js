@@ -2,9 +2,20 @@ import React from "react";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 
+/**
+ * Converts camelCase to spaced string
+ * @param {string} str 
+ * @returns 
+ */
 const convertWord = (str) => {
     return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
 }
+
+/**
+ * Contains a div that displays a list of ingredients in a button group
+ * @param {Object} param0 Object containing all the dependencies
+ * @returns 
+ */
 const IngredientSelectGroup = ({ width, ingredients, handleChange, value, disabled }) => {
   return (
     <div className={`col-lg-${width} col-md-${width+1} text-center`}>
@@ -36,6 +47,11 @@ const IngredientSelectGroup = ({ width, ingredients, handleChange, value, disabl
   );
 };
 
+/**
+ * Creates a card for the Server that displays ingredient options and lets you edit a pizza
+ * @param {Object} param0 Object containing all the dependencies for the component
+ * @returns a formatted div containing all the ingredient selectors for a pizza
+ */
 const PizzaOrderCard = ({
   ingredients_by_type,
   value,

@@ -1,3 +1,8 @@
+/**
+ * Display a card containing buttons for selecting a seasonal item
+ * @param {Object} param0 object containing necessary dependencies from Server
+ * @returns a formatted bootstrap card
+ */
 const SeasonalItemCard = ({handleAddSeasonalItem,seasonal_item_types,disabled}) => {
     return (
         <span className='translate'>
