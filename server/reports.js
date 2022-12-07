@@ -23,6 +23,8 @@ router.get("/", function (req, res) {
 });
 
 /**Gets sales report information
+ * @function
+ * @name api/reports/sales
  * @param req -- start and end time for the sales period
  * @param res -- JSON that contains list of items with total sales for that item within that time.
  */
@@ -112,7 +114,9 @@ router.post("/sales", async function (req, res) {
 });
 
 /**Gets information for excess report
- * @param req -- includes start_time for the excess report
+ * @function
+ * @name api/reports/excess
+* @param req -- includes start_time for the excess report
  * @param res -- list of ingredients, containing ingredient_name, stock, percentage used, and fill level
  *                for ingredients in excess.
  */
@@ -172,7 +176,9 @@ router.post("/excess", async function (req, res) {
 });
 
 /** Get restock report information
- * @param res -- empty
+ * @function
+ * @name api/reports/restock
+* @param res -- empty
  * @param req -- list of ingredients under their fill level, including
  *                ingredient_name, fill_level, inventory, and percentage for ingredients.
  */
@@ -202,6 +208,8 @@ router.get("/restock", async function (req, res) {
 });
 
 /**Restocks all ingredients to fill level if under it.
+ * @function
+ * @name api/reports/restock_all
  * @param req -- empty
  * @param res -- empty
  */
@@ -217,7 +225,10 @@ router.get("/restock_all", function (req, res) {
     res.send({ ingredients: q_resp });
   });
 });
+
 /**Adds seasonal item to db
+ * @function
+ * @name api/reports/add_seasonal_item
  * @param req -- includes name, ingredients, and price of new item
  * @param res -- empty
  */
@@ -250,6 +261,8 @@ router.post("/add_seasonal_item", async function (req, res) {
   res.send({});
 });
 /**Remove seasonal item from the menu
+ * @function
+ * @name api/remove_seasonal_item
  * @param req -- list of items to remove under "items"
  * @param res -- empty
  */
@@ -264,6 +277,8 @@ router.post("/remove_seasonal_item", function (req, res) {
 });
 
 /**Gets honors information -- sales by employee over a date range
+ * @function
+ * @name api/report/honors
  * @param req -- start_time, end_time for date range
  * @param response -- list of employees, including id, name, and sales.
  */
