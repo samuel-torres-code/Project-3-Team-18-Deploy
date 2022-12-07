@@ -38,6 +38,7 @@ function Manager() {
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
   const [loading, setLoading] = useState(true);
+  const [load, setLoad] = useState(false);
 
   const protectedIngredients = [
     "House Blend",
@@ -86,8 +87,16 @@ function Manager() {
   });
 
   useEffect(() => {
-    loadIngredients();
-    loadMenuItems();
+    Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+      setIngredientData(values[0]);
+
+      var options = [];
+      values[0].forEach((element, index) =>
+        options.push({ name: element.name, id: index })
+      );
+      setMultiselectOptions(options);
+      setMenuItemData(values[1]);
+    });
     if (loading) {
       setTimeout(() => {
         setLoading(false);
@@ -96,34 +105,28 @@ function Manager() {
   }, []);
 
   useEffect(() => {
-    loadIngredients();
-    loadMenuItems();
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    loadIngredients();
-    loadMenuItems();
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    loadIngredients();
-    loadMenuItems();
-  }, [
-    selectedIngredient,
-    selectedMenuItem,
-    newIngredientName,
-    newIngredientType,
-    fillLevel,
-    newItemName,
-    newItemPrice,
-    newItemIngredients,
-  ]);
+    console.log("Hit");
+    if (load) {
+      console.log("Loading");
+      setLoad(false);
+      Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+        setIngredientData(values[0]);
+
+        var options = [];
+        values[0].forEach((element, index) =>
+          options.push({ name: element.name, id: index })
+        );
+        setMultiselectOptions(options);
+        setMenuItemData(values[1]);
+      });
+    }
+  }, [load]);
 
   /**
    * Loads ingredients from database using api call
    */
   async function loadIngredients() {
-    await client.get("/api/manager/load_ingredients").then((res) => {
+    return client.get("/api/manager/load_ingredients").then((res) => {
       var ingredients = [];
       var options = [];
       for (var i = 0; i < res.data.length; i++) {
@@ -148,8 +151,7 @@ function Manager() {
       ingredients.forEach((element, index) =>
         options.push({ name: element.name, id: index })
       );
-      setIngredientData(ingredients);
-      setMultiselectOptions(options);
+      return ingredients;
     });
   }
 
@@ -157,7 +159,7 @@ function Manager() {
    * Loads menu items from database using an api call.
    */
   async function loadMenuItems() {
-    await client.get("/api/manager/load_prices").then((res) => {
+    return client.get("/api/manager/load_prices").then((res) => {
       const items = [];
       for (var i = 0; i < res.data["pizza_types"].length; i++) {
         items.push({
@@ -191,7 +193,7 @@ function Manager() {
         if (nameA > nameB) return 1;
         return 0;
       });
-      setMenuItemData(items);
+      return items;
     });
   }
 
@@ -291,6 +293,7 @@ function Manager() {
       setAddAsManager(false);
       setNewEmployeeName("");
       setNewEmployeePassword("");
+      setLoad(true);
     }
   }
 
@@ -311,11 +314,7 @@ function Manager() {
     client.post("/api/manager/remove_ingredient", {
       ingredients: [ingredient_name],
     });
-    loadIngredients();
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    loadIngredients();
+    setLoad(true);
   }
 
   /**
@@ -343,11 +342,7 @@ function Manager() {
       items: [item_name],
     });
     setSelectedMenuItem("");
-    loadMenuItems();
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-    loadMenuItems();
+    setLoad(true);
   }
 
   /**
@@ -402,6 +397,7 @@ function Manager() {
       setNewIngredientName("");
       setNewIngredientType("");
       setFillLevel("");
+      setLoad(true);
     }
   }
 
@@ -409,42 +405,39 @@ function Manager() {
    * Updates database with new information for the selected ingredient.
    */
   function editIngredient() {
-    if (restockAmount !== "") {
-      if (isNaN(restockAmount)) {
-        setAlertText(
-          "Invalid Input for Restock Ingredient: Restock amount is NaN."
-        );
-        setShowAlert(true);
-      } else {
-        client.post("/api/manager/restock", {
-          ingredients: [selectedIngredient],
-          amount: restockAmount,
-        });
-        setRestockAmount("");
-        loadIngredients();
-      }
-    } else {
+    if (restockAmount === "" && fillLevel === "") {
       setAlertText(
         "Invalid Input for Restock Ingredient: Restock amount is null."
       );
       setShowAlert(true);
-    }
-    if (fillLevel !== "") {
-      if (isNaN(fillLevel)) {
-        setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
-        setShowAlert(true);
-      } else {
-        client.post("/api/manager/change_fill_level", {
-          ingredient_name: selectedIngredient,
-          fill_level: fillLevel,
-        });
-        setFillLevel("");
-        setSelectedIngredient("");
-        loadIngredients();
-      }
+    } else if (isNaN(restockAmount) && fillLevel === "") {
+      setAlertText(
+        "Invalid Input for Restock Ingredient: Restock amount is NaN."
+      );
+      setShowAlert(true);
     } else {
+      client.post("/api/manager/restock", {
+        ingredients: [selectedIngredient],
+        amount: restockAmount,
+      });
+      setRestockAmount("");
+      setLoad(true);
+    }
+
+    if (fillLevel === "" && restockAmount === "") {
       setAlertText("Invalid Input for Fill Level: Fill Level is null.");
       setShowAlert(true);
+    } else if (isNaN(fillLevel) && restockAmount === "") {
+      setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
+      setShowAlert(true);
+    } else {
+      client.post("/api/manager/change_fill_level", {
+        ingredient_name: selectedIngredient,
+        fill_level: fillLevel,
+      });
+      setFillLevel("");
+      setSelectedIngredient("");
+      setLoad(true);
     }
   }
 
@@ -467,7 +460,7 @@ function Manager() {
         menu_items: [selectedMenuItem],
         new_price: newItemPrice,
       });
-      loadMenuItems();
+      setLoad(true);
       setNewItemPrice("");
     }
   }
@@ -501,7 +494,7 @@ function Manager() {
         ingredients: new_ingredients,
         price: newItemPrice,
       });
-      loadMenuItems();
+      setLoad(true);
       setNewItemName("");
       setNewItemPrice("");
     }
@@ -526,6 +519,7 @@ function Manager() {
     setNewItemPrice("");
     setNewItemIngredients([]);
     setSelectedMenuItem("");
+    setLoad(true);
   }
 
   // calls the correct function to submit the data from the modal.
