@@ -73,7 +73,10 @@ const Register = () => {
     setConfPass('');
   };
 
-  //take care of the registration
+  /**
+   * Take care of the user registration - new account if email not in use, otherwise flag the customer they already have an account
+   * @param {event} event 
+   */
   const registerRegistration = async (event) => {
     event.preventDefault();
     const registerData = await client.post('/api/register',{
@@ -100,7 +103,6 @@ const Register = () => {
     });
     reg = "b";
     window.location.reload();
-    //clearValues();
   };
 
 
