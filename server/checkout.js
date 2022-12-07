@@ -14,6 +14,8 @@ const pool = new Pool({
 });
 
 /**Performs a checkout
+ * @function
+ * @name api/checkout
  * @param req -- JSON -- "order" contains employee ID and customer name.
  *                       "pizzas", "drinks", and "seasonal_items" contain
  *                          items ordered, including price for all, and 

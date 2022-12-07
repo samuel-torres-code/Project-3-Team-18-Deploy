@@ -2,7 +2,8 @@ const { response } = require('express');
 const { Pool } = require('pg');
 const dotenv = require('dotenv').config();
 
-var express = require('express');
+const express = require('express');
+
 var router = express.Router();
 module.exports = router;
 var data = {};
@@ -20,9 +21,11 @@ router.get('/', function(req, res){
     res.send('default route /api/server');
 });
 
-/**Call to get all the ingredients for the manager table
- * @param req -- blank
- * @param res -- JSON that maps ingredient type names to a list of ingredient
+/** Call to get all the ingredients for the manager table
+ * @function
+ * @name api/server/ingredients
+ * @param {*} req -- blank
+ * @param {*} res -- JSON that maps ingredient type names to a list of ingredient
  *              objects that have that type. Each ingredient contains it's
  *              id, type, and name
  */
@@ -60,6 +63,8 @@ router.get('/ingredients', function(req, res) {
     
 });
 /**Returns all menu items.
+ * @function
+ * @name api/server/types
  * @param req -- blank
  * @param res -- JSON mapping pizza_types, drink_types, and seasonal_item_types, 
  *              to a list of items with that type. Each item includes it's type
