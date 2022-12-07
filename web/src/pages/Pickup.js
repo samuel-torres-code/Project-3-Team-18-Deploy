@@ -51,7 +51,7 @@ const Pickup = () => {
           <div className="feature col">
 
           <p>
-          <span className='translate'>Give your order number(or name) at the specified time to pickup your order!</span>
+          <span className='translate'>Give your order number (or name) at the specified time to pickup your order!</span>
           </p>
         </div>
         <div>
