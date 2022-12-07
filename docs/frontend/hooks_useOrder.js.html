@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: hooks/useOrder.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: hooks/useOrder.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState, useEffect } from "react";
+
+// Example JSON Structure
+// {
+//     "order": {
+//         "emp_id": "-1",
+//         "cust_name": "Sam Torres"
+//     },
+//     "pizzas":[
+//         {
+//             "pizza_type": "cheese",
+//             "pizza_price": "6.45",
+//             "ingredients":[
+//                 { "ingredient_id" : "4" },
+//                 { "ingredient_id" : "36" },
+//                 { "ingredient_id" : "18" },
+//             ]
+//         },
+//         ...
+//     ],
+//     "drinks": [
+//         {
+//             "drink_type": "Fountain",
+//             "drink_price": "2.49",
+//         },
+//         {
+//             "drink_type": "Bottled",
+//             "drink_price": "2.49",
+//         },
+//         ...
+//     ],
+//     "seasonal_items": [
+//         {
+//             "item_name": "Chicken Wings",
+//             "item_price": "12.99",
+//         },
+//         {
+//             "item_name": "Lobster Mac",
+//             "item_price": "8.49",
+//         },
+//         ...
+//     ]
+// }
+
+const useOrder = () => {
+  const [orderLoading, setOrderLoading] = useState(true);
+  const [orderError, setOrderError] = useState(null);
+  const [order, setOrder] = useState({
+    // order_info:{
+    //     emp_id: "-1",
+    //     cust_name: ""
+    // },
+    // pizzas:[],
+    // drinks:[]
+  });
+  const [pizzas, setPizzas] = useState([]);
+  const [drinks, setDrinks] = useState([]);
+  const [seasonalItems, setSeasonalItems] = useState([]);
+
+  useEffect(() => {
+    loadStorage();
+  }, []);
+
+  useEffect(() => {
+    if (!orderLoading) {
+      updateStorage();
+    }
+  }, [order]);
+
+  useEffect(() => {
+    if (!orderLoading) {
+      setOrder({
+        order_info: { ...order.order_info },
+        pizzas: pizzas,
+        drinks: drinks,
+        seasonal_items: seasonalItems,
+      });
+    }
+  }, [pizzas, drinks, seasonalItems]);
+
+  /**
+   * Updates the local storage for the order with the state variable
+   */
+  const updateStorage = () => {
+    try {
+      
+      localStorage.setItem("order", JSON.stringify(order));
+    } catch (e) {
+      console.log("Trouble updating localStorage");
+      console.log(e);
+    }
+  };
+
+  /**
+   * Loads the local storage order info into the state variable
+   */
+  const loadStorage = () => {
+    if (localStorage.getItem("order") == null) {
+      setOrder({
+        order_info: {
+          emp_id: "-1",
+          cust_name: "",
+        },
+        pizzas: [],
+        drinks: [],
+        seasonal_items: [],
+      });
+    } else {
+      const orderJSON = JSON.parse(localStorage.getItem("order"));
+      setOrder(orderJSON);
+      setPizzas(orderJSON.pizzas);
+      setSeasonalItems(orderJSON.seasonal_items);
+      setDrinks(orderJSON.drinks);
+    }
+
+    setOrderLoading(false);
+  };
+
+  /**
+   * Updates the order state variables
+   * @param {string} name name for the order
+   */
+  const setOrderName = (name) => {
+    setOrder({
+      order_info: {
+        ...order.order_info,
+        cust_name: name,
+      },
+      pizzas: [...order.pizzas],
+      drinks: [...order.drinks],
+      seasonal_items: [...order.seasonal_items],
+    });
+  };
+
+  /**
+   * resets the order state variable
+   */
+  const clearOrder = () => {
+    setOrder({
+      order_info: {
+        ...order.order_info,
+        cust_name: order.order_info.cust_name,
+      },
+      pizzas: [],
+      drinks: [],
+      seasonal_items: [],
+    });
+  };
+
+  const updatePizza = (updatedPizza, index) => {
+    if (
+      updatedPizza != null &amp;&amp;
+      typeof updatedPizza !== "undefined" &amp;&amp;
+      index &lt; pizzas.length
+    ) {
+    const newPizzas = order.pizzas.map((currPizza, i) => Number(index) === i ? updatedPizza : currPizza)
+
+      setPizzas(
+        newPizzas
+      );
+    }
+  };
+
+  /**
+   * Updates the order state variable to update the pizza at given index with the given one
+   * @param {Pizza} updatedPizza object containing pizza attributes
+   * @param {Number} index index of pizza to update
+   */
+  const updatePizzaAsync = async (updatedPizza, index) => {
+    if (
+      updatedPizza != null &amp;&amp;
+      typeof updatedPizza !== "undefined" &amp;&amp;
+      index &lt; pizzas.length
+    ) {
+    const newPizzas = order.pizzas.map((currPizza, i) => Number(index) === i ? updatedPizza : currPizza)
+
+      setPizzas(
+        newPizzas
+      );
+    }
+  };
+
+  /**
+   * Adds the given pizza object to the state variable
+   * @param {Pizza} pizza Object containing pizza attributes
+   * @returns returns the new index of the pizza
+   */
+  const addNewPizza = (pizza = {
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  }) => {
+    setPizzas([
+      ...order.pizzas,
+      pizza,
+    ]);
+    return pizzas.length;
+  };
+
+  /**
+   * Adds the given pizza object to the state variable asynchronously
+   * @param {Pizza} pizza Object containing pizza attributes
+   * @returns returns the new index of the pizza 
+   */
+  const addNewPizzaAsync = async (pizza = {
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  }) => {
+    setPizzas([
+      ...order.pizzas,
+      pizza,
+    ]);
+    return pizzas.length;
+  };
+
+  /**
+   * Deletes the pizza at the given index
+   * @param {Number} index index of pizza to delete
+   */
+  const deletePizza = (index) => {
+    setPizzas(order.pizzas.filter((pizza, i) => i !== index));
+  };
+
+  /**
+   * Adds a given seasonal item to state
+   * @param {Item} item Object containing seasonal item attributes
+   */
+  const addItem = (item) => {
+    setSeasonalItems([
+      ...order.seasonal_items,
+      {
+        item_name: item.item_name,
+        item_price: item.item_price,
+      },
+    ]);
+  };
+
+  /**
+   * deletes the seasonal item at the given index
+   * @param {Number} index index of seasonal item to delete
+   */
+  const deleteItem = (index) => {
+    setSeasonalItems(order.seasonal_items.filter((item, i) => i !== index));
+  };
+
+  /**
+   * Adds the given drink to state
+   * @param {Drink} drink object containing the attributes of a drink
+   */
+  const addDrink = (drink) => {
+    setDrinks([
+      ...order.drinks,
+      {
+        drink_type: drink.drink_type,
+        drink_price: drink.drink_price,
+      },
+    ]);
+  };
+
+  /**
+   * Deletes the drink at the given index from state
+   * @param {Number} index index of drink to delete
+   */
+  const deleteDrink = (index) => {
+    setDrinks(order.drinks.filter((item, i) => i !== index));
+  };
+
+  return {
+    orderLoading,
+    orderError,
+    order,
+    setOrderName,
+    addNewPizza,
+    updatePizza,
+    addNewPizzaAsync,
+    updatePizzaAsync,
+    deletePizza,
+    addDrink,
+    addItem,
+    deleteItem,
+    deleteDrink,
+    clearOrder,
+  };
+};
+
+export default useOrder;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

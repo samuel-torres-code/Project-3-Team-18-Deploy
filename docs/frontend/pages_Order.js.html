@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Order.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Order.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useEffect, useState } from "react";
+import AddItemCard from "../components/AddItemCard";
+import UserOrderCard from "../components/UserOrderCard";
+import { postOrderAsync } from "../api/ServerAPI";
+import useMenu from "../hooks/useMenu";
+import useOrder from "../hooks/useOrder";
+import Alert from "react-bootstrap/Alert";
+import { useNavigate } from "react-router-dom";
+
+const Order = () => {
+  const [loadMenu, setLoadMenu] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
+
+  const {
+    orderLoading,
+    orderError,
+    order,
+    setOrderName,
+    addNewPizza,
+    deletePizza,
+    addDrink,
+    addItem,
+    deleteItem,
+    deleteDrink,
+    clearOrder,
+  } = useOrder([]);
+  const { menuLoading, menuError, itemTypes, ingredients_by_type } = useMenu(
+    []
+  );
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!orderLoading) {
+      if (localStorage.getItem("user") !== null) {
+        setOrderName(localStorage.getItem("user"));
+      } else {
+        setOrderName("Guest");
+      }
+    }
+  }, [orderLoading]);
+
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
+  function handleSwitchTab(event) {
+    if (event.target.value === "Menu") {
+      setLoadMenu(true);
+    } else if (event.target.value === "Cart") {
+      setLoadMenu(false);
+    }
+  }
+
+  /**
+   * Redirects user to the pizza route to add a pizza.
+   */
+  function handleAddPizzaClick() {
+    addNewPizza();
+    navigate(`/pizza`);
+  }
+
+  /**
+   * Redirects user to the pizza route with a specified index of pizza to edit.
+   * @param {int} index
+   */
+  function handleEditPizzaClick(index) {
+    navigate(`/pizza?index=${index}`);
+    console.log("Edit Pizza " + index);
+  }
+
+  /**
+   * Adds a drink to the order and alerts the user.
+   * @param {event} event
+   */
+  function handleAddDrinkClick(event) {
+    addDrink(
+      itemTypes.drink_types.find(
+        (drink) => drink.drink_type === event.target.value
+      )
+    );
+
+    setAlertText(`Added ${event.target.value} Drink to Order!`);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  }
+
+  /**
+   * Adds an item to the order and alerts the user.
+   * @param {event} event
+   */
+  function handleAddItemClick(event) {
+    addItem(
+      itemTypes.seasonal_item_types.find(
+        (item) => item.item_name === event.target.dataset.user
+      )
+    );
+
+    setAlertText(`Added ${event.target.dataset.user} to Order!`);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000);
+  }
+
+  /**
+   * Checks the user out and redirects them to the pickup order page.
+   */
+  function handleCheckout() {
+    if (
+      order.drinks.length > 0 ||
+      order.pizzas.length > 0 ||
+      order.seasonal_items.length > 0
+    ) {
+      postOrderAsync(order).then(() => {
+        localStorage.removeItem("order");
+        setTimeout(() => {
+          navigate("/pickup");
+        }, 50);
+      });
+    } else {
+      console.error("No items selected in order");
+    }
+  }
+
+  if (menuError || orderError) {
+    return (
+      &lt;div>
+        &lt;p>Menu Error: {menuError}&lt;/p>
+        &lt;p>Order Error: {orderError}&lt;/p>
+      &lt;/div>
+    );
+  } else if (menuLoading || orderLoading) {
+    return (
+      &lt;div
+        style={{
+          width: "100vw",
+          height: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        &lt;img
+          src={require("../loader_pizza.gif")}
+          alt="Loading"
+          style={{ width: "15vw", height: "auto" }}
+        />
+      &lt;/div>
+    );
+  } else {
+    return (
+      &lt;div className="container">
+        &lt;ul className="nav nav-tabs justify-content-center my-3">
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadMenu
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Menu"
+              aria-current="page"
+              onClick={handleSwitchTab}>
+              &lt;span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}
+              >
+                Menu
+              &lt;/span>
+            &lt;/button>
+          &lt;/li>
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadMenu
+                  ? "nav-link fw-bolder fs-5 link-secondary"
+                  : "nav-link fw-bolder fs-5 active link-primary"
+              }
+              value="Cart"
+              onClick={handleSwitchTab}>
+              &lt;span
+                className="translate mx-3"
+                style={{ pointerEvents: "none" }}
+              >
+                Current Order
+              &lt;/span>
+            &lt;/button>
+          &lt;/li>
+        &lt;/ul>
+        {showAlert ? (
+          &lt;Alert
+            variant="primary"
+            onClose={() => setShowAlert(false)}
+            dismissible
+          >
+            {alertText}
+          &lt;/Alert>
+        ) : (
+          // add spacing for alert
+          &lt;div style={{ height: "58px" }}>&lt;/div>
+        )}
+        {loadMenu ? (
+          &lt;AddItemCard
+            seasonalItems={itemTypes.seasonal_item_types}
+            drinkFunction={handleAddDrinkClick}
+            itemButtonFunction={handleAddItemClick}
+            addPizzaFunction={handleAddPizzaClick}
+          >&lt;/AddItemCard>
+        ) : (
+          &lt;UserOrderCard
+            drinks={order.drinks}
+            pizzas={order.pizzas}
+            seasonal_items={order.seasonal_items}
+            deleteDrink={deleteDrink}
+            deleteItem={deleteItem}
+            deletePizza={deletePizza}
+            editPizza={handleEditPizzaClick}
+            handleCheckout={handleCheckout}
+            handleResetPage={clearOrder}
+            ingredients_by_type={ingredients_by_type}
+          >&lt;/UserOrderCard>
+        )}
+      &lt;/div>
+    );
+  }
+};
+
+export default Order;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

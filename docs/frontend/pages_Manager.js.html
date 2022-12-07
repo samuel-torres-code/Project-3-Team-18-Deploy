@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Manager.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Manager.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState, useEffect } from "react";
+import axios from "axios";
+import { API_URL } from "../API";
+import IngredientTable from "../components/IngredientTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import Multiselect from "multiselect-react-dropdown";
+import Alert from "react-bootstrap/Alert";
+import "./Manager.css";
+
+function Manager() {
+  const [ingredientData, setIngredientData] = useState([]);
+  const [menuItemData, setMenuItemData] = useState([]);
+  const [multiselectOptions, setMultiselectOptions] = useState([]);
+
+  const [selectedIngredient, setSelectedIngredient] = useState("");
+  const [selectedMenuItem, setSelectedMenuItem] = useState("");
+  const [showAddIngredientModal, setShowAddIngredientModal] = useState(false);
+  const [showEditIngredientModal, setShowEditIngredientModal] = useState(false);
+  const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
+  const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
+
+  const [restockAmount, setRestockAmount] = useState("");
+  const [fillLevel, setFillLevel] = useState("");
+  const [newIngredientName, setNewIngredientName] = useState("");
+  const [newIngredientType, setNewIngredientType] = useState("");
+  const [newItemName, setNewItemName] = useState("");
+  const [newItemPrice, setNewItemPrice] = useState("");
+  const [newItemIngredients, setNewItemIngredients] = useState([]);
+
+  const [addEmployeeName, setNewEmployeeName] = useState("");
+  const [addEmployeePassword, setNewEmployeePassword] = useState("");
+  const [addAsManager, setAddAsManager] = useState(false);
+  const [addedEmployeeDatabase, setAddedEmployeeDatabase] = useState(null);
+  const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
+
+  const [loading, setLoading] = useState(true);
+  const [load, setLoad] = useState(false);
+
+  const protectedIngredients = [
+    "House Blend",
+    "Mozzarella",
+    "Parmesan",
+    "Ricotta",
+    "Vegan",
+    "Dough",
+    "Balsamic Glaze",
+    "Basil Pesto",
+    "BBQ Sauce",
+    "Olive Oil",
+    "Oregano",
+    "Sriracha",
+    "Applewood Bacon",
+    "Black Forest Ham",
+    "Italian Sausage",
+    "Meatball",
+    "Pepperoni",
+    "Salami",
+    "Smoked Chicken",
+    "Boxes",
+    "Cups",
+    "Napkins",
+    "Black Olives",
+    "Cherry Tomato",
+    "Green Peppers",
+    "Jalapenos",
+    "Kalmata Olives",
+    "Red Onions",
+    "Red Peppers",
+    "Spinach",
+    "Broccolini",
+    "Caramelized Onions",
+    "Garlic",
+    "Mixed Mushrooms",
+    "Red Potatoes",
+    "Pesto",
+    "Red",
+    "White",
+    "Zesty Red",
+  ];
+
+  const client = axios.create({
+    baseURL: API_URL,
+  });
+
+  useEffect(() => {
+    Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+      setIngredientData(values[0]);
+
+      var options = [];
+      values[0].forEach((element, index) =>
+        options.push({ name: element.name, id: index })
+      );
+      setMultiselectOptions(options);
+      setMenuItemData(values[1]);
+    });
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (load) {
+      Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+        // setLoad(false);
+        setIngredientData(values[0]);
+
+        var options = [];
+        values[0].forEach((element, index) =>
+          options.push({ name: element.name, id: index })
+        );
+        setMultiselectOptions(options);
+
+        setMenuItemData(values[1]);
+        setTimeout(() => {
+          setLoad(false);
+        }, 1000);
+      });
+    }
+  }, [load]);
+
+  /**
+   * Loads ingredients from database using api call
+   */
+  async function loadIngredients() {
+    return client.get("/api/manager/load_ingredients").then((res) => {
+      var ingredients = [];
+      var options = [];
+      for (var i = 0; i &lt; res.data.length; i++) {
+        ingredients.push({
+          name: res.data[i][0],
+          type: res.data[i][1],
+          inventory: res.data[i][2],
+          fill_level: res.data[i][3],
+        });
+      }
+      ingredients.sort((a, b) => {
+        const typeA = a.type.toUpperCase();
+        const typeB = b.type.toUpperCase();
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (typeA &lt; typeB) return -1;
+        if (typeA > typeB) return 1;
+        if (nameA &lt; nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+      ingredients.forEach((element, index) =>
+        options.push({ name: element.name, id: index })
+      );
+      return ingredients;
+    });
+  }
+
+  /**
+   * Loads menu items from database using an api call.
+   */
+  async function loadMenuItems() {
+    return client.get("/api/manager/load_prices").then((res) => {
+      const items = [];
+      for (var i = 0; i &lt; res.data["pizza_types"].length; i++) {
+        items.push({
+          name: res.data["pizza_types"][i]["pizza_type"],
+          price: res.data["pizza_types"][i]["pizza_price"],
+          type: "Pizza Type",
+        });
+      }
+      for (i = 0; i &lt; res.data["drink_types"].length; i++) {
+        items.push({
+          name: res.data["drink_types"][i]["drink_type"],
+          price: res.data["drink_types"][i]["drink_price"],
+          type: "Drink Type",
+        });
+      }
+      for (i = 0; i &lt; res.data["seasonal_items"].length; i++) {
+        items.push({
+          name: res.data["seasonal_items"][i]["item_name"],
+          price: res.data["seasonal_items"][i]["item_price"],
+          type: "Seasonal Item",
+        });
+      }
+      items.sort((a, b) => {
+        const typeA = a.type.toUpperCase();
+        const typeB = b.type.toUpperCase();
+        const nameA = a.name.toUpperCase();
+        const nameB = b.name.toUpperCase();
+        if (typeA &lt; typeB) return 1;
+        if (typeA > typeB) return -1;
+        if (nameA &lt; nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+      return items;
+    });
+  }
+
+  /**
+   * Changes the state variable restock amount with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleRestockChange(event) {
+    setRestockAmount(event.target.value);
+  }
+
+  /**
+   * Changes the state variable fill_level with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleFillLevelChange(event) {
+    setFillLevel(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new ingredient name with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleAddNameChange(event) {
+    setNewIngredientName(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new ingredient type with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleAddTypeChange(event) {
+    setNewIngredientType(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new item name with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleNewItemNameChange(event) {
+    setNewItemName(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new item price with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleNewItemPriceChange(event) {
+    setNewItemPrice(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new employee name with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleAddEmployeeName(event) {
+    setNewEmployeeName(event.target.value);
+  }
+
+  /**
+   * Changes the state variable new employee passcode with the targeted value from the event.
+   * @param {event} event
+   */
+  function handleAddEmployeePassword(event) {
+    setNewEmployeePassword(event.target.value);
+  }
+
+  /**
+   * Changes the state variable add as manager with the targeted value from the event.
+   */
+  function handleAddAsManagerChange() {
+    setAddAsManager(!addAsManager);
+  }
+
+  /**
+   * Attempts to add a new employee to the database.
+   */
+  function handleAddNewEmployee() {
+    if (addEmployeeName.length === 0) {
+      console.error("Invalid Input for Employee Name: No name is given.");
+    } else if (isNaN(addEmployeePassword)) {
+      console.error("Invalid Input for Employee Password: Password is NaN.");
+    } else {
+      client
+        .post("/api/manager/addEmployee", {
+          emp: addEmployeeName,
+          pass: addEmployeePassword,
+          status: addAsManager,
+        })
+        .then((res) => {
+          if (res.data === true) {
+            setAddedEmployeeDatabase(true);
+          } else {
+            setAddedEmployeeDatabase(false);
+          }
+        });
+      setAddAsManager(false);
+      setNewEmployeeName("");
+      setNewEmployeePassword("");
+      setLoad(true);
+    }
+  }
+
+  /**
+   * Sets the selected ingredient and sets the flag to show the edit ingredient modal.
+   * @param {string} ingredient_name
+   */
+  function handleEditIngredientClick(ingredient_name) {
+    setSelectedIngredient(ingredient_name);
+    setShowEditIngredientModal(true);
+  }
+
+  /**
+   * Attempts to remove an ingredient from the database.
+   * @param {string} ingredient_name
+   */
+  function handleDeleteIngredientClick(ingredient_name) {
+    client.post("/api/manager/remove_ingredient", {
+      ingredients: [ingredient_name],
+    });
+    setLoad(true);
+  }
+
+  /**
+   * Sets the flag to show the add ingredient modal.
+   */
+  function handleAddIngredientClick() {
+    setShowAddIngredientModal(true);
+  }
+
+  /**
+   * Sets the selected menu item and sets the flag to show the edit item menu modal.
+   * @param {string} item_name
+   */
+  function handleEditMenuItemClick(item_name) {
+    setSelectedMenuItem(item_name);
+    setShowEditMenuItemModal(true);
+  }
+
+  /**
+   * Attempts to delete a menu item from the database.
+   * @param {string} item_name
+   */
+  function handleDeleteMenuItemClick(item_name) {
+    client.post("/api/reports/remove_seasonal_item", {
+      items: [item_name],
+    });
+    setSelectedMenuItem("");
+    setLoad(true);
+  }
+
+  /**
+   * Sets the flag to show the add menu item modal.
+   */
+  function handleAddMenuItemClick() {
+    setShowAddMenuItemModal(true);
+  }
+
+  /**
+   * Adds selected ingredient to the list of new item ingredients.
+   * @param {array[ingredients]} selectedList
+   * @param {string} selectedItem
+   */
+  function handleAddNewItemIngredient(selectedList, selectedItem) {
+    setNewItemIngredients(newItemIngredients.concat(selectedItem));
+  }
+
+  /**
+   * Removes the selected ingredient from the list of new item ingredients.
+   * @param {array[ingredients]} selectedList
+   * @param {string} removedItem
+   */
+  function handleRemoveNewItemIngredient(selectedList, removedItem) {
+    setNewItemIngredients(selectedList);
+  }
+
+  /**
+   * Adds new ingredient to database.
+   */
+  function addIngredient() {
+    if (newIngredientName === "") {
+      setAlertText(
+        "Invalid Input for Add Ingredient: Ingredient name is null."
+      );
+      setShowAlert(true);
+    } else if (newIngredientType === "") {
+      setAlertText(
+        "Invalid Input for Add Ingredient: Ingredient type is null."
+      );
+      setShowAlert(true);
+    } else if (fillLevel === "") {
+      setAlertText("Invalid Input for Add Ingredient: Fill level is null.");
+      setShowAlert(true);
+    } else {
+      client.post("/api/manager/add_ingredient", {
+        ingredient_name: newIngredientName,
+        ingredient_type: newIngredientType,
+        fill_level: fillLevel,
+      });
+      loadIngredients();
+      setNewIngredientName("");
+      setNewIngredientType("");
+      setFillLevel("");
+      setLoad(true);
+    }
+  }
+
+  /**
+   * Updates database with new information for the selected ingredient.
+   */
+  function editIngredient() {
+    if (restockAmount === "" &amp;&amp; fillLevel === "") {
+      setAlertText(
+        "Invalid Input for Restock Ingredient: Restock amount is null."
+      );
+      setShowAlert(true);
+      return;
+    } else if (isNaN(restockAmount) &amp;&amp; fillLevel === "") {
+      setAlertText(
+        "Invalid Input for Restock Ingredient: Restock amount is NaN."
+      );
+      setShowAlert(true);
+      return;
+    } else {
+      client.post("/api/manager/restock", {
+        ingredients: [selectedIngredient],
+        amount: restockAmount,
+      });
+      setRestockAmount("");
+      setLoad(true);
+    }
+
+    if (fillLevel === "" &amp;&amp; restockAmount === "") {
+      setAlertText("Invalid Input for Fill Level: Fill Level is null.");
+      setShowAlert(true);
+      return;
+    } else if (isNaN(fillLevel) &amp;&amp; restockAmount === "") {
+      setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
+      setShowAlert(true);
+      return;
+    } else {
+      client.post("/api/manager/change_fill_level", {
+        ingredient_name: selectedIngredient,
+        fill_level: fillLevel,
+      });
+      setFillLevel("");
+      setSelectedIngredient("");
+      setLoad(true);
+    }
+  }
+
+  /**
+   * Updates database with new information for the selected menu item
+   */
+  function editMenuItem() {
+    if (newItemPrice === "") {
+      setAlertText(
+        "Invalid Input for Update Menu Item Price: New item price is null."
+      );
+      setShowAlert(true);
+    } else if (isNaN(newItemPrice)) {
+      setAlertText(
+        "Invalid Input for Update Menu Item Price: New item price is NaN."
+      );
+      setShowAlert(true);
+    } else {
+      client.post("/api/manager/update_menu_items", {
+        menu_items: [selectedMenuItem],
+        new_price: newItemPrice,
+      });
+      setLoad(true);
+      setNewItemPrice("");
+    }
+  }
+
+  /**
+   * Adds new menu item to database.
+   */
+  function addMenuItem() {
+    if (newItemName === "") {
+      setAlertText(
+        "Invalid Input for Add Seasonal Item: Seasonal item name is null."
+      );
+      setShowAlert(true);
+    } else if (newItemPrice === "") {
+      setAlertText(
+        "Invalid Input for Add Seasonal Item: Seasonal item price is null."
+      );
+      setShowAlert(true);
+    } else if (isNaN(newItemPrice)) {
+      setAlertText(
+        "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
+      );
+      setShowAlert(true);
+    } else {
+      var new_ingredients = [];
+      newItemIngredients.forEach((element) =>
+        new_ingredients.push(element.name)
+      );
+      client.post("/api/reports/add_seasonal_item", {
+        item_name: newItemName,
+        ingredients: new_ingredients,
+        price: newItemPrice,
+      });
+      setLoad(true);
+      setNewItemName("");
+      setNewItemPrice("");
+    }
+  }
+
+  /**
+   * Hides modal used to input data to edit or add ingredients and menu items and resets state variables.
+   */
+  function hideModal() {
+    setShowAddIngredientModal(false);
+    setShowEditIngredientModal(false);
+    setShowAddMenuItemModal(false);
+    setShowEditMenuItemModal(false);
+
+    setRestockAmount("");
+    setFillLevel("");
+    setNewIngredientName("");
+    setNewIngredientType("");
+    setSelectedIngredient("");
+
+    setNewItemName("");
+    setNewItemPrice("");
+    setNewItemIngredients([]);
+    setSelectedMenuItem("");
+    setLoad(true);
+  }
+
+  /**
+   * Calls the correct function to submit the data from the modal.
+   */
+  function submitModal() {
+    if (showAddIngredientModal) {
+      addIngredient();
+    } else if (showEditIngredientModal) {
+      editIngredient();
+    } else if (showAddMenuItemModal) {
+      addMenuItem();
+    } else if (showEditMenuItemModal) {
+      editMenuItem();
+    }
+    hideModal();
+  }
+
+  if (condrender === "true") {
+    if (loading) {
+      return (
+        &lt;div
+          style={{
+            width: "100vw",
+            height: "90vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          &lt;img
+            src={require("../loader_pizza.gif")}
+            alt="Loading"
+            style={{ width: "15vw", height: "auto" }}
+          />
+        &lt;/div>
+      );
+    } else {
+      return (
+        &lt;span className="translate">
+          &lt;div className="row w-100 m-0">
+            {showAlert ? (
+              &lt;div>
+                &lt;Alert
+                  className="mt-3 w-50 mx-auto"
+                  style={{ marginBottom: "-2em" }}
+                  variant="primary"
+                  onClose={() => setShowAlert(false)}
+                  dismissible>
+                  {alertText}
+                &lt;/Alert>
+              &lt;/div>
+            ) : (
+              // add spacing for alert
+              &lt;div style={{ height: "2.6em" }}>&lt;/div>
+            )}
+            &lt;div
+              className="modal fade"
+              id="inputModal"
+              data-bs-backdrop="static"
+              data-bs-keyboard="false"
+              tabIndex="-1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              &lt;div className="modal-dialog">
+                &lt;div className="modal-content">
+                  &lt;div className="modal-header">
+                    &lt;h1 className="modal-title fs-5" id="exampleModalLabel">
+                      {showAddIngredientModal &amp;&amp; &lt;p>Add New Ingredient&lt;/p>}
+                      {showEditIngredientModal &amp;&amp; (
+                        &lt;p>Edit Ingredient {selectedIngredient}&lt;/p>
+                      )}
+                      {showAddMenuItemModal &amp;&amp; &lt;p>Add New Seasonal Item&lt;/p>}
+                      {showEditMenuItemModal &amp;&amp; (
+                        &lt;p>Edit Menu Item {selectedMenuItem}&lt;/p>
+                      )}
+                    &lt;/h1>
+                    &lt;button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                      onClick={hideModal}>&lt;/button>
+                  &lt;/div>
+                  &lt;div className="modal-body">
+                    {showEditIngredientModal &amp;&amp; (
+                      &lt;div>
+                        &lt;div className="d-flex justify-content-center">
+                          &lt;p className="mx-auto">Leave blank if no change&lt;/p>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Restock Inventory&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Restock Amount"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={restockAmount}
+                              onChange={handleRestockChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Change Fill Level&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Fill Level"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={fillLevel}
+                              onChange={handleFillLevelChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                      &lt;/div>
+                    )}
+                    {showAddIngredientModal &amp;&amp; (
+                      &lt;div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Ingredient Name&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Name"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={newIngredientName}
+                              onChange={handleAddNameChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Ingredient Type&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;select
+                              className="form-select w-75 mx-2"
+                              onChange={handleAddTypeChange}
+                              defaultValue="">
+                              &lt;option value="">
+                                &lt;span className="translate">Select Type&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Sauce">
+                                &lt;span className="translate">Sauce&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Cheese">
+                                &lt;span className="translate">Cheese&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Dough">
+                                &lt;span className="translate">Dough&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Drizzle">
+                                &lt;span className="translate">Drizzle&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Meats">
+                                &lt;span className="translate">Meats&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Raw Veggies">
+                                &lt;span className="translate">Raw Veggies&lt;/span>
+                              &lt;/option>
+                              &lt;option value="Roasted Veggies">
+                                &lt;span className="translate">
+                                  Roasted Veggies
+                                &lt;/span>
+                              &lt;/option>
+                              &lt;option value="Other">
+                                &lt;span className="translate">Other&lt;/span>
+                              &lt;/option>
+                            &lt;/select>
+                          &lt;/div>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Fill Level&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Fill Level"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={fillLevel}
+                              onChange={handleFillLevelChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                      &lt;/div>
+                    )}
+                    {showAddMenuItemModal &amp;&amp; (
+                      &lt;div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Item Name&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Name"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={newItemName}
+                              onChange={handleNewItemNameChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Item Price&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="Price"
+                              className="mx-2 w-75"
+                              style={{ height: "36px" }}
+                              value={newItemPrice}
+                              onChange={handleNewItemPriceChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Item Ingredients&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="multiselect col-7">
+                            &lt;div className="mx-2 w-75">
+                              &lt;Multiselect
+                                options={multiselectOptions}
+                                selectedValues={newItemIngredients}
+                                onSelect={handleAddNewItemIngredient}
+                                onRemove={handleRemoveNewItemIngredient}
+                                displayValue="name"
+                                avoidHighlightFirstOption={true}
+                                style={{ chips: { background: "#e8b74d" } }}
+                              />
+                            &lt;/div>
+                          &lt;/div>
+                        &lt;/div>
+                      &lt;/div>
+                    )}
+                    {showEditMenuItemModal &amp;&amp; (
+                      &lt;div>
+                        &lt;div className="row d-flex align-items-center my-2">
+                          &lt;div className="col-5 p-0 d-flex justify-content-end align-items-center">
+                            &lt;h6 className="my-auto mx-2">Change Item Price&lt;/h6>
+                          &lt;/div>
+                          &lt;div className="col-7">
+                            &lt;input
+                              type="text"
+                              placeholder="New Item Price"
+                              className="mx-2"
+                              style={{ height: "36px" }}
+                              value={newItemPrice}
+                              onChange={handleNewItemPriceChange}>&lt;/input>
+                          &lt;/div>
+                        &lt;/div>
+                      &lt;/div>
+                    )}
+                  &lt;/div>
+                  &lt;div className="modal-footer">
+                    &lt;button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                      onClick={hideModal}>
+                      Close
+                    &lt;/button>
+                    &lt;button
+                      type="button"
+                      className="btn btn-primary"
+                      data-bs-dismiss="modal"
+                      onClick={submitModal}>
+                      Save changes
+                    &lt;/button>
+                  &lt;/div>
+                &lt;/div>
+              &lt;/div>
+            &lt;/div>
+            &lt;div className="col mt-5 p-0">
+              &lt;IngredientTable
+                ingredientData={ingredientData}
+                handleEditIngredientClick={handleEditIngredientClick}
+                handleDeleteIngredientClick={handleDeleteIngredientClick}
+                handleAddIngredientClick={handleAddIngredientClick}
+                protectedIngredients={protectedIngredients}>&lt;/IngredientTable>
+            &lt;/div>
+            &lt;div className="col mt-5 p-0">
+              &lt;div className="container">
+                &lt;div
+                  className="border border-dark mx-5"
+                  style={{ maxHeight: "35vh", overflowY: "auto" }}>
+                  &lt;table className="w-100">
+                    &lt;thead className="table-header position-sticky">
+                      &lt;tr>
+                        &lt;th className="px-1">Menu Item&lt;/th>
+                        &lt;th className="px-1">Type&lt;/th>
+                        &lt;th className="px-1">Price&lt;/th>
+                        &lt;th className="px-1">Edit&lt;/th>
+                        &lt;th className="px-1">Delete&lt;/th>
+                      &lt;/tr>
+                    &lt;/thead>
+                    &lt;tbody>
+                      {menuItemData.map((item, key) => {
+                        return (
+                          &lt;tr
+                            key={key}
+                            className="table-row border-top border-secondary">
+                            &lt;td>{item.name}&lt;/td>
+                            &lt;td>{item.type}&lt;/td>
+                            &lt;td>${item.price}&lt;/td>
+                            &lt;td>
+                              &lt;button
+                                type="button"
+                                className="btn btn-primary btn-sm mx-auto"
+                                data-bs-toggle="modal"
+                                data-bs-target="#inputModal"
+                                onClick={() =>
+                                  handleEditMenuItemClick(item.name)
+                                }>
+                                &lt;FontAwesomeIcon icon={faPencil} />
+                              &lt;/button>
+                            &lt;/td>
+                            &lt;td>
+                              {item.type === "Seasonal Item" &amp;&amp; (
+                                &lt;button
+                                  className="btn btn-primary btn-sm mx-auto"
+                                  onClick={() =>
+                                    handleDeleteMenuItemClick(item.name)
+                                  }>
+                                  &lt;FontAwesomeIcon icon={faTrash} />
+                                &lt;/button>
+                              )}
+                            &lt;/td>
+                          &lt;/tr>
+                        );
+                      })}
+                    &lt;/tbody>
+                  &lt;/table>
+                &lt;/div>
+                &lt;div className="d-flex justify-content-end mx-5">
+                  &lt;button
+                    className="btn btn-primary btn-sm mt-3 fs-5"
+                    data-bs-toggle="modal"
+                    data-bs-target="#inputModal"
+                    onClick={handleAddMenuItemClick}>
+                    Add Menu Item
+                  &lt;/button>
+                &lt;/div>
+              &lt;/div>
+
+              &lt;div className="border border-secondary rounded p-3 mx-5 mt-4">
+                &lt;h4 className="text-center">
+                  &lt;span className="translate">Add Employee to System&lt;/span>
+                &lt;/h4>
+                &lt;div className="d-flex justify-content-center flex-wrap">
+                  &lt;span className="translate">
+                    &lt;input
+                      type="text"
+                      placeholder="Employee Name"
+                      className="m-2"
+                      value={addEmployeeName}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeeName}>&lt;/input>
+                  &lt;/span>
+                  &lt;span className="translate">
+                    &lt;input
+                      type="text"
+                      placeholder="Employee Passcode"
+                      className="m-2"
+                      value={addEmployeePassword}
+                      style={{ height: "36px" }}
+                      onChange={handleAddEmployeePassword}>&lt;/input>
+                  &lt;/span>
+                  &lt;div className="d-flex align-items-center">
+                    &lt;div className="m-2">
+                      &lt;input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Add Manager"
+                        onChange={handleAddAsManagerChange}
+                        checked={addAsManager}
+                        id="managerCheck">&lt;/input>
+                      &lt;label className="form-check-label">
+                        &lt;span className="translate">Add as Manager?&lt;/span>
+                      &lt;/label>
+                    &lt;/div>
+                  &lt;/div>
+                &lt;/div>
+                &lt;div className="d-flex justify-content-center flex-wrap">
+                  &lt;span className="translate">
+                    &lt;input
+                      type="button"
+                      className="btn btn-primary my-2 fs-5"
+                      value="Add Employee"
+                      onClick={handleAddNewEmployee}>&lt;/input>
+                  &lt;/span>
+                &lt;/div>
+                {addedEmployeeDatabase === true &amp;&amp; (
+                  &lt;div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "blue" }}>
+                    &lt;span className="translate">Added New Employee.&lt;/span>
+                  &lt;/div>
+                )}
+                {addedEmployeeDatabase === false &amp;&amp; (
+                  &lt;div
+                    className="d-flex justify-content-center flex-wrap"
+                    style={{ color: "red" }}>
+                    &lt;span className="translate">
+                      Failed to Add New Employee. Try Different Passcode.
+                    &lt;/span>
+                  &lt;/div>
+                )}
+              &lt;/div>
+            &lt;/div>
+          &lt;/div>
+        &lt;/span>
+      );
+    }
+  }
+}
+
+export default Manager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

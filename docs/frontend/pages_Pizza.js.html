@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Pizza.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Pizza.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState, useEffect } from "react";
+import IngredientItemButton from "../components/IngredientItemButton";
+import useOrder from "../hooks/useOrder";
+import useMenu from "../hooks/useMenu";
+import Button from "react-bootstrap/Button";
+import Collapse from "react-bootstrap/Collapse";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Alert from "react-bootstrap/Alert";
+import "./Pizza.css";
+
+/**
+ * Fixes Camel Case and dash delinated strings
+ * @param {string} str 
+ * @returns formatted string
+ */
+const convertWord = (str) => {
+  return str
+    .replace(/([a-z])([A-Z])/g, `$1 $2`)
+    .replace(/-([a-z])/g, (g) => {
+      return " " + g.substr(1).toUpperCase();
+    })
+    .replace(/(^[a-z])/g, (g) => {
+      return g.toUpperCase();
+    });
+};
+
+/**
+ * Reorders ingredient types for better rendering
+ * @param {string[]} arr 
+ * @returns Custom ordered list for ingredient types
+ */
+const orderTypes = (arr) => {
+  return [
+    "Dough",
+    "Sauce",
+    "Cheese",
+    ...arr.filter(
+      (ing) =>
+        ing !== "Other" &amp;&amp;
+        ing !== "Dough" &amp;&amp;
+        ing !== "Sauce" &amp;&amp;
+        ing !== "Cheese" &amp;&amp;
+        ing !== "Drizzle"
+    ),
+    "Drizzle",
+  ];
+};
+
+
+const Pizza = () => {
+
+  //useEffects and useStates
+  const [pizzaIndex, setPizzaIndex] = useState(-1);
+  const [dropdownStates, setDropdownStates] = useState([false]);
+  const [pizza, setPizza] = useState({
+    pizza_type: "",
+    pizza_price: "0.00",
+    ingredients: [],
+  });
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
+  const navigate = useNavigate();
+  const {
+    orderLoading,
+    orderError,
+    order,
+    addNewPizzaAsync,
+    updatePizzaAsync,
+  } = useOrder([]);
+  const { menuLoading, menuError, ingredients_by_type, itemTypes } = useMenu();
+  const [queryParameters] = useSearchParams();
+  const indexURL = queryParameters.get("index");
+
+  /**
+   * Checks if there is a selected type and selected dough
+   * @param {Pizza} currentPizza 
+   * @returns Bool if there is an error with the given pizza
+   */
+  const checkRequirements = (currentPizza) => {
+    //Check if required buttons are checked (Dough and Type)
+    if (pizza.pizza_type === "") {
+      setAlertText("Please select a pizza type.");
+      setShowAlert(true);
+      return true;
+    }
+    //Find Dough IDs
+    const doughIDs = ingredients_by_type.Dough.map((ing) => ing.ingredient_id);
+    if (
+      pizza.ingredients.filter((ing) =>
+        doughIDs.includes(Number(ing.ingredient_id))
+      ).length != 1
+    ) {
+      setAlertText("Please select one type of dough.");
+      setShowAlert(true);
+      return true;
+    }
+
+    setShowAlert(false);
+    return false;
+  };
+
+  /**
+   * Resets all the "toppings" to be unselected when you switch types
+   * @param {string} type type of current pizza
+   */
+  const resetToppings = (type) => {
+    const not_topping_types = ["Other", "Dough", "Sauce", "Cheese", "Drizzle"];
+    const filtered_ingredient_ids = Object.keys(ingredients_by_type)
+      .filter((key) => not_topping_types.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = ingredients_by_type[key];
+        return obj;
+      }, {});
+
+    const not_topping_ids = Object.values(filtered_ingredient_ids)
+      .map((ingredients) => {
+        return ingredients.map((ingredient) => {
+          return ingredient.ingredient_id;
+        });
+      })
+      .flat();
+    setPizza({
+      ...type,
+      ingredients: pizza.ingredients.filter((ing) => {
+        return not_topping_ids.includes(Number(ing.ingredient_id));
+      }),
+    });
+  };
+
+  /**
+   * checks if the number of toppings is valid for the pizza and the type
+   * @param {Pizza} currentPizza Object describing current pizza
+   * @param {string} type string representing pizza type
+   * @returns true if there is an error with the pizza and given type
+   */
+  const checkToppings = (currentPizza, type) => {
+    if (type === "") {
+      setAlertText("Please select a pizza type.");
+      setShowAlert(true);
+      return true;
+    }
+    if (menuLoading &amp;&amp; menuError === "") {
+      setAlertText("Toppings haven't loaded yet. Stand by.");
+      setShowAlert(true);
+      return true;
+    }
+
+    const topping_types = Object.keys(ingredients_by_type).filter(
+      (ing) =>
+        ing !== "Other" &amp;&amp;
+        ing !== "Dough" &amp;&amp;
+        ing !== "Sauce" &amp;&amp;
+        ing !== "Cheese" &amp;&amp;
+        ing !== "Drizzle"
+    );
+
+    const toppings = Object.keys(ingredients_by_type)
+      .filter((key) => topping_types.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = ingredients_by_type[key];
+        return obj;
+      }, {});
+    const topping_ids = Object.values(toppings)
+      .map((ingredients) => {
+        return ingredients.map((ingredient) => {
+          return ingredient.ingredient_id;
+        });
+      })
+      .flat();
+
+    //get number of toppings
+    const toppingsOnPizza = currentPizza.ingredients.filter((ing) => {
+      return topping_ids.indexOf(Number(ing.ingredient_id)) !== -1;
+    });
+    if (type === "cheese") {
+      if (toppingsOnPizza.length > 0) {
+        setAlertText("Cheese pizza can't have toppings.");
+        setShowAlert(true);
+        return true;
+      }
+    } else if (type === "one-topping") {
+      if (toppingsOnPizza.length > 1) {
+        setAlertText("One topping pizza can only have one topping.");
+        setShowAlert(true);
+        return true;
+      }
+    } else if (type === "build-your-own") {
+      if (toppingsOnPizza.length > 4) {
+        setAlertText("Build your own pizza can only have up to 4 toppings.");
+        setShowAlert(true);
+        return true;
+      }
+    } else {
+      setAlertText("Invalid pizza type. Please select another pizza type.");
+      setShowAlert(true);
+      return true;
+    }
+    setShowAlert(false);
+    return false;
+  };
+
+  /**
+   * Checks if the current pizza has a ingredient associated with the id
+   * @param {Number} ingredient_id_int 
+   * @returns true if the current pizza contains the ingredient associated with the id
+   */
+  const containsIngredient = (ingredient_id_int) => {
+    if (typeof pizza !== "undefined" &amp;&amp; pizza != null) {
+      return (
+        pizza.ingredients.filter(
+          (ing) => ing.ingredient_id === "" + ingredient_id_int
+        ).length >= 1
+      );
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    if (!orderLoading) {
+      if (indexURL != null &amp;&amp; typeof indexURL !== "undefined") {
+        setPizzaIndex(indexURL);
+        setPizza(order.pizzas[indexURL]);
+      }
+    }
+  }, [orderLoading]);
+
+  useEffect(() => {
+    if (menuLoading === false) {
+      setDropdownStates([
+        true,
+        ...Array(Object.keys(ingredients_by_type).length - 1).fill(false),
+      ]);
+    }
+  }, [menuLoading]);
+
+  useEffect(() => {
+    if (showAlert) {
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 4000);
+    }
+  }, [showAlert]);
+
+  /**
+   * Checks if the pizza can be saved, saves, and redirects you to order
+   * @returns just for early termination
+   */
+  const handleSavePizza = () => {
+    if (checkRequirements(pizza)) {
+      return;
+    }
+
+    //If index == -1
+    if (pizzaIndex === -1) {
+      //  add pizza
+      addNewPizzaAsync(pizza).then(() => {
+        //Cheeky little workaround
+        //Not professional at all
+        //Needed because navigate rerenders useOrder before it can update the order state
+        // and put in local storage
+        setTimeout(() => {
+          navigate("/order");
+        }, 100);
+      });
+    } else {
+      //  Save pizza
+      //  Same workaround needed
+      updatePizzaAsync(pizza, pizzaIndex).then(() => {
+        setTimeout(() => {
+          navigate("/order");
+        }, 100);
+      });
+    }
+  };
+
+  if (menuError || orderError) {
+    return (
+      &lt;div>
+        &lt;p>&lt;span className='translate'>Menu Error: {menuError}&lt;/span>&lt;/p>
+        &lt;p>&lt;span className='translate'>Order Error: {orderError}&lt;/span>&lt;/p>
+      &lt;/div>
+    );
+  } else if (menuLoading || orderLoading) {
+    return (
+      &lt;div
+        style={{
+          width: "100vw",
+          height: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        &lt;img
+          src={require("../loader_pizza.gif")}
+          alt="Loading"
+          style={{ width: "15vw", height: "auto" }}
+        />
+      &lt;/div>
+    );
+  } else {
+    return (
+      &lt;span className='translate'>
+      &lt;div className="container">
+        &lt;div className="row mt-2">
+          &lt;div className="col-1 mt-2">
+            &lt;Button
+              variant="secondary"
+              onClick={() => {
+                navigate("/order");
+              }}
+              className="mx-2"
+            >
+              &lt;span className='translate'>Back&lt;/span>
+            &lt;/Button>
+          &lt;/div>
+
+          &lt;div className="col-11">
+            {showAlert ? (
+              &lt;Alert variant="primary" onClose={() => setShowAlert(false)}>
+                {alertText}
+              &lt;/Alert>
+            ) : (
+              // add spacing for alert
+              &lt;div style={{ height: "75px" }}>&lt;/div>
+            )}
+          &lt;/div>
+        &lt;/div>
+        &lt;div className="row">
+          {/* Pizza Types Dropdown */}
+          &lt;div className="ingredientDropdownContainer mb-2">
+            &lt;Button
+              onClick={() =>
+                setDropdownStates(
+                  dropdownStates.map((s, i) => (i === 0 ? !s : s))
+                )
+              }
+              aria-controls="pizza-type-collapse"
+              aria-expanded={dropdownStates[0]}
+              className="ingredientDropdown shadow-none"
+              variant="link"
+            >
+              &lt;span className='translate'>Pizza Type&lt;/span>
+              {!dropdownStates[0] ? (
+                &lt;FontAwesomeIcon className="mx-2" icon={faCaretDown} />
+              ) : (
+                &lt;FontAwesomeIcon className="mx-2" icon={faCaretUp} />
+              )}
+            &lt;/Button>
+
+            &lt;Collapse in={dropdownStates[0]}>
+              &lt;div id="pizza-type-collapse">
+                &lt;div className="row justify-content-center">
+                  {itemTypes.pizza_types.map((type, i) => (
+                    &lt;IngredientItemButton
+                      key={`${type}_${i}`}
+                      cardText={`${convertWord(type.pizza_type)} $${
+                        type.pizza_price
+                      }`}
+                      selected={pizza.pizza_type === type.pizza_type}
+                      onClick={() => {
+                        if (!checkToppings(pizza, type.pizza_type)) {
+                          setPizza({ ...type, ingredients: pizza.ingredients });
+                        } else {
+                          resetToppings(type);
+                        }
+                      }}
+                    >&lt;/IngredientItemButton>
+                  ))}
+                &lt;/div>
+              &lt;/div>
+            &lt;/Collapse>
+          &lt;/div>
+
+          {/* Pizza Ingredients Dropdowns */}
+          {ingredients_by_type ? (
+            orderTypes(Object.keys(ingredients_by_type)).map((type, i) => {
+              return (
+                &lt;div
+                  key={`${type}_${i}`}
+                  className="ingredientDropdownContainer my-2"
+                >
+                  &lt;Button
+                    variant="link"
+                    onClick={() =>
+                      setDropdownStates(
+                        dropdownStates.map((s, ind) =>
+                          ind === i + 1 ? !s : false
+                        )
+                      )
+                    }
+                    aria-controls="pizza-type-collapse"
+                    aria-expanded={dropdownStates[i + 1]}
+                    className="ingredientDropdown shadow-none"
+                  >
+                    {convertWord(type)}
+                    {!dropdownStates[i + 1] ? (
+                      &lt;FontAwesomeIcon className="mx-2" icon={faCaretDown} />
+                    ) : (
+                      &lt;FontAwesomeIcon className="mx-2" icon={faCaretUp} />
+                    )}
+                  &lt;/Button>
+                  &lt;Collapse in={dropdownStates[i + 1]}>
+                    &lt;div id="pizza-type-collapse">
+                      &lt;div className="row justify-content-center">
+                        {ingredients_by_type[type].map((ingredient, i) => (
+                          &lt;IngredientItemButton
+                            selected={containsIngredient(
+                              ingredient.ingredient_id
+                            )}
+                            key={`${ingredient.ingredient_name}_${i}`}
+                            cardText={convertWord(ingredient.ingredient_name)}
+                            onClick={() => {
+                              if (
+                                !containsIngredient(ingredient.ingredient_id)
+                              ) {
+                                const newPizza = {
+                                  ...pizza,
+                                  ingredients: [
+                                    ...pizza.ingredients,
+                                    {
+                                      ingredient_id: `${ingredient.ingredient_id}`,
+                                    },
+                                  ],
+                                };
+
+                                if (
+                                  !checkToppings(newPizza, newPizza.pizza_type)
+                                ) {
+                                  setPizza(newPizza);
+                                }
+                              } else {
+                                const newPizza = {
+                                  ...pizza,
+                                  ingredients: pizza.ingredients.filter(
+                                    (ing) =>
+                                      ing.ingredient_id !==
+                                      "" + ingredient.ingredient_id
+                                  ),
+                                };
+                                setPizza(newPizza);
+                                if (!checkToppings(pizza, pizza.pizza_type)) {
+                                  //setShowAlert(false);
+                                }
+                              }
+                            }}
+                          >&lt;/IngredientItemButton>
+                        ))}
+                      &lt;/div>
+                    &lt;/div>
+                  &lt;/Collapse>
+                &lt;/div>
+              );
+            })
+          ) : (
+            &lt;p>&lt;span className='translate'>no menu yet&lt;/span>&lt;/p>
+          )}
+        &lt;/div>
+        &lt;div className="row justify-content-between ">
+          &lt;div className="col-3">
+            &lt;Button
+              onClick={() => {
+                handleSavePizza();
+              }}
+              className="mx-2"
+            >
+              &lt;span className='translate'>Save&lt;/span>
+            &lt;/Button>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+      &lt;/span>
+    );
+  }
+};
+
+export default Pizza;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

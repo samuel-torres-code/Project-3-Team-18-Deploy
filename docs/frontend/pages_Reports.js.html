@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Reports.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Reports.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState } from "react";
+import Alert from "react-bootstrap/Alert";
+import ExcessReport from "../components/ExcessReport";
+import HonorsReport from "../components/EmployeeSalesReport";
+import SalesReport from "../components/SalesReport";
+import RestockReport from "../components/RestockReport";
+
+/**
+ * Component to display all of the reports to the user.
+ * @returns
+ */
+const Reports = () => {
+  const [loadTab, setLoadTab] = useState("Sales Report");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState(false);
+  const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
+
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
+  function handleSwitchTab(event) {
+    setLoadTab(event.target.value);
+  }
+
+  if (condrender) {
+    return (
+      &lt;span className="translate">
+      &lt;div className="container">
+        &lt;ul className="nav nav-tabs justify-content-center my-3">
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadTab === "Sales Report"
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Sales Report"
+              onClick={handleSwitchTab}>
+              &lt;span className="translate" style={{pointerEvents: "none"}}>
+              Sales Report &lt;/span>
+            &lt;/button>
+          &lt;/li>
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadTab === "Excess Report"
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Excess Report"
+              onClick={handleSwitchTab}>
+                &lt;span className="translate" style={{pointerEvents: "none"}}>
+              Excess Report&lt;/span>
+            &lt;/button>
+          &lt;/li>
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadTab === "Restock Report"
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Restock Report"
+              onClick={handleSwitchTab}>
+                &lt;span className="translate" style={{pointerEvents: "none"}}>
+              Restock Report &lt;/span>
+            &lt;/button>
+          &lt;/li>
+          &lt;li className="nav-item">
+            &lt;button
+              className={
+                loadTab === "Honors Addendum"
+                  ? "nav-link fw-bolder fs-5 active link-primary"
+                  : "nav-link fw-bolder fs-5 link-secondary"
+              }
+              value="Honors Addendum"
+              onClick={handleSwitchTab}>
+                &lt;span className="translate" style={{pointerEvents: "none"}}>
+              Honors Addendum &lt;/span>
+            &lt;/button>
+          &lt;/li>
+        &lt;/ul>
+        {showAlert ? (
+          &lt;Alert
+            variant="primary"
+            onClose={() => setShowAlert(false)}
+            dismissible>
+            {alertText}
+          &lt;/Alert>
+        ) : (
+          // add spacing for alert
+          &lt;div style={{ height: "58px" }}>&lt;/div>
+        )}
+        {loadTab === "Sales Report" &amp;&amp; (
+          &lt;SalesReport
+            setShowAlert={setShowAlert}
+            setAlertText={setAlertText}>&lt;/SalesReport>
+        )}
+        {loadTab === "Excess Report" &amp;&amp; (
+          &lt;ExcessReport
+            setShowAlert={setShowAlert}
+            setAlertText={setAlertText}>&lt;/ExcessReport>
+        )}
+        {loadTab === "Restock Report" &amp;&amp; &lt;RestockReport>&lt;/RestockReport>}
+        {loadTab === "Honors Addendum" &amp;&amp; (
+          &lt;HonorsReport
+            setShowAlert={setShowAlert}
+            setAlertText={setAlertText}>&lt;/HonorsReport>
+        )}
+      &lt;/div>
+      &lt;/span>
+    );
+  }
+};
+
+export default Reports;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Register.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Register.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import bootstrap from "bootstrap";
+import { useState, useEffect } from "react";
+import { Link, useAsyncError } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import axios from 'axios';
+import { API_URL } from "../API";
+
+var reg = "a";
+
+const Register = () => {
+  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [confPass, setConfPass] = useState('');
+  const [registered, setIsRegistered] = useState('');
+  const client = axios.create({
+    baseURL: API_URL
+  })
+
+  //login persistency
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("isLoggedIn");
+    if (loggedInUser) {
+      setIsRegistered(loggedInUser);
+    }
+  }, []);
+
+  /** Set the reg component for the system, allows us to check for registration statuses
+   *  @returns
+   */
+  function setReg(){
+    reg = "a";
+  }
+
+  /** Ensure that the username, email, password, and confirmation password have actually been filled
+   *  @returns bool with the above state
+   */
+  function infoCompleted() {
+    return user.length > 0 &amp;&amp; pass.length > 0 &amp;&amp; email.length > 0 &amp;&amp; confPass.length > 0 &amp;&amp; confPass === pass;
+  }
+
+  //update the user to the given user
+  const changeUser = (event) => {
+    setUser(event.target.value);
+    reg = "a";
+  };
+
+  //update email to the given email
+  const changeEmail = (event) => {
+    setEmail(event.target.value);
+  };
+
+  //update the password to the given password
+  const changePass = (event) => {
+    setPass(event.target.value);
+  };
+
+  //update confirmation password to the given password
+  const changeConfPass = (event) => {
+    setConfPass(event.target.value);
+  }
+
+  //change the value of registration confirmation
+  const changeIsRegistered = (event) => {
+    setIsRegistered(event);
+  }
+
+  //In the event we need to immediately clear for some reason
+  const clearValues = () => {
+    setEmail('');
+    setPass('');
+    setUser('');
+    setConfPass('');
+  };
+
+  /**
+   * Take care of the user registration - new account if email not in use, otherwise flag the customer they already have an account
+   * @param {event} event 
+   * @returns
+   */
+  const registerRegistration = async (event) => {
+    event.preventDefault();
+    const registerData = await client.post('/api/register',{
+        user: user,
+        email: email,
+        pass: pass
+    }).then(res => {
+      changeIsRegistered(res.data);
+      localStorage.setItem('isLoggedIn', res.data);
+      localStorage.setItem('user', user);
+      localStorage.setItem('email', email);
+      localStorage.setItem('log', 'b');
+    })
+    .catch((error) => {
+      if (error.response) {
+        console.log(error.response);
+        console.log("Server responded.");
+      } else if (error.request) {
+        console.log("Network error.");
+      } else {
+        console.log("Unknown error type.")
+        console.log(error);
+      }
+    });
+    reg = "b";
+    window.location.reload();
+  };
+
+
+  return(
+    &lt;div>
+      {((localStorage.getItem('isLoggedIn') === 'false') || (localStorage.getItem('isLoggedIn') === null)) &amp;&amp; 
+        &lt;Form>
+
+        &lt;Form.Group className="mt-3 mx-auto" controlId="registerEmail" style={{width: '50%'}}>
+            &lt;Form.Label>&lt;span className='translate'>Email&lt;/span>&lt;/Form.Label>
+            &lt;Form.Control type="email" placeholder="Email" value={email} onChange={changeEmail} />
+        &lt;/Form.Group>
+  
+        &lt;Form.Group className="mt-3 mx-auto" controlId="registerUser" style={{width: '50%'}}>
+            &lt;Form.Label>&lt;span className='translate'>Username&lt;/span>&lt;/Form.Label>
+            &lt;Form.Control type="username" placeholder="Username" value={user} onChange={changeUser} />
+        &lt;/Form.Group>
+  
+        &lt;Form.Group className="mt-3 mx-auto" controlId="registerPass" style={{width: '50%'}}>
+            &lt;Form.Label>&lt;span className='translate'>Password&lt;/span>&lt;/Form.Label>
+            &lt;Form.Control type="password" placeholder="Password" value={pass} onChange={changePass} />
+        &lt;/Form.Group>
+  
+        &lt;Form.Group className="mt-3 mx-auto" controlId="registerConfirmPass" style={{width: '50%'}}>
+            {confPass.length === 0 &amp;&amp;
+              &lt;Form.Label>&lt;span className='translate'>Confirm Password&lt;/span>&lt;/Form.Label>
+            }
+            {!(confPass === pass) &amp;&amp; pass.length > 0 &amp;&amp; confPass.length > 0 &amp;&amp;
+              &lt;Form.Label style={{color: 'red',}}>&lt;span className='translate'>Passwords Do Not Match&lt;/span>&lt;/Form.Label>
+            }
+            {(confPass === pass) &amp;&amp; pass.length > 0 &amp;&amp; confPass.length > 0 &amp;&amp;
+              &lt;Form.Label style={{color: 'blue',}}>&lt;span className='translate'>Passwords Match&lt;/span>&lt;/Form.Label>
+            }
+            &lt;Form.Control type="password" placeholder="Password" value={confPass} onChange={changeConfPass} />
+            
+        &lt;/Form.Group>
+  
+        {(!registered) &amp;&amp; (reg === "b") &amp;&amp;
+          &lt;div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            &lt;Form.Group className="mt-3 mx-auto" controlId="emailUsage">
+              &lt;Form.Label style={{color: 'red',}}>&lt;span className='translate'>Email Already in Use&lt;/span>&lt;/Form.Label>
+            &lt;/Form.Group>
+          &lt;/div>
+        }
+        &lt;div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+          &lt;Link to={'/Home'}>&lt;Button className="btn btn-primary mx-3 mt-3" variant="primary" type="submit" style={{width: '100%'}} disabled={!infoCompleted()} onClick={registerRegistration}>&lt;span className='translate'>Register&lt;/span>&lt;/Button>&lt;/Link>
+          &lt;Link to={'/Login'}>&lt;Button className="btn btn-primary mx-3 mt-3" type="button" style={{width: '100%'}} onClick={setReg}>&lt;span className='translate'>Back to Login&lt;/span>&lt;/Button>&lt;/Link>
+        &lt;/div>
+        &lt;/Form>
+      }
+      {(localStorage.getItem('isLoggedIn') === 'true') &amp;&amp; 
+        &lt;Form>
+          &lt;div className="mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            &lt;div style={{color: 'blue', fontSize: '40'}}>&lt;span className='translate'>Thanks For Signing Up!&lt;/span>&lt;/div>
+          &lt;/div> 
+          &lt;div className="mt-3 mx-auto d-flex align-self-center" style={{justifyContent:'center', alignItems:'center'}}>
+            &lt;Form.Group>
+              &lt;Link to={'/Home'}>
+                &lt;Button className="btn btn-primary" variant="primary" type="button" style={{width: '100%'}}>&lt;span className='translate'>Back To Home&lt;/span>&lt;/Button>
+              &lt;/Link>
+            &lt;/Form.Group>
+          &lt;/div>
+        &lt;/Form>
+      }
+    &lt;/div>
+  );
+};
+    
+  export default Register;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

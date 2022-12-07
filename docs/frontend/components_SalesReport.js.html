@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/SalesReport.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/SalesReport.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState } from "react";
+import DatePicker from "react-datepicker";
+import dateFormat from "dateformat";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
+import { getSalesReport } from "../api/ReportAPI";
+
+/**
+ * Component to display the sales report to the user.
+ * @param {function} setAlertText
+ * @param {function} setShowAlert
+ * @returns html
+ */
+const SalesReport = ({ setAlertText, setShowAlert }) => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+
+  /**
+   * Loads data necessary for the report with an api call.
+   */
+  const handleGenerateReport = () => {
+    if (startDate === null || typeof startDate === undefined) {
+      setAlertText("Please enter a start date.");
+      setShowAlert(true);
+      return;
+    }
+    if (endDate === null || typeof endDate === undefined) {
+      setAlertText("Please enter a end date.");
+      setShowAlert(true);
+      return;
+    }
+    setShowAlert(false);
+    getSalesReport(
+      dateFormat(startDate, "yyyy-mm-dd"),
+      dateFormat(endDate, "yyyy-mm-dd")
+    ).then((res) => {
+      setSalesData(res["sales"]);
+    });
+  };
+
+  return (
+    &lt;>
+      &lt;div className="container">
+        &lt;div className="row">
+          &lt;div className="col-xs-12 col-md-4">
+            &lt;p>
+              This report shows the sales by menu item given a certain date
+              range.
+            &lt;/p>
+            &lt;DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              placeholderText="Start Date"
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              className="form-control mb-2"
+            />
+            &lt;DatePicker
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
+              selectsEnd
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+              placeholderText="End Date"
+              className="form-control"
+            />
+            &lt;div className="text-center my-2">
+              &lt;button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => handleGenerateReport()}>
+                Generate
+              &lt;/button>
+            &lt;/div>
+          &lt;/div>
+          &lt;div className="col-xs-12 col-md-8">
+            &lt;div
+              className="border border-dark mx-5"
+              style={{ maxHeight: "60vh", overflowY: "auto" }}>
+              &lt;table className="w-100">
+                &lt;thead className="table-header position-sticky">
+                  &lt;tr>
+                    &lt;th className="px-1">Menu Item&lt;/th>
+                    &lt;th className="px-1">Sales&lt;/th>
+                  &lt;/tr>
+                &lt;/thead>
+                &lt;tbody>
+                  {salesData.map((val, key) => {
+                    return (
+                      &lt;tr
+                        key={key}
+                        className="table-row border-top border-secondary">
+                        &lt;td>{val.item_name}&lt;/td>
+                        &lt;td>${val.sales}&lt;/td>
+                      &lt;/tr>
+                    );
+                  })}
+                &lt;/tbody>
+              &lt;/table>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/>
+  );
+};
+
+export default SalesReport;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

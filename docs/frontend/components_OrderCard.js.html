@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/OrderCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/OrderCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Alert from "react-bootstrap/Alert";
+import "./OrderCard.css";
+import { useEffect, useState } from "react";
+
+/**
+ * Converts CamelCase and dash-seperated words into spaced and Capitalized words
+ * @param {String} string given string
+ * @returns a formatted string
+ */
+const convertWord = (str) => {
+  return str
+    .replace(/([a-z])([A-Z])/g, `$1 $2`)
+    .replace(/-([a-z])/g, (g) => {
+      return " " + g.substr(1).toUpperCase();
+    })
+    .replace(/(^[a-z])/g, (g) => {
+      return g.toUpperCase();
+    });
+};
+
+/**
+ * Component for displaying drink counts
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the drink counts
+ */
+const DrinkCountRows = ({ drink_counts }) => {
+  return drink_counts.map((drink, index) => {
+    return (
+      &lt;div key={drink.drink_name + index} className="container">
+        &lt;div className="row">
+          &lt;div className="col-6">
+            &lt;span className="translate">{drink.drink_name}: &lt;/span>
+          &lt;/div>
+          &lt;div className="col-2">{drink.drink_count}&lt;/div>
+        &lt;/div>
+      &lt;/div>
+    );
+  });
+};
+
+/**
+ * Component for displaying seasonal items on the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the seasonal items on the order
+ */
+const SeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
+  return seasonal_items.map((item, index) => (
+    &lt;div key={item.item_name + index} className="row my-2">
+      &lt;div className="col-6">
+        &lt;p className="my-0">&lt;span className="translate">{item.item_name}&lt;/span>&lt;/p>
+        &lt;p className="my-0"> ${item.item_price} &lt;/p>
+      &lt;/div>
+      &lt;div className="col-2 ">&lt;/div>
+      &lt;div className="col-2 mx-2">
+        &lt;button
+          onClick={() => handleDeleteSeasonalItem(index)}
+          className="btn btn-primary"
+        >
+          &lt;FontAwesomeIcon icon={faTrash} />
+        &lt;/button>
+      &lt;/div>
+    &lt;/div>
+  ));
+};
+
+/**
+ * Component for displaying the pizzas on the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the pizzas on the order
+ */
+const PizzaRows = ({
+  pizzas,
+  handleDeletePizza,
+  handleEditPizza,
+  currentPizzaID,
+  showAlerts,
+}) => {
+  return pizzas.map((pizza, index) => (
+    &lt;div
+      key={pizza.pizza_type + index}
+      className={
+        pizza.pizza_id === currentPizzaID
+          ? `row my-2 selected-pizza py-2`
+          : `row my-2 py-2`
+      }
+    >
+      &lt;div className="col-6">
+        &lt;p className="text-left my-0">&lt;span className="translate">{`Pizza ${index + 1} `}&lt;/span>&lt;/p>
+      &lt;/div>
+      &lt;div className="col-2 mx-1 ">
+        &lt;button
+          onClick={() => handleEditPizza(pizza.pizza_id)}
+          className="btn btn-primary"
+        >
+          &lt;FontAwesomeIcon icon={faPencil} />
+        &lt;/button>
+      &lt;/div>
+      &lt;div className="col-2 mx-1">
+        &lt;button
+          onClick={() => handleDeletePizza(pizza.pizza_id)}
+          className="btn btn-primary"
+        >
+          &lt;FontAwesomeIcon icon={faTrash} />
+        &lt;/button>
+      &lt;/div>
+      &lt;div className="col-12">
+        {showAlerts[index] &amp;&amp;
+          pizza.pizza_error.split("\n").map((str) => {
+            if (str !== "") {
+              return (
+                &lt;Alert
+                  key={str}
+                  className="py-1 px-1 my-1 text-left"
+                  variant="primary"
+                >
+                  &lt;span className="translate">{str}&lt;/span>
+                &lt;/Alert>
+              );
+            }
+          })}
+        &lt;p className="text-left mb-1">&lt;span className="translate">{`Type: ${convertWord(
+          pizza.pizza_type
+        )}`} &lt;/span>&lt;/p>
+
+        &lt;p className="text-left mb-1">${pizza.pizza_price}&lt;/p>
+
+        {pizza.ingredients.map((ingredient, index) => (
+          &lt;p
+            key={ingredient.ingredient_name + pizza.pizza_type + index}
+            className="text-left my-0"
+          >
+            &lt;span className="translate">
+            {ingredient.ingredient_name}
+            &lt;/span>
+          &lt;/p>
+        ))}
+      &lt;/div>
+    &lt;/div>
+  ));
+};
+
+
+/**
+ * Component for displaying name and interacting with the order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the name, checkout and cancel buttons
+ */
+const OrderInfo = ({
+  order_info,
+  onFormChange,
+  handleSubmitName,
+  disabled,
+  handleCheckout,
+  resetPage,
+  showOrderAlert,
+  orderAlertText,
+}) => {
+  if (order_info.name === "") {
+    return (
+      &lt;span className="translate">
+        &lt;InputGroup className="mb-3">
+          &lt;Form.Control
+            placeholder="Customer's name"
+            aria-label="Customer's name"
+            aria-describedby="customer-enter-name"
+            name="order_name"
+            onChange={onFormChange}
+          />
+          &lt;Button
+            onClick={() => handleSubmitName()}
+            variant="outline-primary"
+            id="customer-enter-name"
+          >
+            &lt;span className="translate">Start Order&lt;/span>
+          &lt;/Button>
+        &lt;/InputGroup>
+      &lt;/span>
+    );
+  } else {
+    return (
+      &lt;span className="translate">
+        &lt;div className="container">
+          &lt;div className="row">
+            {showOrderAlert &amp;&amp; (
+              &lt;Alert className="py-1 px-1 my-1 text-left" variant="primary">
+                {orderAlertText}
+              &lt;/Alert>
+            )}
+            &lt;div className="col-12">
+              &lt;span className="translate">Order Name: {order_info.name}&lt;/span>
+            &lt;/div>
+            &lt;div className="col-xs-12 col-md-6 my-1">
+              &lt;button
+                disabled={disabled}
+                className="btn btn-primary"
+                onClick={() => handleCheckout()}
+              >
+                &lt;span className="translate">Checkout&lt;/span>
+              &lt;/button>
+            &lt;/div>
+            &lt;div className="col-xs-12 col-md-6 my-1">
+              &lt;button
+                disabled={disabled}
+                className="btn btn-secondary"
+                onClick={() => resetPage()}
+              >
+                &lt;span className="translate">Cancel&lt;/span>
+              &lt;/button>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/span>
+    );
+  }
+};
+
+/**
+ * Component for displaying order information for the current order
+ * @param {Object} param0 Object containing the necessary dependencies for the component
+ * @returns a div containing the information for the current order
+ */
+const OrderCard = ({
+  order_info,
+  pizzas,
+  seasonal_items,
+  drink_counts,
+  onFormChange,
+  handleEditPizza,
+  handleDeletePizza,
+  handleDeleteSeasonalItem,
+  handleSubmitName,
+  currentPizzaID,
+  disabled,
+  handleCheckout,
+  resetPage,
+  showAlerts,
+  showOrderAlert,
+  orderAlertText,
+}) => {
+  const calculatePrice = () => {
+    var total_price = 0.0;
+    pizzas.forEach((element) => {
+      total_price += Number(element.pizza_price);
+    });
+    drink_counts.forEach((element) => {
+      total_price += Number(element.drink_count) * Number(element.drink_price);
+    });
+    return `$${total_price.toFixed(2)}`;
+  };
+
+  return (
+    &lt;>
+      &lt;div className="card">
+        &lt;ul className="list-group list-group-flush">
+          &lt;li className="list-group-item">
+            &lt;OrderInfo
+              handleCheckout={handleCheckout}
+              resetPage={resetPage}
+              disabled={disabled}
+              handleSubmitName={handleSubmitName}
+              onFormChange={onFormChange}
+              order_info={order_info}
+              showOrderAlert={showOrderAlert}
+              orderAlertText={orderAlertText}
+            />
+          &lt;/li>
+          &lt;div style={{ maxHeight: "80vh", overflowY: "scroll" }}>
+            &lt;li className="list-group-item">
+              &lt;strong>
+                &lt;span className="translate">Drinks&lt;/span>
+              &lt;/strong>
+              &lt;DrinkCountRows drink_counts={drink_counts} />
+            &lt;/li>
+            &lt;li className="list-group-item">
+              &lt;strong>
+                &lt;span className="translate">Seasonal Items&lt;/span>
+              &lt;/strong>
+              &lt;SeasonalItemRows
+                handleDeleteSeasonalItem={handleDeleteSeasonalItem}
+                seasonal_items={seasonal_items}
+              />
+            &lt;/li>
+            &lt;li className="list-group-item">
+              &lt;strong>
+                &lt;span className="translate">Pizzas&lt;/span>
+              &lt;/strong>
+              &lt;PizzaRows
+                currentPizzaID={currentPizzaID}
+                pizzas={pizzas}
+                handleDeletePizza={handleDeletePizza}
+                handleEditPizza={handleEditPizza}
+                showAlerts={showAlerts}
+              />
+            &lt;/li>
+            &lt;li className="list-group-item">
+              &lt;strong>
+                &lt;span className="translate">Total Price: &lt;/span>
+                {calculatePrice()}
+              &lt;/strong>
+            &lt;/li>
+          &lt;/div>
+        &lt;/ul>
+      &lt;/div>
+    &lt;/>
+  );
+};
+
+export default OrderCard;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

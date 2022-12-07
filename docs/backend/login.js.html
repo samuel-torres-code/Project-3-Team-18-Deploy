@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: login.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: login.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var express = require('express');
+const dotenv = require('dotenv').config();
+const { Pool } = require('pg');
+var router = express.Router();
+module.exports = router;
+
+const pool = new Pool({
+    user: process.env.PSQL_USER,
+    host: process.env.PSQL_HOST,
+    database: process.env.PSQL_DATABASE,
+    password: process.env.PSQL_PASSWORD,
+    port: process.env.PSQL_PORT,
+    ssl: {rejectUnauthorized: false}
+});
+
+// Add process hook to shutdown pool
+process.on('SIGINT', function() {
+    pool.end();
+    console.log('Application successfully shutdown');
+    process.exit(0);
+});
+
+/*router.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+        "Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+    next();
+});*/
+
+/** This function determines if the user entered a valid username, whether an employee or non-employee
+ *  Automatically checks either employee credentials or customer credentials depending on the login checkbox
+ *  @function
+ *  @name api/login/
+ *  @param {*} req contains the body with the input information: user, email, password, emp
+ *  @param {*} res contains specific information that determines employee information or customer login status
+ */
+router.post('/', (req, res, next) => {
+    data = [];
+    let send = false;
+    if(req.body.emp === "true"){
+        var queryString = "SELECT * FROM employees_web where emp_name='" + req.body.user +"';"
+        pool.query(queryString).then(query_res => {
+            for(let i = 0; i &lt; query_res.rowCount; i++) {
+                if((query_res.rows[i].passcode === req.body.password) &amp;&amp; (query_res.rows[i].is_manager === true)){
+                    send = true;
+                    data.push(true);
+                    data.push(true);
+                    data.push(query_res.rows[i].emp_id);
+                    return res.send(data);
+                }
+                else if(query_res.rows[i].passcode === req.body.password){
+                    send = true;
+                    data.push(true);
+                    data.push(false);
+                    data.push(query_res.rows[i].emp_id);
+                    return res.send(data);
+                }
+            }
+            data.push(false);
+            data.push(false);
+            data.push(-1);
+            return res.send(data);
+        });
+    }
+    else{
+        //IF USERNAME DOES NOT EXIST WE GET AN ERROR. LOGGING IN WITH EMAIL NEVER TAKEN CARE OF BC OF THIS
+            var queryString = "SELECT * FROM users_web where username='" + req.body.user +"';";
+            pool.query(queryString).then(query_res => {
+                for(let i = 0; i &lt; query_res.rowCount; i++) {
+                    if((query_res.rows[i].password === req.body.password) &amp;&amp; (!send)){
+                        send = true;
+                        return res.send(send);
+                    }
+                }
+                if(!send){
+                    return res.send(send);
+                }
+            });
+        }
+});
+
+/** Check and see if the user provided an email address and allow them to login if valid info is given
+ *  This function will be checked AFTER it is confirmed that the user did not enter a username
+ *  @function
+ *  @name api/login/email
+ *  @param {*} req contains the body with the input information: user, email, password,
+ *  @param {*} res contains specific information that determines customer login status
+ */
+router.post('/email', (req, res, next) => {
+    var queryStringTwo = "SELECT * FROM users_web where email='" + req.body.email + "';";
+    var send = false;
+    pool.query(queryStringTwo).then(query_res => {
+        for(let i = 0; i &lt; query_res.rowCount; i++) {
+            if(query_res.rows[i].password === req.body.password){
+                send = true;
+                return res.send(true);
+            }
+        }
+        if(!send)
+            return res.send(false);
+    });
+})
+
+/** Check if user exists within the database and allow them access if they do
+ *  This function is for Google Sign-In only
+ *  @function
+ *  @name api/login/google/login
+ *  @param {*} req contains the body with the input information: user, email
+ *  @param {*} res contains specific information that determines customer login status
+ */
+router.post('/google/login', (req, res, next) => {
+    var queryStringTwo = "SELECT * FROM users_web_oauth where email='" + req.body.email + "';";
+    var send = false;
+    pool.query(queryStringTwo).then(query_res => {
+        for(let i = 0; i &lt; query_res.rowCount; i++) {
+            if(query_res.rows[i].email === req.body.email){
+                send = true;
+                return res.send(true);
+            }
+        }
+        if(!send){
+            return res.send(false);
+        }
+            
+    });
+})
+
+/** If user has failed to login automatically with google, create an account and allow access
+ *  @function
+ *  @name api/login/google/login/secondary
+ *  @param {*} req contains the body with the input information: user, email
+ *  @param {*} res contains specific information that determines customer login status
+ */
+router.post('/google/login/secondary', (req, res, next) => {
+    var queryStringTwo = "insert into users_web_oauth (username, email) values ('" + req.body.user + "', '" + req.body.email + "');";
+    pool.query(queryStringTwo).then(query_res => {
+        return res.send(true);
+    });
+})
+
+router.get('/', function(req, res){
+    res.send('default route /api/login');
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#api/checkout">api/checkout</a></li><li><a href="global.html#api/login/">api/login/</a></li><li><a href="global.html#api/login/email">api/login/email</a></li><li><a href="global.html#api/login/google/login">api/login/google/login</a></li><li><a href="global.html#api/login/google/login/secondary">api/login/google/login/secondary</a></li><li><a href="global.html#api/manager/addEmployee">api/manager/addEmployee</a></li><li><a href="global.html#api/manager/add_ingredient">api/manager/add_ingredient</a></li><li><a href="global.html#api/manager/change_fill_level">api/manager/change_fill_level</a></li><li><a href="global.html#api/manager/load_ingredients">api/manager/load_ingredients</a></li><li><a href="global.html#api/manager/load_menu_items">api/manager/load_menu_items</a></li><li><a href="global.html#api/manager/load_prices">api/manager/load_prices</a></li><li><a href="global.html#api/manager/remove_ingredient">api/manager/remove_ingredient</a></li><li><a href="global.html#api/manager/restock">api/manager/restock</a></li><li><a href="global.html#api/manager/update_menu_items">api/manager/update_menu_items</a></li><li><a href="global.html#api/register/">api/register/</a></li><li><a href="global.html#api/remove_seasonal_item">api/remove_seasonal_item</a></li><li><a href="global.html#api/report/honors">api/report/honors</a></li><li><a href="global.html#api/reports/add_seasonal_item">api/reports/add_seasonal_item</a></li><li><a href="global.html#api/reports/excess">api/reports/excess</a></li><li><a href="global.html#api/reports/restock">api/reports/restock</a></li><li><a href="global.html#api/reports/restock_all">api/reports/restock_all</a></li><li><a href="global.html#api/reports/sales">api/reports/sales</a></li><li><a href="global.html#api/server/ingredients">api/server/ingredients</a></li><li><a href="global.html#api/server/types">api/server/types</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:12:39 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/UserOrderCard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/UserOrderCard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
+
+/**
+ * Returns the html to display all of the pizzas on the order to the user.
+ * @param {array} pizzas
+ * @param {function} handleEditPizza
+ * @param {function} handleDeletePizza
+ * @param {map} ingredient_dict
+ * @returns html
+ */
+const UserPizzaRows = ({
+  pizzas,
+  handleEditPizza,
+  handleDeletePizza,
+  ingredient_dict,
+}) => {
+  return pizzas.map((pizza, index) => {
+    return (
+      &lt;div key={pizza.pizza_type + index} className="row my-2">
+        &lt;div className="col-7">
+          &lt;strong className="text-left my-0">{pizza.pizza_type}&lt;/strong>
+          &lt;p className="text-left mb-1">${pizza.pizza_price}&lt;/p>
+
+          {pizza.ingredients?.map((ingredient, index) => (
+            &lt;p
+              key={ingredient + pizza.pizza_type + index}
+              className="text-left my-0">
+              &lt;span className="translate">
+                {ingredient_dict[ingredient.ingredient_id].ingredient_name}
+              &lt;/span>
+            &lt;/p>
+          ))}
+        &lt;/div>
+        &lt;div className="col-4 d-flex-inline p-0 text-end">
+          &lt;button
+            onClick={() => handleEditPizza(index)}
+            className="btn btn-primary mx-2 mb-2">
+            &lt;FontAwesomeIcon icon={faPencil} />
+          &lt;/button>
+          &lt;button
+            onClick={() => handleDeletePizza(index)}
+            className="btn btn-primary mx-2 mb-2">
+            &lt;FontAwesomeIcon icon={faTrash} />
+          &lt;/button>
+        &lt;/div>
+      &lt;/div>
+    );
+  });
+};
+
+/**
+ * Returns the html to display all of the seasonal items on the order to the user.
+ * @param {array} seasonal_items
+ * @param {function} handleDeleteSeasonalItem
+ * @returns html
+ */
+const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
+  return seasonal_items.map((item, index) => {
+    return (
+      &lt;span className="translate">
+        &lt;div key={item.item_name + index} className="row my-2">
+          &lt;div className="col-9">
+            &lt;strong className="my-0">{item.item_name}&lt;/strong>
+            &lt;p className="my-0"> ${item.item_price} &lt;/p>
+          &lt;/div>
+          &lt;div className="col-2 text-end p-0">
+            &lt;button
+              onClick={() => handleDeleteSeasonalItem(index)}
+              className="btn btn-primary mx-2">
+              &lt;FontAwesomeIcon icon={faTrash} />
+            &lt;/button>
+          &lt;/div>
+        &lt;/div>
+      &lt;/span>
+    );
+  });
+};
+
+/**
+ * Returns the html to display all of the drinks on the order to the user.
+ * @param {array} drinks
+ * @param {function} handleDeleteDrink
+ * @returns html
+ */
+const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
+  return drinks.map((drink, index) => {
+    return (
+      &lt;span className="translate">
+        &lt;div key={drink.drink_type + index} className="row my-2">
+          &lt;div className="col-9">
+            &lt;strong className="my-0">{drink.drink_type}&lt;/strong>
+            &lt;p className="my-0"> ${drink.drink_price} &lt;/p>
+          &lt;/div>
+          &lt;div className="col-2 text-end p-0">
+            &lt;button
+              onClick={() => handleDeleteDrink(index)}
+              className="btn btn-primary mx-2">
+              &lt;FontAwesomeIcon icon={faTrash} />
+            &lt;/button>
+          &lt;/div>
+        &lt;/div>
+      &lt;/span>
+    );
+  });
+};
+
+/**
+ * Component to display all of the items on the order to the user.
+ * @param {array} drinks
+ * @param {array} pizzas
+ * @param {array} seasonal_items
+ * @param {function} deleteDrink
+ * @param {function} deleteItem
+ * @param {function} deletePizza
+ * @param {function} editPizza
+ * @param {function} handleResetPage
+ * @param {function} handleCheckout
+ * @param {array} ingredients_by_type
+ * @returns html
+ */
+const UserOrderCard = ({
+  drinks,
+  pizzas,
+  seasonal_items,
+  deleteDrink,
+  deleteItem,
+  deletePizza,
+  editPizza,
+  handleResetPage,
+  handleCheckout,
+  ingredients_by_type,
+}) => {
+  const [load, setLoad] = useState(true);
+
+  useEffect(() => {
+    setLoad(false);
+  }, [load]);
+
+  /**
+   * Function to calculate the total price of the order.
+   * @returns Total price of order
+   */
+  function calculatePrice() {
+    var total_price = 0.0;
+    pizzas.forEach((pizza) => {
+      total_price += Number(pizza.pizza_price);
+    });
+    drinks.forEach((drink) => {
+      total_price += Number(drink.drink_price);
+    });
+    seasonal_items.forEach((item) => {
+      total_price += Number(item.item_price);
+    });
+    return `${total_price.toFixed(2)}`;
+  }
+
+  return (
+    &lt;span className="translate">
+      &lt;div className="container row mx-auto">
+        &lt;div className="card col-lg-6 col-md-8 col-sm-12 mx-auto p-0">
+          &lt;ul className="list-group list-group-flush">
+            &lt;div style={{ maxHeight: "65vh", overflowY: "auto" }}>
+              &lt;li className="list-group-item pizzas">
+                &lt;strong className="fs-5">
+                  &lt;span className="translate">Pizzas:&lt;/span>
+                &lt;/strong>
+                &lt;UserPizzaRows
+                  pizzas={pizzas}
+                  handleEditPizza={editPizza}
+                  handleDeletePizza={deletePizza}
+                  ingredient_dict={Object.values(ingredients_by_type)
+                    .flat()
+                    .reduce(function (map, obj) {
+                      map[obj.ingredient_id] = obj;
+                      return map;
+                    }, {})}>&lt;/UserPizzaRows>
+              &lt;/li>
+              &lt;li className="list-group-item seasonal_items">
+                &lt;strong className="fs-5">
+                  &lt;span className="translate">Seasonal Items:&lt;/span>
+                &lt;/strong>
+                &lt;UserSeasonalItemRows
+                  seasonal_items={seasonal_items}
+                  handleDeleteSeasonalItem={deleteItem}>&lt;/UserSeasonalItemRows>
+              &lt;/li>
+              &lt;li className="list-group-item drinks">
+                &lt;strong className="fs-5">
+                  &lt;span className="translate">Drinks:&lt;/span>
+                &lt;/strong>
+                &lt;UserDrinkRows
+                  drinks={drinks}
+                  handleDeleteDrink={deleteDrink}>&lt;/UserDrinkRows>
+              &lt;/li>
+            &lt;/div>
+          &lt;/ul>
+          &lt;div className="list-group-item row mx-0 d-flex">
+            &lt;div className="col-sm-12 col-lg-6 my-2 fs-5">
+              &lt;strong className="align-middle">
+                &lt;span className="translate">
+                  Total Price: ${calculatePrice()}
+                &lt;/span>
+              &lt;/strong>
+            &lt;/div>
+            &lt;div className="col-sm-12 col-lg-6 px-0 text-center my-2 d-flex justify-content-evenly">
+              &lt;button className="btn btn-secondary" onClick={handleResetPage}>
+                &lt;span className="translate">Cancel&lt;/span>
+              &lt;/button>
+              &lt;button className="btn btn-primary" onClick={handleCheckout}>
+                &lt;span className="translate">Checkout&lt;/span>
+              &lt;/button>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/span>
+  );
+};
+
+export default UserOrderCard;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#AddItemCard">AddItemCard</a></li><li><a href="global.html#AddPizzaCard">AddPizzaCard</a></li><li><a href="global.html#DrinkCard">DrinkCard</a></li><li><a href="global.html#DrinkCountRows">DrinkCountRows</a></li><li><a href="global.html#DrinkRows">DrinkRows</a></li><li><a href="global.html#ExcessReport">ExcessReport</a></li><li><a href="global.html#GoogleMapsComp">GoogleMapsComp</a></li><li><a href="global.html#HonorsReport">HonorsReport</a></li><li><a href="global.html#IngredientItemButton">IngredientItemButton</a></li><li><a href="global.html#IngredientSelectGroup">IngredientSelectGroup</a></li><li><a href="global.html#IngredientTable">IngredientTable</a></li><li><a href="global.html#ItemButton">ItemButton</a></li><li><a href="global.html#OrderCard">OrderCard</a></li><li><a href="global.html#OrderInfo">OrderInfo</a></li><li><a href="global.html#PizzaOrderCard">PizzaOrderCard</a></li><li><a href="global.html#PizzaRows">PizzaRows</a></li><li><a href="global.html#Reports">Reports</a></li><li><a href="global.html#RestockReport">RestockReport</a></li><li><a href="global.html#SalesReport">SalesReport</a></li><li><a href="global.html#SeasonalItemCard">SeasonalItemCard</a></li><li><a href="global.html#SeasonalItemRows">SeasonalItemRows</a></li><li><a href="global.html#UserDrinkRows">UserDrinkRows</a></li><li><a href="global.html#UserOrderCard">UserOrderCard</a></li><li><a href="global.html#UserPizzaRows">UserPizzaRows</a></li><li><a href="global.html#UserSeasonalItemRows">UserSeasonalItemRows</a></li><li><a href="global.html#convertWord">convertWord</a></li><li><a href="global.html#getExcessReport">getExcessReport</a></li><li><a href="global.html#getHonorsReport">getHonorsReport</a></li><li><a href="global.html#getIngredientsByType">getIngredientsByType</a></li><li><a href="global.html#getItemTypes">getItemTypes</a></li><li><a href="global.html#getRestockReport">getRestockReport</a></li><li><a href="global.html#getSalesReport">getSalesReport</a></li><li><a href="global.html#markLoader">markLoader</a></li><li><a href="global.html#orderTypes">orderTypes</a></li><li><a href="global.html#postOrder">postOrder</a></li><li><a href="global.html#postOrderAsync">postOrderAsync</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Tue Dec 06 2022 23:13:40 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
