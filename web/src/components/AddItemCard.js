@@ -1,5 +1,13 @@
 import ItemButton from "./ItemButton";
 
+/**
+ * Component to display the Menu to the user and to allow them to add items to their order.
+ * @param {array} seasonalItems
+ * @param {function} drinkFunction
+ * @param {function} itemButtonFunction
+ * @param {function} addPizzaFunction
+ * @returns
+ */
 const AddItemCard = ({
   seasonalItems,
   drinkFunction,
@@ -21,7 +29,6 @@ const AddItemCard = ({
             return (
               <ItemButton
                 key={item.item_name}
-                imgName={"scary_pizza.png"}
                 cardText={item.item_name}
                 onClick={itemButtonFunction}></ItemButton>
             );

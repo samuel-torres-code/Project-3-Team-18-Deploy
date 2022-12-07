@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const [alertText, setAlertText] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const {
     orderLoading,
@@ -41,6 +41,10 @@ const Order = () => {
     }
   }, [orderLoading]);
 
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
   function handleSwitchTab(event) {
     if (event.target.value === "Menu") {
       setLoadMenu(true);
@@ -49,16 +53,27 @@ const Order = () => {
     }
   }
 
+  /**
+   * Redirects user to the pizza route to add a pizza.
+   */
   function handleAddPizzaClick() {
     addNewPizza();
     navigate(`/pizza`);
   }
 
+  /**
+   * Redirects user to the pizza route with a specified index of pizza to edit.
+   * @param {int} index
+   */
   function handleEditPizzaClick(index) {
     navigate(`/pizza?index=${index}`);
     console.log("Edit Pizza " + index);
   }
 
+  /**
+   * Adds a drink to the order and alerts the user.
+   * @param {event} event
+   */
   function handleAddDrinkClick(event) {
     addDrink(
       itemTypes.drink_types.find(
@@ -73,6 +88,10 @@ const Order = () => {
     }, 3000);
   }
 
+  /**
+   * Adds an item to the order and alerts the user.
+   * @param {event} event
+   */
   function handleAddItemClick(event) {
     addItem(
       itemTypes.seasonal_item_types.find(
@@ -87,6 +106,9 @@ const Order = () => {
     }, 3000);
   }
 
+  /**
+   * Checks the user out and redirects them to the pickup order page.
+   */
   function handleCheckout() {
     if (
       order.drinks.length > 0 ||

@@ -12,7 +12,7 @@ const IngredientTable = ({
     <div className="container">
       <div
         className="border border-dark mx-5"
-        style={{ maxHeight: "70vh", overflowY: "auto" }}>
+        style={{ maxHeight: "65vh", overflowY: "auto" }}>
         <table className="w-100">
           <thead className="table-header position-sticky">
             <tr>

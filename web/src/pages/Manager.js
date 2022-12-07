@@ -5,6 +5,7 @@ import IngredientTable from "../components/IngredientTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import Multiselect from "multiselect-react-dropdown";
+import Alert from "react-bootstrap/Alert";
 import "./Manager.css";
 
 function Manager() {
@@ -18,6 +19,9 @@ function Manager() {
   const [showEditIngredientModal, setShowEditIngredientModal] = useState(false);
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const [restockAmount, setRestockAmount] = useState("");
   const [fillLevel, setFillLevel] = useState("");
@@ -376,15 +380,18 @@ function Manager() {
    */
   function addIngredient() {
     if (newIngredientName === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Ingredient: Ingredient name is null."
       );
+      setShowAlert(true);
     } else if (newIngredientType === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Ingredient: Ingredient type is null."
       );
+      setShowAlert(true);
     } else if (fillLevel === "") {
-      console.error("Invalid Input for Add Ingredient: Fill level is null.");
+      setAlertText("Invalid Input for Add Ingredient: Fill level is null.");
+      setShowAlert(true);
     } else {
       client.post("/api/manager/add_ingredient", {
         ingredient_name: newIngredientName,
@@ -404,9 +411,10 @@ function Manager() {
   function editIngredient() {
     if (restockAmount !== "") {
       if (isNaN(restockAmount)) {
-        console.error(
+        setAlertText(
           "Invalid Input for Restock Ingredient: Restock amount is NaN."
         );
+        setShowAlert(true);
       } else {
         client.post("/api/manager/restock", {
           ingredients: [selectedIngredient],
@@ -415,12 +423,16 @@ function Manager() {
         setRestockAmount("");
         loadIngredients();
       }
+    } else {
+      setAlertText(
+        "Invalid Input for Restock Ingredient: Restock amount is null."
+      );
+      setShowAlert(true);
     }
     if (fillLevel !== "") {
       if (isNaN(fillLevel)) {
-        console.error(
-          "Invalid Input for Restock Ingredient: Restock amount is NaN."
-        );
+        setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
+        setShowAlert(true);
       } else {
         client.post("/api/manager/change_fill_level", {
           ingredient_name: selectedIngredient,
@@ -430,6 +442,9 @@ function Manager() {
         setSelectedIngredient("");
         loadIngredients();
       }
+    } else {
+      setAlertText("Invalid Input for Fill Level: Fill Level is null.");
+      setShowAlert(true);
     }
   }
 
@@ -438,13 +453,15 @@ function Manager() {
    */
   function editMenuItem() {
     if (newItemPrice === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Update Menu Item Price: New item price is null."
       );
+      setShowAlert(true);
     } else if (isNaN(newItemPrice)) {
-      console.error(
+      setAlertText(
         "Invalid Input for Update Menu Item Price: New item price is NaN."
       );
+      setShowAlert(true);
     } else {
       client.post("/api/manager/update_menu_items", {
         menu_items: [selectedMenuItem],
@@ -460,17 +477,20 @@ function Manager() {
    */
   function addMenuItem() {
     if (newItemName === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item name is null."
       );
+      setShowAlert(true);
     } else if (newItemPrice === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is null."
       );
+      setShowAlert(true);
     } else if (isNaN(newItemPrice)) {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
       );
+      setShowAlert(true);
     } else {
       var new_ingredients = [];
       newItemIngredients.forEach((element) =>
@@ -544,6 +564,21 @@ function Manager() {
       return (
         <span className="translate">
           <div className="row w-100 m-0">
+            {showAlert ? (
+              <div>
+                <Alert
+                  className="mt-3 w-50 mx-auto"
+                  style={{ marginBottom: "-2em" }}
+                  variant="primary"
+                  onClose={() => setShowAlert(false)}
+                  dismissible>
+                  {alertText}
+                </Alert>
+              </div>
+            ) : (
+              // add spacing for alert
+              <div style={{ height: "2.6em" }}></div>
+            )}
             <div
               className="modal fade"
               id="inputModal"
@@ -769,7 +804,7 @@ function Manager() {
                 </div>
               </div>
             </div>
-            <div className="col my-5 p-0">
+            <div className="col mt-5 p-0">
               <IngredientTable
                 ingredientData={ingredientData}
                 handleEditIngredientClick={handleEditIngredientClick}
@@ -777,11 +812,11 @@ function Manager() {
                 handleAddIngredientClick={handleAddIngredientClick}
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
-            <div className="col my-5 p-0">
+            <div className="col mt-5 p-0">
               <div className="container">
                 <div
                   className="border border-dark mx-5"
-                  style={{ maxHeight: "40vh", overflowY: "auto" }}>
+                  style={{ maxHeight: "35vh", overflowY: "auto" }}>
                   <table className="w-100">
                     <thead className="table-header position-sticky">
                       <tr>

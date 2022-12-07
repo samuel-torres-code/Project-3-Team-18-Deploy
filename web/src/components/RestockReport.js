@@ -3,11 +3,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { getRestockReport } from "../api/ReportAPI";
 
+/**
+ * Component to display the restock report to the user.
+ * @returns html
+ */
 const RestockReport = () => {
   const [restockData, setRestockData] = useState([]);
 
   /**
-   * Loads data necessary for the report.
+   * Loads data necessary for the report with an api call.
    */
   const handleGenerateReport = () => {
     getRestockReport().then((res) => {

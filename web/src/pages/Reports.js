@@ -5,12 +5,20 @@ import HonorsReport from "../components/EmployeeSalesReport";
 import SalesReport from "../components/SalesReport";
 import RestockReport from "../components/RestockReport";
 
+/**
+ * Component to display all of the reports to the user.
+ * @returns
+ */
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState(false);
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
   function handleSwitchTab(event) {
     setLoadTab(event.target.value);
   }

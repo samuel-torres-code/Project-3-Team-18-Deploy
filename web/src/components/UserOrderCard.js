@@ -2,19 +2,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 
+/**
+ * Returns the html to display all of the pizzas on the order to the user.
+ * @param {array} pizzas
+ * @param {function} handleEditPizza
+ * @param {function} handleDeletePizza
+ * @param {map} ingredient_dict
+ * @returns html
+ */
 const UserPizzaRows = ({
   pizzas,
   handleEditPizza,
   handleDeletePizza,
   ingredient_dict,
 }) => {
-  const convertWord = (str) => {
-    return str.replace(/([a-z])([A-Z])/g, `$1 $2`);
-  };
-
   return pizzas.map((pizza, index) => {
     return (
-      
       <div key={pizza.pizza_type + index} className="row my-2">
         <div className="col-7">
           <strong className="text-left my-0">{pizza.pizza_type}</strong>
@@ -24,8 +27,8 @@ const UserPizzaRows = ({
             <p
               key={ingredient + pizza.pizza_type + index}
               className="text-left my-0">
-                <span className='translate'>
-              {convertWord(ingredient_dict[ingredient.ingredient_id].ingredient_name)}
+              <span className="translate">
+                {ingredient_dict[ingredient.ingredient_id].ingredient_name}
               </span>
             </p>
           ))}
@@ -43,11 +46,16 @@ const UserPizzaRows = ({
           </button>
         </div>
       </div>
-
     );
   });
 };
 
+/**
+ * Returns the html to display all of the seasonal items on the order to the user.
+ * @param {array} seasonal_items
+ * @param {function} handleDeleteSeasonalItem
+ * @returns html
+ */
 const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   return seasonal_items.map((item, index) => {
     return (
@@ -70,6 +78,12 @@ const UserSeasonalItemRows = ({ seasonal_items, handleDeleteSeasonalItem }) => {
   });
 };
 
+/**
+ * Returns the html to display all of the drinks on the order to the user.
+ * @param {array} drinks
+ * @param {function} handleDeleteDrink
+ * @returns html
+ */
 const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
   return drinks.map((drink, index) => {
     return (
@@ -92,6 +106,20 @@ const UserDrinkRows = ({ drinks, handleDeleteDrink }) => {
   });
 };
 
+/**
+ * Component to display all of the items on the order to the user.
+ * @param {array} drinks
+ * @param {array} pizzas
+ * @param {array} seasonal_items
+ * @param {function} deleteDrink
+ * @param {function} deleteItem
+ * @param {function} deletePizza
+ * @param {function} editPizza
+ * @param {function} handleResetPage
+ * @param {function} handleCheckout
+ * @param {array} ingredients_by_type
+ * @returns html
+ */
 const UserOrderCard = ({
   drinks,
   pizzas,
@@ -110,11 +138,10 @@ const UserOrderCard = ({
     setLoad(false);
   }, [load]);
 
-  // function handleEditPizza(index) {
-  //   console.log("Edit pizza:" + index);
-  //   setLoad(true);
-  // }
-
+  /**
+   * Function to calculate the total price of the order.
+   * @returns Total price of order
+   */
   function calculatePrice() {
     var total_price = 0.0;
     pizzas.forEach((pizza) => {
