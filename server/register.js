@@ -30,6 +30,9 @@ process.on('SIGINT', function() {
     next();
 });*/
 
+/** This function looks to see if an email is already attatched to a created account
+ *  If no account exists, this function creates an account for the user with the provided information
+ */
 router.post('/', (req, res, next) => {
     let send = false;
     var queryString = "insert into users_web (username, password, email) VALUES ('" + req.body.user + "', '" + req.body.pass + "', '" + req.body.email + "') returning username as username;";
