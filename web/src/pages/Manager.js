@@ -105,11 +105,9 @@ function Manager() {
   }, []);
 
   useEffect(() => {
-    console.log("Hit");
     if (load) {
-      console.log("Loading");
-      setLoad(false);
       Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+        // setLoad(false);
         setIngredientData(values[0]);
 
         var options = [];
@@ -117,7 +115,11 @@ function Manager() {
           options.push({ name: element.name, id: index })
         );
         setMultiselectOptions(options);
+
         setMenuItemData(values[1]);
+        setTimeout(() => {
+          setLoad(false);
+        }, 1000);
       });
     }
   }, [load]);
@@ -410,11 +412,13 @@ function Manager() {
         "Invalid Input for Restock Ingredient: Restock amount is null."
       );
       setShowAlert(true);
+      return;
     } else if (isNaN(restockAmount) && fillLevel === "") {
       setAlertText(
         "Invalid Input for Restock Ingredient: Restock amount is NaN."
       );
       setShowAlert(true);
+      return;
     } else {
       client.post("/api/manager/restock", {
         ingredients: [selectedIngredient],
@@ -427,9 +431,11 @@ function Manager() {
     if (fillLevel === "" && restockAmount === "") {
       setAlertText("Invalid Input for Fill Level: Fill Level is null.");
       setShowAlert(true);
+      return;
     } else if (isNaN(fillLevel) && restockAmount === "") {
       setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
       setShowAlert(true);
+      return;
     } else {
       client.post("/api/manager/change_fill_level", {
         ingredient_name: selectedIngredient,
