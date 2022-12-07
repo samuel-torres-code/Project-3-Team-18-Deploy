@@ -26,14 +26,15 @@ const Register = () => {
     }
   }, []);
 
-  /* Set the reg component for the system, allows us to check for registration statuses
+  /** Set the reg component for the system, allows us to check for registration statuses
+   *  @returns
    */
   function setReg(){
     reg = "a";
   }
 
-  /* Ensure that the username, email, password, and confirmation password have actually been filled
-   * @return bool with the above state
+  /** Ensure that the username, email, password, and confirmation password have actually been filled
+   *  @returns bool with the above state
    */
   function infoCompleted() {
     return user.length > 0 && pass.length > 0 && email.length > 0 && confPass.length > 0 && confPass === pass;
@@ -76,6 +77,7 @@ const Register = () => {
   /**
    * Take care of the user registration - new account if email not in use, otherwise flag the customer they already have an account
    * @param {event} event 
+   * @returns
    */
   const registerRegistration = async (event) => {
     event.preventDefault();
