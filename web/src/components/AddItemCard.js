@@ -14,7 +14,7 @@ const AddItemCard = ({
     <span className="translate">
       <div className="container px-0">
         <div className="d-flex justify-content-center my-4">
-          <button className="btn btn-primary" onClick={addPizzaFunction}>
+          <button className="btn btn-primary btn-lg" onClick={addPizzaFunction}>
             <span className="translate" style={{ pointerEvents: "none" }}>
               Add Pizza
             </span>
@@ -25,7 +25,6 @@ const AddItemCard = ({
             return (
               <ItemButton
                 key={item.item_name}
-                imgName={"scary_pizza.png"}
                 cardText={item.item_name}
                 onClick={itemButtonFunction}></ItemButton>
             );
@@ -33,7 +32,7 @@ const AddItemCard = ({
         </div>
         <div className="d-flex justify-content-center gap-3 my-4">
           <button
-            className="btn btn-primary"
+            className="btn btn-primary btn-lg"
             value="Fountain"
             onClick={drinkFunction}>
             <span className="translate" style={{ pointerEvents: "none" }}>
@@ -41,7 +40,7 @@ const AddItemCard = ({
             </span>
           </button>
           <button
-            className="btn btn-primary"
+            className="btn btn-primary btn-lg"
             value="Bottle"
             onClick={drinkFunction}>
             <span className="translate" style={{ pointerEvents: "none" }}>

@@ -6,13 +6,11 @@ import useMenu from "../hooks/useMenu";
 import useOrder from "../hooks/useOrder";
 import Alert from "react-bootstrap/Alert";
 import { useNavigate } from "react-router-dom";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faUtensils, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 const Order = () => {
   const [loadMenu, setLoadMenu] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const [alertText, setAlertText] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const {
     orderLoading,
@@ -20,7 +18,6 @@ const Order = () => {
     order,
     setOrderName,
     addNewPizza,
-    // updatePizza,
     deletePizza,
     addDrink,
     addItem,
@@ -44,6 +41,10 @@ const Order = () => {
     }
   }, [orderLoading]);
 
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
   function handleSwitchTab(event) {
     if (event.target.value === "Menu") {
       setLoadMenu(true);
@@ -52,16 +53,27 @@ const Order = () => {
     }
   }
 
+  /**
+   * Redirects user to the pizza route to add a pizza.
+   */
   function handleAddPizzaClick() {
     addNewPizza();
     navigate(`/pizza`);
   }
 
+  /**
+   * Redirects user to the pizza route with a specified index of pizza to edit.
+   * @param {int} index
+   */
   function handleEditPizzaClick(index) {
     navigate(`/pizza?index=${index}`);
     console.log("Edit Pizza " + index);
   }
 
+  /**
+   * Adds a drink to the order and alerts the user.
+   * @param {event} event
+   */
   function handleAddDrinkClick(event) {
     addDrink(
       itemTypes.drink_types.find(
@@ -76,6 +88,10 @@ const Order = () => {
     }, 3000);
   }
 
+  /**
+   * Adds an item to the order and alerts the user.
+   * @param {event} event
+   */
   function handleAddItemClick(event) {
     addItem(
       itemTypes.seasonal_item_types.find(
@@ -90,6 +106,9 @@ const Order = () => {
     }, 3000);
   }
 
+  /**
+   * Checks the user out and redirects them to the pickup order page.
+   */
   function handleCheckout() {
     if (
       order.drinks.length > 0 ||
@@ -145,9 +164,7 @@ const Order = () => {
               }
               value="Menu"
               aria-current="page"
-              onClick={handleSwitchTab}
-            >
-              {/* <FontAwesomeIcon icon={faUtensils} /> */}
+              onClick={handleSwitchTab}>
               <span
                 className="translate mx-3"
                 style={{ pointerEvents: "none" }}
@@ -164,11 +181,7 @@ const Order = () => {
                   : "nav-link fw-bolder fs-5 active link-primary"
               }
               value="Cart"
-              onClick={handleSwitchTab}
-            >
-              {/* <div className="mx-5 fs-3">
-                <FontAwesomeIcon icon={faCartShopping} />
-              </div> */}
+              onClick={handleSwitchTab}>
               <span
                 className="translate mx-3"
                 style={{ pointerEvents: "none" }}

@@ -327,10 +327,11 @@ const Server = () => {
       }
     }
 
+    const emp_id = localStorage.getItem('employeeID') === null || typeof(localStorage.getItem('employeeID')) === 'undefined' ? 1 : localStorage.getItem('employeeID')
     //Arrange JSON
     const reqJson = {
       order: {
-        emp_id: 1,
+        emp_id: emp_id,
         cust_name: orderInfo.name,
       },
       pizzas: [

@@ -1,15 +1,24 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-import dateFormat, { masks } from "dateformat";
+import dateFormat from "dateformat";
 import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { getSalesReport } from "../api/ReportAPI";
 
+/**
+ * Component to display the sales report to the user.
+ * @param {function} setAlertText
+ * @param {function} setShowAlert
+ * @returns html
+ */
 const SalesReport = ({ setAlertText, setShowAlert }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [salesData, setSalesData] = useState([]);
 
+  /**
+   * Loads data necessary for the report with an api call.
+   */
   const handleGenerateReport = () => {
     if (startDate === null || typeof startDate === undefined) {
       setAlertText("Please enter a start date.");
