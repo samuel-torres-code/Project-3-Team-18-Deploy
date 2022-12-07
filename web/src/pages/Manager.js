@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../API";
 import IngredientTable from "../components/IngredientTable";
-import MenuItemsTable from "../components/MenuItemsTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 import Multiselect from "multiselect-react-dropdown";
+import Alert from "react-bootstrap/Alert";
 import "./Manager.css";
 
 function Manager() {
@@ -19,6 +19,9 @@ function Manager() {
   const [showEditIngredientModal, setShowEditIngredientModal] = useState(false);
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const [restockAmount, setRestockAmount] = useState("");
   const [fillLevel, setFillLevel] = useState("");
@@ -116,6 +119,9 @@ function Manager() {
     newItemIngredients,
   ]);
 
+  /**
+   * Loads ingredients from database using api call
+   */
   async function loadIngredients() {
     await client.get("/api/manager/load_ingredients").then((res) => {
       var ingredients = [];
@@ -147,6 +153,9 @@ function Manager() {
     });
   }
 
+  /**
+   * Loads menu items from database using an api call.
+   */
   async function loadMenuItems() {
     await client.get("/api/manager/load_prices").then((res) => {
       const items = [];
@@ -186,42 +195,80 @@ function Manager() {
     });
   }
 
+  /**
+   * Changes the state variable restock amount with the targeted value from the event.
+   * @param {event} event
+   */
   function handleRestockChange(event) {
     setRestockAmount(event.target.value);
   }
 
+  /**
+   * Changes the state variable fill_level with the targeted value from the event.
+   * @param {event} event
+   */
   function handleFillLevelChange(event) {
     setFillLevel(event.target.value);
   }
 
+  /**
+   * Changes the state variable new ingredient name with the targeted value from the event.
+   * @param {event} event
+   */
   function handleAddNameChange(event) {
     setNewIngredientName(event.target.value);
   }
 
+  /**
+   * Changes the state variable new ingredient type with the targeted value from the event.
+   * @param {event} event
+   */
   function handleAddTypeChange(event) {
     setNewIngredientType(event.target.value);
   }
 
+  /**
+   * Changes the state variable new item name with the targeted value from the event.
+   * @param {event} event
+   */
   function handleNewItemNameChange(event) {
     setNewItemName(event.target.value);
   }
 
+  /**
+   * Changes the state variable new item price with the targeted value from the event.
+   * @param {event} event
+   */
   function handleNewItemPriceChange(event) {
     setNewItemPrice(event.target.value);
   }
 
+  /**
+   * Changes the state variable new employee name with the targeted value from the event.
+   * @param {event} event
+   */
   function handleAddEmployeeName(event) {
     setNewEmployeeName(event.target.value);
   }
 
+  /**
+   * Changes the state variable new employee passcode with the targeted value from the event.
+   * @param {event} event
+   */
   function handleAddEmployeePassword(event) {
     setNewEmployeePassword(event.target.value);
   }
 
+  /**
+   * Changes the state variable add as manager with the targeted value from the event.
+   */
   function handleAddAsManagerChange() {
     setAddAsManager(!addAsManager);
   }
 
+  /**
+   * Attempts to add a new employee to the database.
+   */
   function handleAddNewEmployee() {
     if (addEmployeeName.length === 0) {
       console.error("Invalid Input for Employee Name: No name is given.");
@@ -247,11 +294,19 @@ function Manager() {
     }
   }
 
+  /**
+   * Sets the selected ingredient and sets the flag to show the edit ingredient modal.
+   * @param {string} ingredient_name
+   */
   function handleEditIngredientClick(ingredient_name) {
     setSelectedIngredient(ingredient_name);
     setShowEditIngredientModal(true);
   }
 
+  /**
+   * Attempts to remove an ingredient from the database.
+   * @param {string} ingredient_name
+   */
   function handleDeleteIngredientClick(ingredient_name) {
     client.post("/api/manager/remove_ingredient", {
       ingredients: [ingredient_name],
@@ -263,15 +318,26 @@ function Manager() {
     loadIngredients();
   }
 
+  /**
+   * Sets the flag to show the add ingredient modal.
+   */
   function handleAddIngredientClick() {
     setShowAddIngredientModal(true);
   }
 
+  /**
+   * Sets the selected menu item and sets the flag to show the edit item menu modal.
+   * @param {string} item_name
+   */
   function handleEditMenuItemClick(item_name) {
     setSelectedMenuItem(item_name);
     setShowEditMenuItemModal(true);
   }
 
+  /**
+   * Attempts to delete a menu item from the database.
+   * @param {string} item_name
+   */
   function handleDeleteMenuItemClick(item_name) {
     client.post("/api/reports/remove_seasonal_item", {
       items: [item_name],
@@ -284,29 +350,48 @@ function Manager() {
     loadMenuItems();
   }
 
+  /**
+   * Sets the flag to show the add menu item modal.
+   */
   function handleAddMenuItemClick() {
     setShowAddMenuItemModal(true);
   }
 
+  /**
+   * Adds selected ingredient to the list of new item ingredients.
+   * @param {array[ingredients]} selectedList
+   * @param {string} selectedItem
+   */
   function handleAddNewItemIngredient(selectedList, selectedItem) {
     setNewItemIngredients(newItemIngredients.concat(selectedItem));
   }
 
+  /**
+   * Removes the selected ingredient from the list of new item ingredients.
+   * @param {array[ingredients]} selectedList
+   * @param {string} removedItem
+   */
   function handleRemoveNewItemIngredient(selectedList, removedItem) {
     setNewItemIngredients(selectedList);
   }
 
+  /**
+   * Adds new ingredient to database.
+   */
   function addIngredient() {
     if (newIngredientName === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Ingredient: Ingredient name is null."
       );
+      setShowAlert(true);
     } else if (newIngredientType === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Ingredient: Ingredient type is null."
       );
+      setShowAlert(true);
     } else if (fillLevel === "") {
-      console.error("Invalid Input for Add Ingredient: Fill level is null.");
+      setAlertText("Invalid Input for Add Ingredient: Fill level is null.");
+      setShowAlert(true);
     } else {
       client.post("/api/manager/add_ingredient", {
         ingredient_name: newIngredientName,
@@ -320,12 +405,16 @@ function Manager() {
     }
   }
 
+  /**
+   * Updates database with new information for the selected ingredient.
+   */
   function editIngredient() {
     if (restockAmount !== "") {
       if (isNaN(restockAmount)) {
-        console.error(
+        setAlertText(
           "Invalid Input for Restock Ingredient: Restock amount is NaN."
         );
+        setShowAlert(true);
       } else {
         client.post("/api/manager/restock", {
           ingredients: [selectedIngredient],
@@ -334,12 +423,16 @@ function Manager() {
         setRestockAmount("");
         loadIngredients();
       }
+    } else {
+      setAlertText(
+        "Invalid Input for Restock Ingredient: Restock amount is null."
+      );
+      setShowAlert(true);
     }
     if (fillLevel !== "") {
       if (isNaN(fillLevel)) {
-        console.error(
-          "Invalid Input for Restock Ingredient: Restock amount is NaN."
-        );
+        setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
+        setShowAlert(true);
       } else {
         client.post("/api/manager/change_fill_level", {
           ingredient_name: selectedIngredient,
@@ -349,18 +442,26 @@ function Manager() {
         setSelectedIngredient("");
         loadIngredients();
       }
+    } else {
+      setAlertText("Invalid Input for Fill Level: Fill Level is null.");
+      setShowAlert(true);
     }
   }
 
+  /**
+   * Updates database with new information for the selected menu item
+   */
   function editMenuItem() {
     if (newItemPrice === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Update Menu Item Price: New item price is null."
       );
+      setShowAlert(true);
     } else if (isNaN(newItemPrice)) {
-      console.error(
+      setAlertText(
         "Invalid Input for Update Menu Item Price: New item price is NaN."
       );
+      setShowAlert(true);
     } else {
       client.post("/api/manager/update_menu_items", {
         menu_items: [selectedMenuItem],
@@ -371,19 +472,25 @@ function Manager() {
     }
   }
 
+  /**
+   * Adds new menu item to database.
+   */
   function addMenuItem() {
     if (newItemName === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item name is null."
       );
+      setShowAlert(true);
     } else if (newItemPrice === "") {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is null."
       );
+      setShowAlert(true);
     } else if (isNaN(newItemPrice)) {
-      console.error(
+      setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
       );
+      setShowAlert(true);
     } else {
       var new_ingredients = [];
       newItemIngredients.forEach((element) =>
@@ -400,6 +507,9 @@ function Manager() {
     }
   }
 
+  /**
+   * Hides modal used to input data to edit or add ingredients and menu items and resets state variables.
+   */
   function hideModal() {
     setShowAddIngredientModal(false);
     setShowEditIngredientModal(false);
@@ -418,6 +528,7 @@ function Manager() {
     setSelectedMenuItem("");
   }
 
+  // calls the correct function to submit the data from the modal.
   function submitModal() {
     if (showAddIngredientModal) {
       addIngredient();
@@ -453,6 +564,21 @@ function Manager() {
       return (
         <span className="translate">
           <div className="row w-100 m-0">
+            {showAlert ? (
+              <div>
+                <Alert
+                  className="mt-3 w-50 mx-auto"
+                  style={{ marginBottom: "-2em" }}
+                  variant="primary"
+                  onClose={() => setShowAlert(false)}
+                  dismissible>
+                  {alertText}
+                </Alert>
+              </div>
+            ) : (
+              // add spacing for alert
+              <div style={{ height: "2.6em" }}></div>
+            )}
             <div
               className="modal fade"
               id="inputModal"
@@ -581,7 +707,7 @@ function Manager() {
                           <div className="col-7">
                             <input
                               type="text"
-                              placeholder="Fill Level Percentage"
+                              placeholder="Fill Level"
                               className="mx-2 w-75"
                               style={{ height: "36px" }}
                               value={fillLevel}
@@ -678,7 +804,7 @@ function Manager() {
                 </div>
               </div>
             </div>
-            <div className="col my-5 p-0">
+            <div className="col mt-5 p-0">
               <IngredientTable
                 ingredientData={ingredientData}
                 handleEditIngredientClick={handleEditIngredientClick}
@@ -686,18 +812,11 @@ function Manager() {
                 handleAddIngredientClick={handleAddIngredientClick}
                 protectedIngredients={protectedIngredients}></IngredientTable>
             </div>
-            <div className="col my-5 p-0">
-              {/* <MenuItemsTable
-                menuItemData={menuItemData}
-                handleEditMenuItemClick={handleEditMenuItemClick}
-                handleDeleteMenuItemClick={handleDeleteMenuItemClick}
-                handleAddMenuItemClick={
-                  handleAddMenuItemClick
-                }></MenuItemsTable> */}
+            <div className="col mt-5 p-0">
               <div className="container">
                 <div
                   className="border border-dark mx-5"
-                  style={{ maxHeight: "40vh", overflowY: "auto" }}>
+                  style={{ maxHeight: "35vh", overflowY: "auto" }}>
                   <table className="w-100">
                     <thead className="table-header position-sticky">
                       <tr>

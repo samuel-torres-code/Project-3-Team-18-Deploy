@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
-import useMenu from "../hooks/useMenu";
-import useOrder from "../hooks/useOrder";
+import { useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import ExcessReport from "../components/ExcessReport";
 import HonorsReport from "../components/EmployeeSalesReport";
 import SalesReport from "../components/SalesReport";
 import RestockReport from "../components/RestockReport";
 
+/**
+ * Component to display all of the reports to the user.
+ * @returns
+ */
 const Reports = () => {
   const [loadTab, setLoadTab] = useState("Sales Report");
   const [showAlert, setShowAlert] = useState(false);
   const [alertText, setAlertText] = useState(false);
   const [condrender, setcondrender] = useState(localStorage.getItem("manager"));
 
-  function makeAlert(text) {
-    setAlertText(text);
-    setShowAlert(true);
-    setTimeout(() => {
-      setShowAlert(false);
-    }, 3000);
-  }
-
+  /**
+   * Switches the active tab on the page.
+   * @param {event} event
+   */
   function handleSwitchTab(event) {
     setLoadTab(event.target.value);
   }
@@ -104,11 +102,7 @@ const Reports = () => {
             setShowAlert={setShowAlert}
             setAlertText={setAlertText}></ExcessReport>
         )}
-        {loadTab === "Restock Report" && (
-          <RestockReport
-            setShowAlert={setShowAlert}
-            setAlertText={setAlertText}></RestockReport>
-        )}
+        {loadTab === "Restock Report" && <RestockReport></RestockReport>}
         {loadTab === "Honors Addendum" && (
           <HonorsReport
             setShowAlert={setShowAlert}
