@@ -1,5 +1,9 @@
 import ItemButton from "./ItemButton";
-
+/**
+ * Component for formatted card containing inputs for adding a seasonal item
+ * @param {Object} param0 Object containing the neccessary dependencies for the component
+ * @returns a formatted card containing inputs for adding a seasonal item
+ */
 const AddItemCard = ({
   seasonalItems,
   drinkFunction,

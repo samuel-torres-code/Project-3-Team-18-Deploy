@@ -1,4 +1,8 @@
-
+/**
+ * Component for formatted card containing inputs for adding a pizza
+ * @param {Object} param0 Object containing the neccessary dependencies for the component
+ * @returns a formatted card containing inputs for adding a pizza
+ */
 const AddPizzaCard = ({handleAddPizza,pizza_types,disabled}) => {
     return (
         <span className='translate'>

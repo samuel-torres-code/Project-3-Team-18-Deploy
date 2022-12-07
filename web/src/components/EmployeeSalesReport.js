@@ -6,6 +6,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import { getHonorsReport } from "../api/ReportAPI";
 
+/**
+ * Component for the honors report and its necessary inputs
+ * @param {Object} param0 Object containing the necessary dependents for the object
+ * @returns a formatted page that displays the honors report and its necessary inputs
+ */
 const HonorsReport = ({ setAlertText, setShowAlert }) => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);

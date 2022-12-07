@@ -1,4 +1,5 @@
 
+//Resource for what the data is supposed to look like
 
 export const order_info = {
     order_name: "Sam",
