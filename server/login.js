@@ -43,17 +43,20 @@ router.post('/', (req, res, next) => {
                     send = true;
                     data.push(true);
                     data.push(true);
+                    data.push(query_res.rows[i].emp_id);
                     return res.send(data);
                 }
                 else if(query_res.rows[i].passcode === req.body.password){
                     send = true;
                     data.push(true);
                     data.push(false);
+                    data.push(query_res.rows[i].emp_id);
                     return res.send(data);
                 }
             }
             data.push(false);
             data.push(false);
+            data.push(-1);
             return res.send(data);
         });
     }
