@@ -23,6 +23,10 @@ process.on('SIGINT', function() {
 
 /** This function looks to see if an email is already attatched to a created account
  *  If no account exists, this function creates an account for the user with the provided information
+ *  @function
+ *  @name api/register/
+ *  @param {*} req contains the body with the input information: user, email, password
+ *  @param {*} res contains specific information that determines customer login status
  */
 router.post('/', (req, res, next) => {
     let send = false;
