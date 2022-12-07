@@ -7,7 +7,7 @@ const client = axios.create({
 
 export const getExcessReport = (start_date) => {
   return client
-    .get("/api/reports/excess", {
+    .post("/api/reports/excess", {
       start_time: start_date,
     })
     .then((res) => {
@@ -15,14 +15,12 @@ export const getExcessReport = (start_date) => {
     });
 };
 
-export const getHonorsReport = (start_date, end_date) => {
-  return client
-    .get("/api/reports/honors", {
-      start_time: start_date,
-      end_time: end_date,
-    })
-    .then((res) => {
-      return res.data;
+  export const getHonorsReport = (start_date,end_date) => {
+    return client.post("/api/reports/honors", {
+        start_time: start_date,
+        end_time: end_date,
+    }).then((res) => {
+      return res.data
     });
 };
 
@@ -35,4 +33,10 @@ export const getSalesReport = (start_date, end_date) => {
     .then((res) => {
       return res.data;
     });
+};
+
+export const getRestockReport = () => {
+  return client.get("/api/reports/restock", {}).then((res) => {
+    return res.data;
+  });
 };

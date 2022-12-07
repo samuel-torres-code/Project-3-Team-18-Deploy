@@ -11,8 +11,6 @@ const ExcessReport = ({ setAlertText, setShowAlert }) => {
   const [ingredientData, setIngredientData] = useState([]);
 
   const handleGenerateReport = () => {
-    console.log(startDate);
-    console.log(dateFormat(startDate, "yyyy-mm-dd"));
     if (startDate === null || typeof startDate === undefined) {
       setAlertText("Please enter a start date.");
       setShowAlert(true);
@@ -21,6 +19,7 @@ const ExcessReport = ({ setAlertText, setShowAlert }) => {
     setShowAlert(false);
     getExcessReport(dateFormat(startDate, "yyyy-mm-dd")).then((res) => {
       setIngredientData(res.ingredients);
+      // console.log(res.ingredients);
     });
   };
 
@@ -73,7 +72,7 @@ const ExcessReport = ({ setAlertText, setShowAlert }) => {
                         <td>{val.ingredient_name}</td>
                         <td>{val.sales}</td>
                         <td>{val.inventory}</td>
-                        <td>{val.percentage}%</td>
+                        <td>{parseFloat(val.percentage).toFixed(2)}%</td>
                       </tr>
                     );
                   })}

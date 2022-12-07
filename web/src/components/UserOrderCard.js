@@ -14,36 +14,36 @@ const UserPizzaRows = ({
 
   return pizzas.map((pizza, index) => {
     return (
-      <span className="translate">
-        <div key={pizza.pizza_type + index} className="row my-2">
-          <div className="col-7">
-            <strong className="text-left my-0">{pizza.pizza_type}</strong>
-            <p className="text-left mb-1">${pizza.pizza_price}</p>
+      
+      <div key={pizza.pizza_type + index} className="row my-2">
+        <div className="col-7">
+          <strong className="text-left my-0">{pizza.pizza_type}</strong>
+          <p className="text-left mb-1">${pizza.pizza_price}</p>
 
-            {pizza.ingredients?.map((ingredient, index) => (
-              <p
-                key={ingredient + pizza.pizza_type + index}
-                className="text-left my-0">
-                {convertWord(
-                  ingredient_dict[ingredient.ingredient_id].ingredient_name
-                )}
-              </p>
-            ))}
-          </div>
-          <div className="col-4 d-flex-inline p-0 text-end">
-            <button
-              onClick={() => handleEditPizza(index)}
-              className="btn btn-primary mx-2 mb-2">
-              <FontAwesomeIcon icon={faPencil} />
-            </button>
-            <button
-              onClick={() => handleDeletePizza(index)}
-              className="btn btn-primary mx-2 mb-2">
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </div>
+          {pizza.ingredients?.map((ingredient, index) => (
+            <p
+              key={ingredient + pizza.pizza_type + index}
+              className="text-left my-0">
+                <span className='translate'>
+              {convertWord(ingredient_dict[ingredient.ingredient_id].ingredient_name)}
+              </span>
+            </p>
+          ))}
         </div>
-      </span>
+        <div className="col-4 d-flex-inline p-0 text-end">
+          <button
+            onClick={() => handleEditPizza(index)}
+            className="btn btn-primary mx-2 mb-2">
+            <FontAwesomeIcon icon={faPencil} />
+          </button>
+          <button
+            onClick={() => handleDeletePizza(index)}
+            className="btn btn-primary mx-2 mb-2">
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
+      </div>
+
     );
   });
 };
