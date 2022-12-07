@@ -1,6 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPencil } from "@fortawesome/free-solid-svg-icons";
 
+/**
+ * Component for a table containing all of the ingredient data to display.
+ * @param {Object} param0 Object containing the necessary dependencies for the given component
+ * @returns a formatted table with ingredient data
+ */
 const IngredientTable = ({
   ingredientData,
   handleEditIngredientClick,
