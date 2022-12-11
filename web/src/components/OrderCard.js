@@ -250,6 +250,9 @@ const OrderCard = ({
     drink_counts.forEach((element) => {
       total_price += Number(element.drink_count) * Number(element.drink_price);
     });
+    seasonal_items.forEach((element) => {
+      total_price += Number(element.item_price);
+    });
     return `$${total_price.toFixed(2)}`;
   };
 
