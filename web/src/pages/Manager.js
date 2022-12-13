@@ -105,24 +105,30 @@ function Manager() {
   }, []);
 
   useEffect(() => {
-    if (load) {
-      Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
-        // setLoad(false);
-        setIngredientData(values[0]);
+    Promise.all([loadIngredients(), loadMenuItems()]).then((values) => {
+      // setLoad(false);
+      setIngredientData(values[0]);
 
-        var options = [];
-        values[0].forEach((element, index) =>
-          options.push({ name: element.name, id: index })
-        );
-        setMultiselectOptions(options);
+      var options = [];
+      values[0].forEach((element, index) =>
+        options.push({ name: element.name, id: index })
+      );
+      setMultiselectOptions(options);
 
-        setMenuItemData(values[1]);
-        setTimeout(() => {
-          setLoad(false);
-        }, 1000);
-      });
-    }
-  }, [load]);
+      setMenuItemData(values[1]);
+      setTimeout(() => {
+        setLoad(false);
+      }, 1000);
+    });
+  }, [
+    load,
+    showAddIngredientModal,
+    showEditIngredientModal,
+    showAddMenuItemModal,
+    showEditMenuItemModal,
+    selectedIngredient,
+    selectedMenuItem,
+  ]);
 
   /**
    * Loads ingredients from database using api call
@@ -381,14 +387,23 @@ function Manager() {
         "Invalid Input for Add Ingredient: Ingredient name is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else if (newIngredientType === "") {
       setAlertText(
         "Invalid Input for Add Ingredient: Ingredient type is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else if (fillLevel === "") {
       setAlertText("Invalid Input for Add Ingredient: Fill level is null.");
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else {
       client.post("/api/manager/add_ingredient", {
         ingredient_name: newIngredientName,
@@ -412,12 +427,18 @@ function Manager() {
         "Invalid Input for Restock Ingredient: Restock amount is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
       return;
     } else if (isNaN(restockAmount) && fillLevel === "") {
       setAlertText(
         "Invalid Input for Restock Ingredient: Restock amount is NaN."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
       return;
     } else {
       client.post("/api/manager/restock", {
@@ -431,10 +452,16 @@ function Manager() {
     if (fillLevel === "" && restockAmount === "") {
       setAlertText("Invalid Input for Fill Level: Fill Level is null.");
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
       return;
     } else if (isNaN(fillLevel) && restockAmount === "") {
       setAlertText("Invalid Input for Fill Level: Fill Level is NaN.");
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
       return;
     } else {
       client.post("/api/manager/change_fill_level", {
@@ -456,11 +483,17 @@ function Manager() {
         "Invalid Input for Update Menu Item Price: New item price is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else if (isNaN(newItemPrice)) {
       setAlertText(
         "Invalid Input for Update Menu Item Price: New item price is NaN."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else {
       client.post("/api/manager/update_menu_items", {
         menu_items: [selectedMenuItem],
@@ -480,16 +513,25 @@ function Manager() {
         "Invalid Input for Add Seasonal Item: Seasonal item name is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else if (newItemPrice === "") {
       setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is null."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else if (isNaN(newItemPrice)) {
       setAlertText(
         "Invalid Input for Add Seasonal Item: Seasonal item price is NaN."
       );
       setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
     } else {
       var new_ingredients = [];
       newItemIngredients.forEach((element) =>
